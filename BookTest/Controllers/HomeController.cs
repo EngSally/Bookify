@@ -1,4 +1,4 @@
-﻿using BookTest.Models;
+﻿using BookTest.Core.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
 

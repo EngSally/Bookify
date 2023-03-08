@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using BookTest.Core.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BookTest.Data
@@ -9,5 +10,15 @@ namespace BookTest.Data
             : base(options)
         {
         }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            builder.Entity<Category>().Property(e => e.CretedOn).HasDefaultValueSql("GETDATE()");
+            base.OnModelCreating(builder);
+        }
+        public DbSet<Category> categories { get; set; }
+
+
+
     }
 }
