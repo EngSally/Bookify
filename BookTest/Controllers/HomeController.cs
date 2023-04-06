@@ -1,5 +1,4 @@
-﻿using BookTest.Core.ViewModels;
-using Microsoft.AspNetCore.Mvc;
+﻿
 using System.Diagnostics;
 
 namespace BookTest.Controllers

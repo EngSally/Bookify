@@ -1,7 +1,10 @@
 ﻿
 
+using Microsoft.EntityFrameworkCore;
+
 namespace BookTest.Core.Models
 {
+    [Index(nameof(Name),IsUnique =true)]
     public class Category
     {
 
@@ -10,7 +13,7 @@ namespace BookTest.Core.Models
         [MaxLength(100)]
         public String Name { get; set; } = null!;
         public bool Deleted { get; set; }
-        public DateTime CretedOn { get; set; }
+        public DateTime CretedOn { get; set; } = DateTime.Now;
         public DateTime? LastUpdate { get; set; }
         
     }
