@@ -1,7 +1,8 @@
-﻿@model IEnumerable<CategoryViewModel>
+﻿@model IEnumerable<AuthorViewModel>
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
+
 @{
-    ViewData["Title"] = "Categories";
+    ViewData["Title"] = "Authors";
 }
 
 
@@ -31,7 +32,7 @@
         <!--end::Icon-->
         <!--begin::Content-->
         <div class="d-flex flex-column pe-0 pe-sm-10">
-            <h5 class="mb-1">Categories</h5>
+            <h5 class="mb-1">Authors</h5>
 
         </div>
         <!--end::Content-->
@@ -39,8 +40,8 @@
     </div>
     <div>
         <a class="btn btn-primary  js-renderPopup  " href="#" role="button"
-           data-titel="Add Category"
-           data-url="/categories/Create">
+           data-titel="Add Authors"
+           data-url="/Authors/Create">
             <i class="bi bi-plus-square-dotted"></i>
 
             Add
@@ -52,7 +53,7 @@
 
 
 <div class="card shadow-sm">
-    <partial name="_DatatablesCardHeader" />
+    <partail name="_DatatablesCardHeader" />
     <div class="card-body  pt-0">
         @if (!Model.Any())
         {
@@ -70,7 +71,7 @@
                 <!--end::Icon-->
                 <!--begin::Content-->
                 <div class="d-flex flex-column pe-0 pe-sm-10 align-self-center">
-                    <h5 class="mb-1">No categories found!</h5>
+                    <h5 class="mb-1">No Authors found!</h5>
                 </div>
                 <!--end::Content-->
             </div>
@@ -86,14 +87,14 @@
                             <th>Status</th>
                             <th>Added On</th>
                             <th>Last Updated</th>
-                            <th  class="js-no-export">Action</th>
+                            <th class="js-no-export">Action</th>
 
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var Category in Model)
+                        @foreach (var Authors in Model)
                         {
-                            <partial name="_PartialRowCategory" model="@Category" />
+                            <partial name="_PartialRowAuthors" model="@Authors" />
                         }
                     </tbody>
                 </table>
@@ -102,9 +103,6 @@
 
     </div>
 </div>
-@*@Html.AntiForgeryToken()*@
-
-
 
 <input class="js-token" type="hidden" name="__RequestVerificationToken" value="@antiforgery.GetAndStoreTokens(Context).RequestToken" />
 @section Plugins{
@@ -115,5 +113,6 @@
 @section Scripts{
 
     <partial name="_ValidationScriptsPartial" />
-   
+
 }
+

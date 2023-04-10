@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 
 namespace BookTest.Helpers
 {
-    [HtmlTargetElement("a",Attributes ="active-when")]
-    public class ActiveTag:TagHelper
+    [HtmlTargetElement("a", Attributes = "active-when")]
+    public class ActiveTag : TagHelper
     {
         public string? ActiveWhen { set; get; }
 
@@ -17,25 +17,25 @@ namespace BookTest.Helpers
 
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
-            if(string.IsNullOrEmpty(ActiveWhen))
+            if (string.IsNullOrEmpty(ActiveWhen))
             {
                 return;
             }
 
 
             var currentController = ViewContextData?.RouteData.Values["controller"]?.ToString();
-            if(currentController==ActiveWhen)
+            if (currentController == ActiveWhen)
             {
-              if(  output.Attributes.ContainsName("class"))
+                if (output.Attributes.ContainsName("class"))
                 {
                     output.Attributes.SetAttribute("class", $"{output.Attributes["class"].Value}  active");
                 }
-              else
+                else
                 {
                     output.Attributes.SetAttribute("class", " active");
                 }
 
-                
+
             }
         }
     }

@@ -1,6 +1,4 @@
-﻿using BookTest.Core.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace BookTest.Data
 {
@@ -17,6 +15,7 @@ namespace BookTest.Data
             base.OnModelCreating(builder);
         }
         public DbSet<Category> categories { get; set; }
+        public DbSet<Author> authors { get; set; }
 
 
 

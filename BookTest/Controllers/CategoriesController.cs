@@ -1,24 +1,31 @@
 ﻿
 
 
+using BookTest.Core.ViewModels.Categories;
+
 namespace BookTest.Controllers
 {
     public class categoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
-        public categoriesController(ApplicationDbContext context,IMapper  mapper)
+        public categoriesController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
         public IActionResult Index()
         {
+
             var categories=_context.categories.AsNoTracking().ToList();
 
             var modelView=_mapper.Map< IEnumerable< CategoryViewModel>>(categories);
             return View(modelView);
         }
+
+
+
+
 
         [HttpGet]
         [AjaxOnly]
@@ -71,9 +78,6 @@ namespace BookTest.Controllers
             category.LastUpdate = DateTime.Now;
             _context.SaveChanges();
             var viewModel=_mapper.Map<CategoryViewModel>(category);
-
-
-
             return PartialView("_PartialRowCategory", viewModel);
         }
 
@@ -94,11 +98,11 @@ namespace BookTest.Controllers
 
         public IActionResult AllowItem(CategoriesFormViewModel model)
         {
-           var Category = _context.categories.SingleOrDefault(x=>x.Name == model.Name);
+            var Category = _context.categories.SingleOrDefault(x=>x.Name == model.Name);
             bool allow=Category is null||Category.Id.Equals(model.Id);
             return Json(allow);
         }
-       
+
 
 
 

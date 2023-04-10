@@ -71,6 +71,7 @@ function OnmodelSuccess(row) {
 
     KTMenu.init();
     KTMenu.initHandlers();
+    //KTMenu.initGlobalHandlers();
 
 }
 

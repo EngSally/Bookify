@@ -7,7 +7,7 @@ namespace BookTest.Filters
     {
         public override bool IsValidForRequest(RouteContext routeContext, ActionDescriptor action)
         {
-           var request= routeContext.HttpContext.Request;
+            var request= routeContext.HttpContext.Request;
             return request.Headers["x-requested-with"] == "XMLHttpRequest";
         }
     }
