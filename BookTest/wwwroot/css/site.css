@@ -30,7 +30,23 @@ body {
     -webkit-appearance: none;
 }
 
+
+
+
 /* End Override Bootbox */
+
+/* Start Override  them */
+.form-floating > .form-select {
+   
+    padding-bottom: 0.125rem;
+}
+
+
+/* End Override  them */
+
+
+
+
 .modal-body {
     position: relative;
     flex: 1 1 auto;

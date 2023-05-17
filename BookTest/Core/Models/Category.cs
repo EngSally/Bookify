@@ -8,7 +8,6 @@
 
         [MaxLength(100)]
         public String Name { get; set; } = null!;
-
-
+        public ICollection<BookCategory> Books { get; set; } = new List<BookCategory>();
     }
 }

@@ -14,7 +14,7 @@ namespace BookTest.Controllers
         }
         public IActionResult Index()
         {
-            var authers=_context.authors.AsNoTracking().ToList();
+            var authers=_context.Authors.AsNoTracking().ToList();
             var modelView=_mapper.Map<IEnumerable<AuthorViewModel>>(authers);
 
             return View(modelView);
@@ -35,7 +35,7 @@ namespace BookTest.Controllers
                 return BadRequest();
 
             var author=_mapper.Map<Author>(model);
-            _context.authors.Add(author);
+            _context.Authors.Add(author);
             _context.SaveChanges();
             var viewModel=_mapper.Map<AuthorViewModel>(author);
             return PartialView("_PartialRowAuthors", viewModel);
@@ -46,7 +46,7 @@ namespace BookTest.Controllers
         [AjaxOnly]
         public IActionResult Edit(int id)
         {
-            var author=_context.authors.Find(id);
+            var author=_context.Authors.Find(id);
             if (author is null) return NotFound();
             var autherModel=_mapper.Map<AuthorsFormViewModel>(author);
             return PartialView("_FormAuthor", autherModel);
@@ -58,7 +58,7 @@ namespace BookTest.Controllers
         public IActionResult Edit(AuthorsFormViewModel model)
         {
             if (!ModelState.IsValid) return BadRequest();
-            var author=_context.authors.Find(model.Id);
+            var author=_context.Authors.Find(model.Id);
             if (author is null) return NotFound();
             author = _mapper.Map(model, author);
             author.LastUpdate = DateTime.Now;
@@ -71,7 +71,7 @@ namespace BookTest.Controllers
 
         public IActionResult Allow(AuthorsFormViewModel model)
         {
-            var author=_context.authors.SingleOrDefault(a=>a.Name == model.Name);
+            var author=_context.Authors.SingleOrDefault(a=>a.Name == model.Name);
             bool allow=  author is null || author.Id.Equals(model.Id);
             return Json(allow);
         }
@@ -80,7 +80,7 @@ namespace BookTest.Controllers
         [AutoValidateAntiforgeryToken]
         public IActionResult ChangeStatue(int id)
         {
-            var author= _context.authors.Find(id);
+            var author= _context.Authors.Find(id);
             if (author is null) return NotFound();
             author.Deleted = !author.Deleted;
             author.LastUpdate = DateTime.Now;

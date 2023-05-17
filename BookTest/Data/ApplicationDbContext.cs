@@ -11,11 +11,19 @@ namespace BookTest.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            builder.Entity<BookCategory>().HasKey(k => new { k.CategoryId, k.BookId });
+
             builder.Entity<Category>().Property(e => e.CretedOn).HasDefaultValueSql("GETDATE()");
             base.OnModelCreating(builder);
         }
-        public DbSet<Category> categories { get; set; }
-        public DbSet<Author> authors { get; set; }
+
+
+
+        
+        public DbSet<Author> Authors { get; set; }
+        public DbSet<Book> Books { get; set; }
+        public DbSet<BookCategory> BooksCategories { get; set; }
+        public DbSet<Category> Categories { get; set; }
 
 
 

@@ -2,4 +2,11 @@
 <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
 
 <script src="~/lib/jquery-ajax-unobtrusive/jquery.unobtrusive-ajax.min.js"></script>
+<script src="~/lib/expressive-annotations-validate/expressive.annotations.validate.min.js"></script>
 <script src="~/js/validation-styling.js"></script>
+<script>
+    //  to  make sure validation enable  for hidden fields.
+    $.validator.setDefaults({
+        ignore:[]//not  ignore any field for validation
+    });
+</script>
