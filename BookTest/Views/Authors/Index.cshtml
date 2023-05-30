@@ -1,5 +1,6 @@
-﻿@model IEnumerable<AuthorViewModel>
+﻿
 @inject Microsoft.AspNetCore.Antiforgery.IAntiforgery antiforgery
+@model IEnumerable<AuthorViewModel>
 @{
     ViewData["Title"] = "Authors";
 }
@@ -79,14 +80,14 @@
         else
         {
             <div class="table-responsive">
-                <table class="table table-striped gy-7 gs-7   js-datatables    data-export-titel='Categories' ">
+                <table class="table table-row-dashed gy-2 align-middle  js-datatables    data-export-titel='Categories' ">
                     <thead>
                         <tr class="fw-semibold fs-6 text-gray-800 border-bottom border-gray-200">
                             <th>Name</th>
                             <th>Status</th>
                             <th>Added On</th>
                             <th>Last Updated</th>
-                            <th class="js-no-export">Action</th>
+                            <th class=" text-end js-no-export">Action</th>
 
                         </tr>
                     </thead>
@@ -102,11 +103,14 @@
 
     </div>
 </div>
-@*@Html.AntiForgeryToken()*@
 
 
 
-<input class="js-token" type="hidden" name="__RequestVerificationToken" value="@antiforgery.GetAndStoreTokens(Context).RequestToken" />
+
+<input type="hidden" name="__RequestVerificationToken" value="@antiforgery.GetAndStoreTokens(Context).RequestToken" />
+
+
+
 @section Plugins{
     <script src="~/assets/plugins/datatables/datatables.bundle.js"></script>
 

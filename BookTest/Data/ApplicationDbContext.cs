@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace BookTest.Data
 {
@@ -11,9 +12,16 @@ namespace BookTest.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            //sequance
+            builder.HasSequence<int>("SerialNumberSequance", "Shared")
+                .StartsAt(10000);
+            builder.Entity<BookCopy>()
+                .Property(e => e.SerialNumber)
+                .HasDefaultValueSql("Next  Value For Shared.SerialNumberSequance");
+
             builder.Entity<BookCategory>().HasKey(k => new { k.CategoryId, k.BookId });
 
-            builder.Entity<Category>().Property(e => e.CretedOn).HasDefaultValueSql("GETDATE()");
+            builder.Entity<Category>().Property(e => e.CreatedOn).HasDefaultValueSql("GETDATE()");
             base.OnModelCreating(builder);
         }
 
@@ -23,6 +31,8 @@ namespace BookTest.Data
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<BookCategory> BooksCategories { get; set; }
+        public DbSet<BookCopy> BooksCopies { get; set; }
+
         public DbSet<Category> Categories { get; set; }
 
 

@@ -1,4 +1,5 @@
 ﻿using BookTest.Core.ViewModels.Authors;
+using BookTest.Core.ViewModels.BookCopy;
 using BookTest.Core.ViewModels.Books;
 using BookTest.Core.ViewModels.Categories;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -27,7 +28,18 @@ namespace BookTest.Core.Mapper
            CreateMap<BooksFormViewModel, Book>()
                 .ReverseMap()
                 .ForMember(des=>des.Categories,opt=>opt.Ignore());
-           
+
+            CreateMap<Book, BookDetailsViewModel>()
+                .ForMember(des => des.Author, opt => opt.MapFrom(src => src.Author!.Name))
+                .ForMember(des => des.Categories, opt => opt.MapFrom(src=>src.Categories.Select(c => c.Category!.Name).ToList()));
+
+
+            //BookCopy
+            CreateMap<BookCopy, BookCopyViewModel>()
+                    .ForMember(des => des.BookTitle, opt => opt.MapFrom(src => src.Book!.Title));
+
+            CreateMap<BookCopyFormViewModel, BookCopy>().ReverseMap();
+
 
         }
     }

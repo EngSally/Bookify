@@ -29,6 +29,10 @@
     {
       "library": "expressive-annotations-validate@2.7.0",
       "destination": "wwwroot/lib/expressive-annotations-validate/"
+    },
+    {
+      "library": "fslightbox@3.4.1",
+      "destination": "wwwroot/assets/plugins/fslightbox/"
     }
   ]
 }

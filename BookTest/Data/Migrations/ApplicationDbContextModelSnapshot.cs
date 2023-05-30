@@ -22,6 +22,9 @@ namespace BookTest.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.HasSequence<int>("SerialNumberSequance", "Shared")
+                .StartsAt(10000L);
+
             modelBuilder.Entity("BookTest.Core.Models.Author", b =>
                 {
                     b.Property<int>("Id")
@@ -30,7 +33,7 @@ namespace BookTest.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CretedOn")
+                    b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("Deleted")
@@ -63,7 +66,7 @@ namespace BookTest.Data.Migrations
                     b.Property<int>("AuthorId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CretedOn")
+                    b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<bool>("Deleted")
@@ -131,6 +134,44 @@ namespace BookTest.Data.Migrations
                     b.ToTable("BooksCategories");
                 });
 
+            modelBuilder.Entity("BookTest.Core.Models.BookCopy", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("EditionNumber")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsAvailableForRental")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastUpdate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SerialNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("Next  Value For Shared.SerialNumberSequance");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.ToTable("BooksCopies");
+                });
+
             modelBuilder.Entity("BookTest.Core.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -139,7 +180,7 @@ namespace BookTest.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime>("CretedOn")
+                    b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime2")
                         .HasDefaultValueSql("GETDATE()");
@@ -395,6 +436,17 @@ namespace BookTest.Data.Migrations
                     b.Navigation("Category");
                 });
 
+            modelBuilder.Entity("BookTest.Core.Models.BookCopy", b =>
+                {
+                    b.HasOne("BookTest.Core.Models.Book", "Book")
+                        .WithMany("BookCopies")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -448,6 +500,8 @@ namespace BookTest.Data.Migrations
 
             modelBuilder.Entity("BookTest.Core.Models.Book", b =>
                 {
+                    b.Navigation("BookCopies");
+
                     b.Navigation("Categories");
                 });
 

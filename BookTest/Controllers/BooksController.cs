@@ -4,7 +4,7 @@ using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
-
+using System.Linq.Dynamic.Core;
 
 namespace BookTest.Controllers
 {
@@ -35,6 +35,47 @@ namespace BookTest.Controllers
             return View();
         }
 
+
+        public  IActionResult Details(int Id)
+        {
+            var book=_context.Books
+                .Include(b=>b.Author)
+                .Include(b=>b.BookCopies)
+                .Include(b=>b.Categories)
+                .ThenInclude(c=>c.Category)
+                .SingleOrDefault(b=>b.Id==Id);
+            
+            if (book is null) return NotFound();
+            var BookDetails=_mapper.Map<BookDetailsViewModel>(book);
+
+            return View(BookDetails);
+        }
+
+        [HttpPost]
+        public  IActionResult GetBooks()
+        {
+            int skip= int.Parse( Request.Form["start"]!);
+            int pageSize=int.Parse( Request.Form["length"]!);
+            int colSortIndex=int.Parse( Request.Form["order[0][column]"]!);
+            string  colSort=Request.Form[$"columns[{colSortIndex}][name]"]!;
+            string  sortType=Request.Form["order[0][dir]"]!;
+            string  searchValue=Request.Form["search[value]"]!;
+            
+            IQueryable<Book> books=_context.Books
+                .Include(b=>b.Author)
+                .Include(c=>c.Categories)
+                .ThenInclude(c=>c.Category);
+            if(!string.IsNullOrEmpty(searchValue))
+               books=books.Where(b=>b.Title.Contains(searchValue) ||b.Author!.Name.Contains(searchValue));
+            books = books.OrderBy($" {colSort} {sortType}");
+
+            var data=books.Skip(skip).Take(pageSize).ToList();
+            var booksViewModel=_mapper.Map<IEnumerable<BookDetailsViewModel>>(data);
+            var recordsTotal=books.Count();
+            var jsonData=new {  recordsFiltered=recordsTotal,recordsTotal,data=booksViewModel};
+            return Ok(jsonData);
+        }
+
         public IActionResult Create()
         {
           
@@ -45,7 +86,7 @@ namespace BookTest.Controllers
 
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public  async Task<IActionResult> Create(BooksFormViewModel model)
+        public   IActionResult Create(BooksFormViewModel model)
         {
             if(!ModelState.IsValid) {
             
@@ -70,7 +111,7 @@ namespace BookTest.Controllers
                 #region Save Image On HardDisk
                 string imageName=$"{Guid.NewGuid()}{extension}";
                 var path=Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books",imageName);
-                var pathThumbnail=Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books/Thumbnail",imageName);
+                var pathThumbnail=Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books/thumb",imageName);
                 using var stream=System.IO.File.Create(path);
                 model.Image.CopyTo(stream);
                 stream.Dispose();
@@ -80,7 +121,7 @@ namespace BookTest.Controllers
                 image.Mutate(i=>i.Resize( width: 200,height:(int) height));
                 image.Save(pathThumbnail);
                 book.ImageUrl = $"/images/books/{imageName}";
-                book.ImageUrlThumbnail = $"/images/books/Thumbnail/{imageName}";
+                book.ImageUrlThumbnail = $"/images/books/thumb/{imageName}";
                 #endregion
 
                 #region For Save Image at Cloudinary Cloud API
@@ -106,14 +147,14 @@ namespace BookTest.Controllers
             _context.Books.Add(book);
           
             _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details),new {id=book.Id});
 
         }
 
 
         [HttpGet]
         [AutoValidateAntiforgeryToken]
-        public async Task<IActionResult> Edit(int id)
+        public IActionResult Edit(int id)
         {
             var book=_context.Books.Include(b=>b.Categories).SingleOrDefault(b=>b.Id == id);
             if (book is null) return NotFound();
@@ -124,13 +165,13 @@ namespace BookTest.Controllers
 
         [HttpPost]
         [AutoValidateAntiforgeryToken]
-        public async Task<IActionResult> Edit(BooksFormViewModel model)
+        public IActionResult Edit([FromForm] BooksFormViewModel FormViewModel)
         {
-            if (!ModelState.IsValid) return View("Form", PopulateViewModel(model));
-            var book=_context.Books.Include(b=>b.Categories).SingleOrDefault(b=>b.Id==model.Id);
+            if (!ModelState.IsValid) return View("Form", PopulateViewModel(FormViewModel));
+            var book=_context.Books.Include(b=>b.Categories).SingleOrDefault(b=>b.Id==FormViewModel.Id);
             if (book is null) return NotFound();
             string imageUrlPublicId=null;
-            if (model.Image is not null)
+            if (FormViewModel.Image is not null)
             {
                 if(book.ImageUrl is not null)//delete old image 
                 {
@@ -143,16 +184,16 @@ namespace BookTest.Controllers
 
                 }
 
-                string extension=Path.GetExtension(model.Image.FileName);
+                string extension=Path.GetExtension(FormViewModel.Image.FileName);
                 if (!_allowedImageExtension.Contains(extension))
                 {
-                    ModelState.AddModelError(nameof(model.Image), Errors.AllowedImageExtension);
-                    return View("Form", PopulateViewModel(model));
+                    ModelState.AddModelError(nameof(FormViewModel.Image), Errors.AllowedImageExtension);
+                    return View("Form", PopulateViewModel(FormViewModel));
                 }
-                if (model.Image.Length > _allowedSize)
+                if (FormViewModel.Image.Length > _allowedSize)
                 {
-                    ModelState.AddModelError(nameof(model.Image), Errors.AllowedImageSize);
-                    return View("Form", PopulateViewModel(model));
+                    ModelState.AddModelError(nameof(FormViewModel.Image), Errors.AllowedImageSize);
+                    return View("Form", PopulateViewModel(FormViewModel));
                 }
               
 
@@ -161,15 +202,15 @@ namespace BookTest.Controllers
                 var path=Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books",imageName);
                 var pathThumbnail=Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books/Thumbnail",imageName);
                 using var stream=System.IO.File.Create(path);
-                model.Image.CopyTo(stream);
+                FormViewModel.Image.CopyTo(stream);
                 stream.Dispose();
-                using   var image=   Image.Load(model.Image.OpenReadStream());
+                using   var image=   Image.Load(FormViewModel.Image.OpenReadStream());
                 var width=(float) image.Width/200;
                 var height= image.Height/width;
                 image.Mutate(i => i.Resize(width: 200, height: (int)height));
                 image.Save(pathThumbnail);
-                model.ImageUrl = $"/images/books/{imageName}";
-                model.ImageUrlThumbnail = $"/images/books/Thumbnail/{imageName}";
+                FormViewModel.ImageUrl = $"/images/books/{imageName}";
+                FormViewModel.ImageUrlThumbnail = $"/images/books/Thumbnail/{imageName}";
                 #endregion
 
                 // using Stream stream = model.Image.OpenReadStream();
@@ -184,8 +225,8 @@ namespace BookTest.Controllers
 
 
             }
-            book = _mapper.Map(model, book);
-            foreach (var category in model.SelectedCategories)
+            book = _mapper.Map(FormViewModel, book);
+            foreach (var category in FormViewModel.SelectedCategories)
             {
                 book.Categories.Add(new BookCategory { CategoryId = category });
             }
@@ -193,7 +234,7 @@ namespace BookTest.Controllers
           //  book.ImageUrlThumbnail= GetThumbnailUrl(book.ImageUrl!);
            // book.ImageUrlPublicId = imageUrlPublicId;
             _context.SaveChanges();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Details), new { id = book.Id });
         }
 
        private BooksFormViewModel PopulateViewModel(BooksFormViewModel? model=null)
@@ -206,6 +247,23 @@ namespace BookTest.Controllers
             return viewModel;
         }
 
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public IActionResult ToggleStatus(int id)
+        {
+            var book = _context.Books.Find(id);
+
+            if (book is null)
+                return NotFound();
+
+            book.Deleted = !book.Deleted;
+            book.LastUpdate = DateTime.Now;
+
+            _context.SaveChanges();
+
+            return Ok();
+        }
         public IActionResult AllowItem(BooksFormViewModel model)
         {
             var book = _context.Books.SingleOrDefault(b=>b.Title==model.Title&&b.AuthorId==model.AuthorId);
@@ -225,6 +283,7 @@ namespace BookTest.Controllers
         }
 
 
+       
 
 
     }

@@ -8,5 +8,7 @@
         public  const  string  AllowedImageExtension="Only .jpg .jpeg .png  are allowed";
         public  const  string  AllowedImageSize="Only 2M size are allowed";
         public  const  string  DateNotAtFuture="Publishing Date Not Allowed Future Date";
+        public  const  string  RangNotBetween="{0} Must be between {1} and {2} ";
+   
     }
 }

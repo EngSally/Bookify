@@ -110,7 +110,9 @@ var KTDatatables = function () {
         datatable = $(table).DataTable({
             "info": false,
             'pageLength': 10,
-            "bDestroy": true,
+            'drawCallback': function () {
+                KTMenu.createInstances();
+            }
         });
     }
 

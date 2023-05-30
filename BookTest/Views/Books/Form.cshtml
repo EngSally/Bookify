@@ -16,7 +16,7 @@
             }
             <div class="mb-10">
                 <!--begin::Image input-->
-                <div class="image-input image-input-empty" data-kt-image-input="true" style="background-image: url(@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/image-placeholder.jpg" : Model.ImageUrl))">
+                <div class="image-input image-input-empty" data-kt-image-input="true" style="background-image: url(@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/image-placeholder.jpg" : Model.ImageUrlThumbnail))">
                     <!--begin::Image preview wrapper-->
                     <div class="image-input-wrapper w-125px h-200px"></div>
                     <!--end::Image preview wrapper-->
@@ -29,6 +29,9 @@
                         <!--begin::Inputs-->
                         <input type="file" asp-for="Image" accept=".png, .jpg, .jpeg" />
                         <input type="hidden" name="avatar_remove" />
+                        <input type="hidden" asp-for="ImageUrl" />
+                        <input type="hidden" asp-for="ImageUrlThumbnail" />
+                    
                         <!--end::Inputs-->
                     </label>
                     <!--end::Edit button-->
