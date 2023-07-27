@@ -2,6 +2,7 @@
 using BookTest.Core.ViewModels.BookCopy;
 using BookTest.Core.ViewModels.Books;
 using BookTest.Core.ViewModels.Categories;
+using BookTest.Core.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BookTest.Core.Mapper
@@ -40,7 +41,10 @@ namespace BookTest.Core.Mapper
 
             CreateMap<BookCopyFormViewModel, BookCopy>().ReverseMap();
 
-
+            //Users
+            CreateMap<ApplicationUser, UserViewModel>().ReverseMap();
+            CreateMap<ApplicationUser, UserFormViewModel>();
+            CreateMap<ApplicationUser, RestPasswordViewModel>();
         }
     }
 }

@@ -1,10 +1,6 @@
-﻿using BookTest.Core.Models;
+﻿
 using BookTest.Core.ViewModels.BookCopy;
-using BookTest.Core.ViewModels.Books;
-using BookTest.Core.ViewModels.Categories;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Net;
+
 
 namespace BookTest.Controllers
 {
@@ -18,7 +14,7 @@ namespace BookTest.Controllers
             _mapper=mapper;
         }
         [AjaxOnly]
-        [AutoValidateAntiforgeryToken]
+       
         public  IActionResult Create(int bookId)
         {
             var book=_context.Books.Find(bookId);
@@ -32,6 +28,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(BookCopyFormViewModel model)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -61,7 +58,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [AutoValidateAntiforgeryToken]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit(BookCopyFormViewModel model)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -71,7 +68,7 @@ namespace BookTest.Controllers
             bookCopy = _mapper.Map(model, bookCopy);
             bookCopy.IsAvailableForRental = bookCopy.Book!.IsAvailableForRental ? model.IsAvailableForRental : false;
           
-            bookCopy.LastUpdate = DateTime.Now;
+            bookCopy.LastUpdateOn = DateTime.Now;
             _context.SaveChanges();
             var bookCopyViewModel=_mapper.Map<BookCopyViewModel>(bookCopy);
 
@@ -82,7 +79,7 @@ namespace BookTest.Controllers
 
 
         [HttpPost]
-         [AutoValidateAntiforgeryToken]
+         [ValidateAntiForgeryToken]
         public IActionResult ToggleStatus(int id)
         {
             var copy = _context.BooksCopies.Find(id);
@@ -91,7 +88,7 @@ namespace BookTest.Controllers
                 return NotFound();
 
             copy.Deleted = !copy.Deleted;
-            copy.LastUpdate = DateTime.Now;
+            copy.LastUpdateOn = DateTime.Now;
 
             _context.SaveChanges();
 
@@ -103,6 +100,26 @@ namespace BookTest.Controllers
             var bookCopy = _context.BooksCopies.SingleOrDefault(b=>b.BookId==model.BookId&&b.EditionNumber==model.EditionNumber);
             bool allow=bookCopy is null||bookCopy.Id.Equals(model.Id);
             return Json(allow);
+        }
+
+        public bool AreOccurrencesEqual(string s)
+        {
+            Dictionary<char,int> dic=new Dictionary<char, int> ();
+            foreach(char c in s) 
+            { 
+             if(! dic.TryAdd(c,1))
+                {
+                    dic[c]++;
+                }
+            }
+           
+            for(int i=1; i < dic.Count; i++) 
+            {
+               if( dic.ElementAt(i-1).Value!=dic.ElementAt(i).Value)
+                    return false;
+            }
+            return true;
+
         }
     }
 }

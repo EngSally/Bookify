@@ -16,8 +16,6 @@ namespace BookTest.Core.ViewModels.Books
         [Display(Name = "Author")]
         [Remote("AllowItem", null!, AdditionalFields = "Id,Title", ErrorMessage = Errors.DuplicatedBook)]
         public int AuthorId { get; set; }
-
-        
         public IEnumerable<SelectListItem>? Authors { get; set; }
 
 
@@ -36,6 +34,7 @@ namespace BookTest.Core.ViewModels.Books
 
 
         [MaxLength(50,ErrorMessage =Errors.MaxLength) ]
+       
         public string Hall { get; set; } = null!;
 
 

@@ -9,7 +9,7 @@
         <h3 class="card-title">@(Model.Id.Equals(0) ? "Add" : "Edit") Book</h3>
     </div>
     <div class="card-body">
-        <form method="post" asp-controller="Books" enctype="multipart/form-data" id="Form">
+        <form method="post" asp-controller="Books"  enctype="multipart/form-data" id="Form">
             @if (Model.Id > 0)
             {
                 <input type="hidden" asp-for="Id" />

@@ -15,6 +15,8 @@ namespace BookTest.Helpers
         public ViewContext? ViewContextData { get; set; }
 
 
+
+        
         public override void Process(TagHelperContext context, TagHelperOutput output)
         {
             if (string.IsNullOrEmpty(ActiveWhen))
@@ -23,7 +25,7 @@ namespace BookTest.Helpers
             }
 
 
-            var currentController = ViewContextData?.RouteData.Values["controller"]?.ToString();
+            var currentController = ViewContextData?.RouteData.Values["controller"]?.ToString()?? string.Empty;
             if (currentController == ActiveWhen)
             {
                 if (output.Attributes.ContainsName("class"))

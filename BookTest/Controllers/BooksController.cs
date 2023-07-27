@@ -2,12 +2,16 @@
 using BookTest.Core.ViewModels.Books;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
+using System.Data;
 using System.Linq.Dynamic.Core;
+using System.Security.Claims;
 
 namespace BookTest.Controllers
 {
+    [Authorize(Roles = AppRole.Archive)]
     public class BooksController : Controller
     {
         private readonly IWebHostEnvironment _webHostEnvironment;
@@ -52,6 +56,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
+        
         public  IActionResult GetBooks()
         {
             int skip= int.Parse( Request.Form["start"]!);
@@ -84,9 +89,13 @@ namespace BookTest.Controllers
         }
 
 
+
+       
+
+
         [HttpPost]
-        [AutoValidateAntiforgeryToken]
-        public   IActionResult Create(BooksFormViewModel model)
+        [ValidateAntiForgeryToken]
+        public   IActionResult Create(int id,BooksFormViewModel model)
         {
             if(!ModelState.IsValid) {
             
@@ -144,6 +153,7 @@ namespace BookTest.Controllers
             {
                 book.Categories.Add(new BookCategory { CategoryId = category });
             }
+            book.CreatedById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             _context.Books.Add(book);
           
             _context.SaveChanges();
@@ -153,7 +163,7 @@ namespace BookTest.Controllers
 
 
         [HttpGet]
-        [AutoValidateAntiforgeryToken]
+        
         public IActionResult Edit(int id)
         {
             var book=_context.Books.Include(b=>b.Categories).SingleOrDefault(b=>b.Id == id);
@@ -164,11 +174,14 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [AutoValidateAntiforgeryToken]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit([FromForm] BooksFormViewModel FormViewModel)
         {
             if (!ModelState.IsValid) return View("Form", PopulateViewModel(FormViewModel));
-            var book=_context.Books.Include(b=>b.Categories).SingleOrDefault(b=>b.Id==FormViewModel.Id);
+            var book=_context.Books.
+                Include(b=>b.Categories)
+                .Include(b=>b.BookCopies)
+                .SingleOrDefault(b=>b.Id==FormViewModel.Id);
             if (book is null) return NotFound();
             string imageUrlPublicId=null;
             if (FormViewModel.Image is not null)
@@ -226,18 +239,30 @@ namespace BookTest.Controllers
 
             }
             book = _mapper.Map(FormViewModel, book);
+            
             foreach (var category in FormViewModel.SelectedCategories)
             {
                 book.Categories.Add(new BookCategory { CategoryId = category });
             }
-            book.LastUpdate=DateTime.Now;
-          //  book.ImageUrlThumbnail= GetThumbnailUrl(book.ImageUrl!);
-           // book.ImageUrlPublicId = imageUrlPublicId;
+            book.LastUpdateOn =DateTime.Now;
+            book.LastUpdateById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            if(!FormViewModel.IsAvailableForRental)
+            {
+                foreach(var cop in  book.BookCopies)
+                {
+                    cop.IsAvailableForRental = false;
+                }
+            }
+            //  book.ImageUrlThumbnail= GetThumbnailUrl(book.ImageUrl!);
+            // book.ImageUrlPublicId = imageUrlPublicId;
             _context.SaveChanges();
             return RedirectToAction(nameof(Details), new { id = book.Id });
         }
 
-       private BooksFormViewModel PopulateViewModel(BooksFormViewModel? model=null)
+
+
+     
+        private BooksFormViewModel PopulateViewModel(BooksFormViewModel? model=null)
         {
             var viewModel=model is null? new BooksFormViewModel() : model;
             var authors=_context.Authors.Where(a=> !a.Deleted).OrderBy(a=>a.Name).AsNoTracking().ToList();
@@ -248,8 +273,12 @@ namespace BookTest.Controllers
         }
 
 
+
+
+     
+
         [HttpPost]
-        [AutoValidateAntiforgeryToken]
+        [ValidateAntiForgeryToken]
         public IActionResult ToggleStatus(int id)
         {
             var book = _context.Books.Find(id);
@@ -258,8 +287,8 @@ namespace BookTest.Controllers
                 return NotFound();
 
             book.Deleted = !book.Deleted;
-            book.LastUpdate = DateTime.Now;
-
+            book.LastUpdateOn = DateTime.Now;
+            book.LastUpdateById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             _context.SaveChanges();
 
             return Ok();

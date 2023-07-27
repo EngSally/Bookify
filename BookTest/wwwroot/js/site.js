@@ -60,6 +60,13 @@ function OnmodelBegin() {
 }
 
 
+function ApplySelect2() {
+    $('.js-select2').select2();
+    $('.js-select2').on('select2:select', function (e) {
+        $('form').not('#signOutForm').validate().element('#' + $(this).attr('id'));
+    });
+}
+
 function OnmodelSuccess(row) {
     ShowToastrMessageSuccess();
     $('#staticBackdrop').modal('hide');
@@ -196,7 +203,7 @@ var KTDatatables = function () {
 
 $(document).ready(function () {
 
-    $('form').on('submit', function () {
+    $('form').not('#signOutForm').on('submit', function () {
 
         if ($('.js-tinymce').length > 0) {
             $('.js-tinymce').each(function () {
@@ -213,7 +220,7 @@ $(document).ready(function () {
         KTDatatables.init();
     });
 
-    /////////////////////////////////
+    /////////////////////////////////Handel Bootsrap Model
     $('body').
         delegate('.js-renderPopup',
             'click',
@@ -232,6 +239,8 @@ $(document).ready(function () {
                        
                         Modalpopup.find('#modal-body').html(form);
                         $.validator.unobtrusive.parse(Modalpopup);
+                        ApplySelect2();
+
                     },
                     error: function () { ShowToastrMessagError('Error') }
 
@@ -264,10 +273,7 @@ $(document).ready(function () {
 
     ////Select2
 
-    $('.js-select2').select2();
-    $('.js-select2').on('select2:select', function (e) {
-        $('form').validate().element('#' + $(this).attr('id'));
-    });
+    ApplySelect2();
 
 
     
@@ -343,6 +349,12 @@ $(document).ready(function () {
 
 
 
+    });
+
+
+
+    $('.js-signoutlink').on('click', function () {
+        $('#signOutForm').submit();
     });
 
 });

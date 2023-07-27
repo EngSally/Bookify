@@ -1,9 +1,11 @@
 using BookTest.Core.Mapper;
-
+using BookTest.Seed;
 using Microsoft.AspNetCore.Identity;
 
 using System.Reflection;
 using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+using BookTest.Data;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,10 +14,14 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+builder.Services.AddIdentity<ApplicationUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddDefaultUI()
+    .AddDefaultTokenProviders();
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<CloudinarySetting>(builder.Configuration.GetSection("CloudinarySetting"));
 
@@ -42,6 +48,14 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+var scopeFactory=app.Services.GetRequiredService<IServiceScopeFactory>();
+using  var scope = scopeFactory.CreateScope();
+var roleManger=scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+var userManger=scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+await DefaultRoles.SeedRoles(roleManger);
+await DefaultUser.SeedAdmin(userManger);
+
 
 app.MapControllerRoute(
     name: "default",

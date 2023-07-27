@@ -1,7 +1,10 @@
 ﻿using BookTest.Core.ViewModels.Authors;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace BookTest.Controllers
 {
+    [Authorize(Roles =AppRole.Archive)]
     public class AuthorsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -28,13 +31,14 @@ namespace BookTest.Controllers
             return PartialView("_FormAuthor");
         }
         [HttpPost]
-        [AutoValidateAntiforgeryToken]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(AuthorsFormViewModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             var author=_mapper.Map<Author>(model);
+            author.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             _context.Authors.Add(author);
             _context.SaveChanges();
             var viewModel=_mapper.Map<AuthorViewModel>(author);
@@ -54,14 +58,15 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [AutoValidateAntiforgeryToken]
+        [ValidateAntiForgeryToken]
         public IActionResult Edit(AuthorsFormViewModel model)
         {
             if (!ModelState.IsValid) return BadRequest();
             var author=_context.Authors.Find(model.Id);
             if (author is null) return NotFound();
             author = _mapper.Map(model, author);
-            author.LastUpdate = DateTime.Now;
+            author.LastUpdateOn = DateTime.Now;
+            author.LastUpdateById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             _context.SaveChanges();
             var authorViewModel=_mapper.Map<AuthorViewModel>(author);
             return PartialView("_PartialRowAuthors", authorViewModel);
@@ -77,15 +82,16 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [AutoValidateAntiforgeryToken]
+        [ValidateAntiForgeryToken]
         public IActionResult ChangeStatue(int id)
         {
             var author= _context.Authors.Find(id);
             if (author is null) return NotFound();
             author.Deleted = !author.Deleted;
-            author.LastUpdate = DateTime.Now;
+            author.LastUpdateOn = DateTime.Now;
+            author.LastUpdateById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
             _context.SaveChanges();
-            return Ok(author.LastUpdate.ToString());
+            return Ok(author.LastUpdateOn.ToString());
         }
 
 
