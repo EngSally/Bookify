@@ -1,6 +1,8 @@
 ﻿using BookTest.Core.ViewModels.Users;
+using BookTest.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
@@ -13,21 +15,29 @@ namespace BookTest.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManger;
+        private readonly IEmailSender _emailSender;
         private  readonly IMapper _mapper;
 
-        public  UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManger, IMapper mapper)
+        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManger, IMapper mapper, IEmailSender emailSender)
         {
             _userManager = userManager;
             _roleManger = roleManger;
             _mapper = mapper;
+            _emailSender = emailSender;
         }
-    
+
         public async Task<IActionResult> Index()
         {
+          await   _emailSender.SendEmailAsync("eng.sally.atalla@outlook.com", "Tessssst  ", "<h1>  Frommmm    Mp  Application</h1>");
             var users=await _userManager.Users.ToListAsync();
             var userViewModel=_mapper.Map<IEnumerable<UserViewModel>>(users);
             return View(userViewModel);
         }
+
+
+
+    
+
 
         [HttpGet]
         [AjaxOnly]
@@ -132,9 +142,23 @@ namespace BookTest.Controllers
            await  _userManager.UpdateAsync(user);
             return Ok(DateTime.Now.ToString());
 
+        }
 
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UnLockAccount(string Id)
+        {
+            var user = await   _userManager.FindByIdAsync(Id);
+            if (user is null) return NotFound();
+
+         if(await   _userManager.IsLockedOutAsync(user)) 
+                await _userManager.SetLockoutEndDateAsync(user, null);
+            return Ok();
 
         }
+
+        
         [HttpGet]
         [AjaxOnly]
         public async Task<IActionResult> RestPassword(string Id)
@@ -148,7 +172,7 @@ namespace BookTest.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> RestPassword(UserFormViewModel model )
+        public async Task<IActionResult> RestPassword(RestPasswordViewModel model )
         {
             if(!ModelState.IsValid) return BadRequest(ModelState);  
             var user= await  _userManager.FindByIdAsync(model.Id);

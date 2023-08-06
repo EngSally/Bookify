@@ -1,4 +1,9 @@
-﻿<!DOCTYPE html>
+﻿
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -22,6 +27,8 @@
 		<!--end::Theme mode setup on page load-->
 		<!--begin::Main-->
 		<!--begin::Root-->
+	@if (SignInManager.IsSignedIn(User))
+	{
 		<div class="d-flex flex-column flex-root">
 			<!--begin::Page-->
 			<div class="page d-flex flex-row flex-column-fluid">
@@ -32,7 +39,7 @@
 					<div class="d-flex flex-column-fluid">
 						<partial name="_Aside" />
 						<!--begin::Container-->
-					<div class="d-flex flex-column flex-column-fluid container-fluid">
+						<div class="d-flex flex-column flex-column-fluid container-fluid">
 							<div class="content flex-column-fluid" id="kt_content">
 								@RenderBody()
 							</div>
@@ -45,7 +52,12 @@
 			</div>
 			<!--end::Page-->
 		</div>
-		<!--end::Root-->
+	}
+	else
+	{
+		@RenderBody()
+	}
+	<!--end::Root-->
 		<!--end::Main-->
 		<!--begin::Scrolltop-->
 		<div id="kt_scrolltop" class="scrolltop" data-kt-scrolltop="true">

@@ -1,5 +1,6 @@
 ﻿
 using BookTest.Core.ViewModels.Books;
+using BookTest.Services;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using Microsoft.AspNetCore.Authorization;
@@ -18,14 +19,19 @@ namespace BookTest.Controllers
         private readonly Cloudinary _cloudinary;
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IImageService _imageService;
+
+       
+
         private readonly List<string> _allowedImageExtension=new(){ ".jpg",".jpeg",".png",".ico"};
         private readonly int _allowedSize=3145728;
         public BooksController(ApplicationDbContext context, IMapper mapper
-            , IWebHostEnvironment webHostEnvironment, IOptions<CloudinarySetting> cloudinarySetting)
+            , IWebHostEnvironment webHostEnvironment, IOptions<CloudinarySetting> cloudinarySetting, IImageService imageService)
         {
             _context = context;
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
+            _imageService= imageService;
             Account account=new ()
             {
                 Cloud=cloudinarySetting.Value.CloudName,
@@ -95,44 +101,27 @@ namespace BookTest.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public   IActionResult Create(int id,BooksFormViewModel model)
+        public   async Task<IActionResult> Create(int id,BooksFormViewModel model)
         {
-            if(!ModelState.IsValid) {
-            
+            if (!ModelState.IsValid)
+            {
                 return View("Form", PopulateViewModel(model));
-                    }
+            }
             var book=_mapper.Map<Book>(model);
-
             if(model.Image is not null) 
             {
-                string extension=Path.GetExtension(model.Image.FileName);
-                if (!_allowedImageExtension.Contains(extension))
-                {
-                    ModelState.AddModelError(nameof(model.Image), Errors.AllowedImageExtension);
-                    return View("Form", PopulateViewModel(model));
-                }
-                if(model.Image.Length>_allowedSize)
-                {
-                    ModelState.AddModelError(nameof(model.Image), Errors.AllowedImageSize);
-                    return View("Form", PopulateViewModel(model));
-                }
-
-                #region Save Image On HardDisk
+                string extension=Path.GetExtension(model.Image.FileName.ToLower());
                 string imageName=$"{Guid.NewGuid()}{extension}";
-                var path=Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books",imageName);
-                var pathThumbnail=Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books/thumb",imageName);
-                using var stream=System.IO.File.Create(path);
-                model.Image.CopyTo(stream);
-                stream.Dispose();
-                using   var image=   Image.Load(model.Image.OpenReadStream());
-                var width=(float) image.Width/200;
-                var height= image.Height/width;
-                image.Mutate(i=>i.Resize( width: 200,height:(int) height));
-                image.Save(pathThumbnail);
+                var (isUploded, errorMessage) = await _imageService.UploadAsync(model.Image,imageName,"/images/books",hasThumbnail:true );
+                if(!isUploded)
+                {
+                    ModelState.AddModelError(nameof(model.Image), errorMessage!);
+                    return View("Form", PopulateViewModel(model));
+                }
+               
                 book.ImageUrl = $"/images/books/{imageName}";
                 book.ImageUrlThumbnail = $"/images/books/thumb/{imageName}";
-                #endregion
-
+            
                 #region For Save Image at Cloudinary Cloud API
 
                 //using Stream imageStream=model.Image.OpenReadStream();
@@ -175,7 +164,7 @@ namespace BookTest.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit([FromForm] BooksFormViewModel FormViewModel)
+        public async Task<IActionResult> Edit([FromForm] BooksFormViewModel FormViewModel)
         {
             if (!ModelState.IsValid) return View("Form", PopulateViewModel(FormViewModel));
             var book=_context.Books.
@@ -188,44 +177,24 @@ namespace BookTest.Controllers
             {
                 if(book.ImageUrl is not null)//delete old image 
                 {
-                     string oldimage=$"{_webHostEnvironment.WebRootPath}{book.ImageUrl}";
-                     string oldThumbnail=$"{_webHostEnvironment.WebRootPath}{ book.ImageUrlThumbnail!}";
-                    if( System.IO.File.Exists(oldimage)) System.IO.File.Delete(oldimage);
-                    if( System.IO.File.Exists(oldThumbnail)) System.IO.File.Delete(oldThumbnail);
+                    _imageService.Delete(book.ImageUrl, book.ImageUrlThumbnail);
                   
                     //await _cloudinary.DeleteResourcesAsync(book.ImageUrlPublicId);
 
                 }
-
                 string extension=Path.GetExtension(FormViewModel.Image.FileName);
-                if (!_allowedImageExtension.Contains(extension))
-                {
-                    ModelState.AddModelError(nameof(FormViewModel.Image), Errors.AllowedImageExtension);
-                    return View("Form", PopulateViewModel(FormViewModel));
-                }
-                if (FormViewModel.Image.Length > _allowedSize)
-                {
-                    ModelState.AddModelError(nameof(FormViewModel.Image), Errors.AllowedImageSize);
-                    return View("Form", PopulateViewModel(FormViewModel));
-                }
-              
-
-                #region Save Image On HardDisk
+                               #region Save Image On HardDisk
                 string imageName=$"{Guid.NewGuid()}{extension}";
-                var path=Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books",imageName);
-                var pathThumbnail=Path.Combine($"{_webHostEnvironment.WebRootPath}/images/books/Thumbnail",imageName);
-                using var stream=System.IO.File.Create(path);
-                FormViewModel.Image.CopyTo(stream);
-                stream.Dispose();
-                using   var image=   Image.Load(FormViewModel.Image.OpenReadStream());
-                var width=(float) image.Width/200;
-                var height= image.Height/width;
-                image.Mutate(i => i.Resize(width: 200, height: (int)height));
-                image.Save(pathThumbnail);
+                var (isUploded, errorMessage) = await _imageService.UploadAsync(FormViewModel.Image, imageName, "/images/books", hasThumbnail: true);
+                if (!isUploded)
+                {
+                    ModelState.AddModelError(nameof(FormViewModel.Image), errorMessage!);
+                    return View("Form", PopulateViewModel(FormViewModel));
+                }
                 FormViewModel.ImageUrl = $"/images/books/{imageName}";
-                FormViewModel.ImageUrlThumbnail = $"/images/books/Thumbnail/{imageName}";
+                FormViewModel.ImageUrlThumbnail = $"/images/books/thumb/{imageName}";
                 #endregion
-
+               
                 // using Stream stream = model.Image.OpenReadStream();
                 // var imageUplaodParametr=new ImageUploadParams
                 // {

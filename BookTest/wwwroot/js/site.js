@@ -351,6 +351,70 @@ $(document).ready(function () {
 
     });
 
+    ///confirem Message
+    $('body').delegate('.js-confirm', 'click', function () {
+        var btn = $(this)
+        bootbox.confirm({
+            message: btn.data('message'),
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-success'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-secondary'
+                }
+            },
+
+            callback: function (result) {
+
+                if (result) {
+                    $.post({
+                        url: btn.data('url'),
+                        data: {
+                            '__RequestVerificationToken': $('.js-token').val()
+                        },
+                        success: function (updatedDate) {
+                            var row = btn.parents('tr');
+                            row.removeClass('animate__animated animate__flash');
+                            var oldstatus = row.find('.js-status').text();
+                            var newstatus = oldstatus === 'Deleted' ? 'Available' : 'Deleted'
+                            btn.parents('tr').find('.js-status').text(newstatus).toggleClass(' badge-light-danger   badge-light-success');
+                            btn.parents('tr').find('.js-lastupdate').text(updatedDate);
+
+                            row.addClass('animate__animated animate__flash');
+
+                            ShowToastrMessageSuccess('Successful!');
+
+
+
+
+                        }
+
+
+                    });
+                }
+                ///////////////////////////
+
+
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+
+
+    });
+
 
 
     $('.js-signoutlink').on('click', function () {

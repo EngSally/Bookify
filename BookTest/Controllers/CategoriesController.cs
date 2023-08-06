@@ -1,10 +1,11 @@
 ﻿
 using BookTest.Core.ViewModels.Categories;
 using System.Security.Claims;
+using System.Text;
 
 namespace BookTest.Controllers
 {
-   // [Authorize(Roles = AppRole.Archive)]
+    [Authorize(Roles = AppRole.Archive)]
     public class categoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -16,24 +17,47 @@ namespace BookTest.Controllers
         }
         public IActionResult Index()
         {
-            
-
-             var categories=_context.Categories.AsNoTracking().ToList(); 
+             var categories=_context.Categories.AsNoTracking().ToList();
             var modelView=_mapper.Map< IEnumerable< CategoryViewModel>>(categories);
             return View(modelView);
         }
 
-        public int MinimizedStringLength(string s)
-        {
-            Dictionary<char,int> dic=new Dictionary<char, int> ();
-            char[] chars=s.ToCharArray();   
-            foreach(char c in  chars)
-            {
-                dic.TryAdd(c, 1);
-            }
-            return dic.Count;
-        }
+      
 
+     
+        public IList<string> CommonChars(string[] words)
+        {
+            if (words.Length == 0) return null;
+            Dictionary<char,int> dic = new Dictionary<char,int>();
+            IList<string> res=new  List<string>();
+            int count=words.Length;
+
+              for (int i=0;i<words.Length;i++)
+                {
+                    for(int j = 0; j < words[i].Length;j++)
+                    {
+                    if (!dic.TryAdd(words[i][j], 1))
+                        dic[words[i][j]]++;
+                    }
+                }
+            int repet=0;
+            foreach (var pair in dic)
+            {
+                if (pair.Value == count) res.Add(pair.Key.ToString());
+                if(pair.Value>count)
+                {
+                    repet = pair.Value;
+                    while (repet > count)
+                    {
+                        res.Add(pair.Key.ToString());
+                        repet = repet - count;
+                    }
+                }
+            }
+            
+            return res;
+        }
+       
 
         [AjaxOnly]
         public IActionResult Create()
