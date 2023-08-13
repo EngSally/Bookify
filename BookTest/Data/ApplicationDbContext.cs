@@ -25,15 +25,15 @@ namespace BookTest.Data
             base.OnModelCreating(builder);
         }
 
-
-
-        
+        public DbSet<Area> Areas { get; set; }
         public DbSet<Author> Authors { get; set; }
         public DbSet<Book> Books { get; set; }
         public DbSet<BookCategory> BooksCategories { get; set; }
         public DbSet<BookCopy> BooksCopies { get; set; }
-
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Governorate> Governorates { get; set; }
+        public  DbSet<Subscriber> Subscribers { get; set; }
+
 
 
 

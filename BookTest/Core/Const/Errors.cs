@@ -5,6 +5,7 @@
         public  const  string  Required="Required";
         public  const  string  MaxLength=" Length Can not be  more than {1} charctor";
         public  const  string  Duplicated="Another  record with the same {0} is aleardy exists";
+        public  const  string  DuplicatedMail="Another  User with the same Email is aleardy exists";
         public  const  string  DuplicatedBook="Book With Same Title And Author  aleardy exists";
         public  const  string  AllowedImageExtension="Only .jpg .jpeg .png  are allowed";
         public  const  string  AllowedImageSize="Only 2M size are allowed";
@@ -18,7 +19,8 @@
         public  const  string OnlyArabicLetters = "Only Arabic letters are allowed.";
         public  const  string OnlyNumbersAndLetters = "Only Arabic/English letters or digits are allowed.";
         public  const  string DenySpecialCharacters = "Special characters are not allowed.";
-        public const string InvalidMobileNumber = "Invalid mobile number.";
+        public const   string InvalidMobileNumber = "Invalid mobile number.";
+        public const   string InvalidNatialId = "Invalid National Id.";
 
     }
 }

@@ -8,9 +8,11 @@ namespace BookTest.Services
 {
     public class EmailSender : IEmailSender
     {
-        readonly private MailSetting _mailSetting;
-        public EmailSender(IOptions<MailSetting> mailSetting )
+        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly  MailSetting _mailSetting;
+        public EmailSender(IWebHostEnvironment webHostEnvironment, IOptions<MailSetting> mailSetting )
         {
+            _webHostEnvironment = webHostEnvironment;
             _mailSetting = mailSetting.Value;
         }
 
@@ -23,7 +25,7 @@ namespace BookTest.Services
                 Body = htmlMessage,
                 IsBodyHtml=true
             };
-            message.To.Add(email);
+            message.To.Add  ( _webHostEnvironment.IsDevelopment()?"eng.sally.atalla@outlook.com":   email);
             SmtpClient smtpClient = new (_mailSetting.Host,_mailSetting.Port)
             {
                 Credentials=new  NetworkCredential(_mailSetting.Email,_mailSetting.Password),
@@ -32,8 +34,6 @@ namespace BookTest.Services
             };
 
            await  smtpClient.SendMailAsync(message);
-            
-            
             smtpClient.Dispose();
         }
     }

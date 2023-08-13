@@ -28,6 +28,7 @@ builder.Services.AddIdentity<ApplicationUser,IdentityRole>(options =>
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 builder.Services.AddTransient<IImageService, ImageService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
+builder.Services.AddTransient<IEmailBodyBuilder, EmailBodyBuilder>();
 builder.Services.AddControllersWithViews();
 builder.Services.Configure<CloudinarySetting>(builder.Configuration.GetSection("CloudinarySetting"));
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSetting"));
