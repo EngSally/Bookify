@@ -15,8 +15,11 @@ namespace BookTest.Controllers
             _context = context;
             _mapper = mapper;
         }
+
+      
         public IActionResult Index()
         {
+           
              var categories=_context.Categories.AsNoTracking().ToList();
             var modelView=_mapper.Map< IEnumerable< CategoryViewModel>>(categories);
             return View(modelView);

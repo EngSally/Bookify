@@ -118,6 +118,51 @@ namespace BookTest.Data.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
+            modelBuilder.Entity("BookTest.Core.Models.Area", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("GovernorateId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("LastUpdateById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("LastUpdateOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("GovernorateId");
+
+                    b.HasIndex("LastUpdateById");
+
+                    b.HasIndex("Name", "GovernorateId")
+                        .IsUnique();
+
+                    b.ToTable("Areas");
+                });
+
             modelBuilder.Entity("BookTest.Core.Models.Author", b =>
                 {
                     b.Property<int>("Id")
@@ -337,6 +382,143 @@ namespace BookTest.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("BookTest.Core.Models.Governorate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastUpdateById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("LastUpdateOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("LastUpdateById");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Governorates");
+                });
+
+            modelBuilder.Entity("BookTest.Core.Models.Subscriber", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Address")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("AreaId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("DateOfBirth")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<string>("FristName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("GovernorateId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("HasWhatsApp")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ImageUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("ImageUrlThumbnail")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("IsBlackListed")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LastName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("LastUpdateById")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime?>("LastUpdateOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("MobilNum")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("NationalId")
+                        .IsRequired()
+                        .HasMaxLength(15)
+                        .HasColumnType("nvarchar(15)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AreaId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("GovernorateId");
+
+                    b.HasIndex("LastUpdateById");
+
+                    b.HasIndex("MobilNum")
+                        .IsUnique();
+
+                    b.HasIndex("NationalId")
+                        .IsUnique();
+
+                    b.ToTable("Subscribers");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -470,6 +652,29 @@ namespace BookTest.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BookTest.Core.Models.Area", b =>
+                {
+                    b.HasOne("BookTest.Core.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("BookTest.Core.Models.Governorate", "Governorate")
+                        .WithMany("Areas")
+                        .HasForeignKey("GovernorateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookTest.Core.Models.ApplicationUser", "LastUpdateBy")
+                        .WithMany()
+                        .HasForeignKey("LastUpdateById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Governorate");
+
+                    b.Navigation("LastUpdateBy");
+                });
+
             modelBuilder.Entity("BookTest.Core.Models.Author", b =>
                 {
                     b.HasOne("BookTest.Core.Models.ApplicationUser", "CreatedBy")
@@ -565,6 +770,52 @@ namespace BookTest.Data.Migrations
                     b.Navigation("LastUpdateBy");
                 });
 
+            modelBuilder.Entity("BookTest.Core.Models.Governorate", b =>
+                {
+                    b.HasOne("BookTest.Core.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("BookTest.Core.Models.ApplicationUser", "LastUpdateBy")
+                        .WithMany()
+                        .HasForeignKey("LastUpdateById");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("LastUpdateBy");
+                });
+
+            modelBuilder.Entity("BookTest.Core.Models.Subscriber", b =>
+                {
+                    b.HasOne("BookTest.Core.Models.Area", "Area")
+                        .WithMany()
+                        .HasForeignKey("AreaId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookTest.Core.Models.ApplicationUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("BookTest.Core.Models.Governorate", "Governorate")
+                        .WithMany()
+                        .HasForeignKey("GovernorateId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BookTest.Core.Models.ApplicationUser", "LastUpdateBy")
+                        .WithMany()
+                        .HasForeignKey("LastUpdateById");
+
+                    b.Navigation("Area");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Governorate");
+
+                    b.Navigation("LastUpdateBy");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -626,6 +877,11 @@ namespace BookTest.Data.Migrations
             modelBuilder.Entity("BookTest.Core.Models.Category", b =>
                 {
                     b.Navigation("Books");
+                });
+
+            modelBuilder.Entity("BookTest.Core.Models.Governorate", b =>
+                {
+                    b.Navigation("Areas");
                 });
 #pragma warning restore 612, 618
         }

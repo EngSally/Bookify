@@ -5,8 +5,10 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.WebUtilities;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Encodings.Web;
 
 namespace BookTest.Controllers
 {
@@ -16,19 +18,26 @@ namespace BookTest.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManger;
         private readonly IEmailSender _emailSender;
+        private readonly IEmailBodyBuilder _emailBodyBuilder;
+        private readonly IWebHostEnvironment _webHostEnvironment;
         private  readonly IMapper _mapper;
 
-        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManger, IMapper mapper, IEmailSender emailSender)
+        public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManger,
+            IEmailSender emailSender, IEmailBodyBuilder emailBodyBuilder,
+            IWebHostEnvironment webHostEnvironment , IMapper mapper)
         {
             _userManager = userManager;
             _roleManger = roleManger;
-            _mapper = mapper;
             _emailSender = emailSender;
+            _emailBodyBuilder = emailBodyBuilder;
+            _webHostEnvironment = webHostEnvironment;
+            _mapper = mapper;
+            
         }
 
         public async Task<IActionResult> Index()
         {
-          await   _emailSender.SendEmailAsync("eng.sally.atalla@outlook.com", "Tessssst  ", "<h1>  Frommmm    Mp  Application</h1>");
+            
             var users=await _userManager.Users.ToListAsync();
             var userViewModel=_mapper.Map<IEnumerable<UserViewModel>>(users);
             return View(userViewModel);
@@ -75,6 +84,27 @@ namespace BookTest.Controllers
             if(result.Succeeded)
             {
                await  _userManager.AddToRolesAsync(user, model.SelectedRoles);
+
+
+
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+                var callbackUrl = Url.Page(
+                        "/Account/ConfirmEmail",
+                        pageHandler: null,
+                        values: new { area = "Identity", userId = user.Id, code },
+                        protocol: Request.Scheme);
+             
+
+                var url=  Url.Action("Index","Home",null,Request.Scheme);
+                var fullPathImage=$"{url}assets/images/icon-positive.svg";
+                var htmlPage=_emailBodyBuilder.GetEmailBody(
+                    fullPathImage
+                    ,$"Hey {user.FullName}, thanks for joining us!",
+                     "please confirm your email",
+                     $"{HtmlEncoder.Default.Encode(callbackUrl!)}",
+                     "Active Account!");
+                await _emailSender.SendEmailAsync(user.Email, "Confirm your email  ", htmlPage);
                 UserViewModel userViewModel=_mapper.Map<UserViewModel>(user);
                 return PartialView("_PartialRowUser", userViewModel);
             }

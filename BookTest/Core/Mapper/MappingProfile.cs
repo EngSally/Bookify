@@ -3,6 +3,7 @@ using BookTest.Core.ViewModels.BookCopy;
 using BookTest.Core.ViewModels.Books;
 using BookTest.Core.ViewModels.Categories;
 using BookTest.Core.ViewModels.Users;
+using BookTest.Core.ViewModels.Subscribers;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BookTest.Core.Mapper
@@ -45,6 +46,18 @@ namespace BookTest.Core.Mapper
             CreateMap<ApplicationUser, UserViewModel>().ReverseMap();
             CreateMap<ApplicationUser, UserFormViewModel>();
             CreateMap<ApplicationUser, RestPasswordViewModel>();
+
+            //Subscribers
+            CreateMap<SubscriberFormViewModel, Subscriber>().ReverseMap();
+            CreateMap<Subscriber, SubscriberSearchResultViewModel>()
+                .ForMember(des => des.FullName, opt => opt.MapFrom(src => $"{src.FristName} {src.LastName}"));
+            CreateMap<Subscriber, SubscriberViewModel>()
+                     .ForMember(des => des.FullName, opt => opt.MapFrom(src => $"{src.FristName} {src.LastName}"))
+                     .ForMember(des => des.Area, opt => opt.MapFrom(src => src.Area!.Name))
+                     .ForMember(des => des.Governorate, opt => opt.MapFrom(src => src.Governorate!.Name));
+                
+        
+        
         }
     }
 }

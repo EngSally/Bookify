@@ -15,17 +15,18 @@ namespace BookTest.Core.ViewModels.Users
 
 
         [MaxLength(100, ErrorMessage = Errors.MaxLength)]
-        [Remote("AllowUserName",null,AdditionalFields ="Id",ErrorMessage =Errors.Duplicated)]
+        [Remote("AllowUserName",null!,AdditionalFields ="Id",ErrorMessage =Errors.Duplicated)]
         [RegularExpression(RegexPatterns.Username,ErrorMessage =Errors.InvalidUsername)]
         public string UserName { get; set; } = null!;
         [EmailAddress, MaxLength(100, ErrorMessage = Errors.MaxLength)]
-        [Remote("AllowEmail", null, AdditionalFields = "Id", ErrorMessage = Errors.Duplicated)]
+        [Remote("AllowEmail", null!, AdditionalFields = "Id", ErrorMessage = Errors.Duplicated)]
         public string  Email { get; set; } = null!;
-        [MaxLength(100, ErrorMessage =Errors.MaxLength)]
 
+
+        [MaxLength(100, ErrorMessage =Errors.MaxLength)]
         [DataType(DataType.Password), 
-            StringLength(100, ErrorMessage = Errors.MaxMinLength,
-            MinimumLength = 8),RegularExpression(RegexPatterns.Password,ErrorMessage =Errors.WeakPassword)]
+         StringLength(100, ErrorMessage = Errors.MaxMinLength,
+               MinimumLength = 8),RegularExpression(RegexPatterns.Password,ErrorMessage =Errors.WeakPassword)]
         [RequiredIf("Id==null", ErrorMessage = Errors.Required)]
         public string? Password { get; set; } 
 

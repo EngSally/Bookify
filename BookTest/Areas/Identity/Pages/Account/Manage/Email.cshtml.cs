@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using BookTest.Services;
 
 namespace BookTest.Areas.Identity.Pages.Account.Manage
 {
@@ -22,14 +23,18 @@ namespace BookTest.Areas.Identity.Pages.Account.Manage
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IEmailSender _emailSender;
 
+        private readonly IEmailBodyBuilder _emailBodyBuilder;
+
         public EmailModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IEmailBodyBuilder emailBodyBuilder)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
+            _emailBodyBuilder = emailBodyBuilder;
         }
 
         /// <summary>
@@ -94,7 +99,6 @@ namespace BookTest.Areas.Identity.Pages.Account.Manage
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
-
             await LoadAsync(user);
             return Page();
         }
@@ -106,13 +110,19 @@ namespace BookTest.Areas.Identity.Pages.Account.Manage
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
-
             if (!ModelState.IsValid)
             {
                 await LoadAsync(user);
                 return Page();
             }
+            var foundUser= await _userManager.FindByEmailAsync(Input.NewEmail);
+            var isAllow= (foundUser is null || foundUser.Id == user.Id);
 
+            if (!isAllow)
+            {
+                StatusMessage =Errors.DuplicatedMail;
+                return RedirectToPage();
+            }
             var email = await _userManager.GetEmailAsync(user);
             if (Input.NewEmail != email)
             {
@@ -124,19 +134,25 @@ namespace BookTest.Areas.Identity.Pages.Account.Manage
                     pageHandler: null,
                     values: new { area = "Identity", userId = userId, email = Input.NewEmail, code = code },
                     protocol: Request.Scheme);
+                var url=  Url.Action("Index","Home",null,Request.Scheme);
+                var fullPathImage=$"{url}assets/images/icon-positive.svg";
+                var body = _emailBodyBuilder.GetEmailBody(
+                fullPathImage,
+                        $"Hey {user.FullName},",
+                        "please confirm your email",
+                        $"{HtmlEncoder.Default.Encode(callbackUrl!)}",
+                        "Confirm Email"
+                );
                 await _emailSender.SendEmailAsync(
                     Input.NewEmail,
                     "Confirm your email",
-                    $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
+                    body);
                 StatusMessage = "Confirmation link to change email sent. Please check your email.";
                 return RedirectToPage();
             }
-
             StatusMessage = "Your email is unchanged.";
             return RedirectToPage();
         }
-
         public async Task<IActionResult> OnPostSendVerificationEmailAsync()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -160,10 +176,19 @@ namespace BookTest.Areas.Identity.Pages.Account.Manage
                 pageHandler: null,
                 values: new { area = "Identity", userId = userId, code = code },
                 protocol: Request.Scheme);
+
+            var body = _emailBodyBuilder.GetEmailBody(
+                "https://res.cloudinary.com/devcreed/image/upload/v1668732314/icon-positive-vote-1_rdexez.svg",
+                        $"Hey {user.FullName},",
+                        "please confirm your email",
+                        $"{HtmlEncoder.Default.Encode(callbackUrl!)}",
+                        "Confirm Email"
+                );
+
             await _emailSender.SendEmailAsync(
                 email,
                 "Confirm your email",
-                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
+                body);
 
             StatusMessage = "Verification email sent. Please check your email.";
             return RedirectToPage();
