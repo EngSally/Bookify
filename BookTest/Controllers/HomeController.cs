@@ -1,9 +1,11 @@
-﻿using BookTest.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿
+using BookTest.Seed;
+using Microsoft.AspNetCore.Authorization;
 using System.Diagnostics;
 
 namespace BookTest.Controllers
 {
+    [Authorize(Roles =   AppRole.Admin )]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
