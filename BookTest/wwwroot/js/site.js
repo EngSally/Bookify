@@ -322,32 +322,11 @@ $(document).ready(function () {
                             row.addClass('animate__animated animate__flash');
 
                             ShowToastrMessageSuccess('Saved Successful!');
-
-
-
-
                         }
-
-
                     });
                 }
-                ///////////////////////////
-
-
             }
         });
-
-
-
-
-
-
-
-
-
-
-
-
 
     });
 

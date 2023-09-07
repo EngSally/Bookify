@@ -55,7 +55,7 @@ namespace BookTest.Core.Mapper
                      .ForMember(des => des.FullName, opt => opt.MapFrom(src => $"{src.FristName} {src.LastName}"))
                      .ForMember(des => des.Area, opt => opt.MapFrom(src => src.Area!.Name))
                      .ForMember(des => des.Governorate, opt => opt.MapFrom(src => src.Governorate!.Name));
-                
+            CreateMap<RenewalSubscribtion, RenewalSubscribtionViewModel>(); 
         
         
         }

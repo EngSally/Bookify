@@ -21,6 +21,7 @@
         public  const  string DenySpecialCharacters = "Special characters are not allowed.";
         public const   string InvalidMobileNumber = "Invalid mobile number.";
         public const   string InvalidNatialId = "Invalid National Id.";
+        public const string EmptyImage = "Please select an image.";
 
     }
 }

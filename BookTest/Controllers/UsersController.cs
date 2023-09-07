@@ -86,25 +86,26 @@ namespace BookTest.Controllers
                await  _userManager.AddToRolesAsync(user, model.SelectedRoles);
 
 
-
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = user.Id, code },
-                        protocol: Request.Scheme);
-             
+                    "/Account/ConfirmEmail",
+                    pageHandler: null,
+                    values: new { area = "Identity", userId = user.Id, code },
+                    protocol: Request.Scheme);
 
-                var url=  Url.Action("Index","Home",null,Request.Scheme);
-                var fullPathImage=$"{url}assets/images/icon-positive.svg";
-                var htmlPage=_emailBodyBuilder.GetEmailBody(
-                    fullPathImage
-                    ,$"Hey {user.FullName}, thanks for joining us!",
-                     "please confirm your email",
-                     $"{HtmlEncoder.Default.Encode(callbackUrl!)}",
-                     "Active Account!");
-                await _emailSender.SendEmailAsync(user.Email, "Confirm your email  ", htmlPage);
+                var placeholders = new Dictionary<string, string>()
+                {
+                    { "imageUrl", "https://res.cloudinary.com/devcreed/image/upload/v1668732314/icon-positive-vote-1_rdexez.svg" },
+                    { "header", $"Hey {user.FullName}, thanks for joining us!" },
+                    { "body", "please confirm your email" },
+                    { "url", $"{HtmlEncoder.Default.Encode(callbackUrl!)}" },
+                    { "linkTitle", "Active Account!" }
+                };
+
+                var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
+
+                await _emailSender.SendEmailAsync(user.Email, "Confirm your email", body);
                 UserViewModel userViewModel=_mapper.Map<UserViewModel>(user);
                 return PartialView("_PartialRowUser", userViewModel);
             }

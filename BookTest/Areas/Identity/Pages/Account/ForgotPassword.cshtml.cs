@@ -76,16 +76,20 @@ namespace BookTest.Areas.Identity.Pages.Account
                     protocol: Request.Scheme);
                 var url=  Url.Action("Index","Home",null,Request.Scheme);
                 var fullPathImage=$"{url}assets/images/icon-positive-vote-2.svg";
+               
 
-                var body = _emailBodyBuilder.GetEmailBody(
-                fullPathImage,
-						$"Hey {user.FullName},",
-						"please click the below button to reset you password",
-						$"{HtmlEncoder.Default.Encode(callbackUrl!)}",
-						"Reset Password"
-				);
+                var placeholders = new Dictionary<string, string>()
+                {
+                    { "imageUrl", fullPathImage },
+                    { "header", $"Hey {user.FullName}," },
+                    { "body", "please click the below button to reset you password" },
+                    { "url", $"{HtmlEncoder.Default.Encode(callbackUrl!)}" },
+                    { "linkTitle", "Reset Password" }
+                };
 
-				await _emailSender.SendEmailAsync(
+                var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
+
+                await _emailSender.SendEmailAsync(
                     Input.Email,
                     "Reset Password",
                     body);

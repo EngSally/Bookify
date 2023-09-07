@@ -91,17 +91,24 @@ namespace BookTest.Areas.Identity.Pages.Account
             protocol: Request.Scheme);
             var url=  Url.Action("Index","Home",null,Request.Scheme);
             var fullpath=$"{url}assets/images/icon-positive.svg";
-            var body = _emailBodyBuilder.GetEmailBody(
-                fullpath,
-						$"Hey {user.FullName}, thanks for joining us!",
-						"please confirm your email",
-						$"{HtmlEncoder.Default.Encode(callbackUrl!)}",
-						"Active Account!"
-				);
+           
 
-			await _emailSender.SendEmailAsync(
-                user.Email,
-                "Confirm your email", body);
+
+
+            var placeholders = new Dictionary<string, string>()
+                {
+                    { "imageUrl", fullpath},
+                    { "header", $"Hey {user.FullName}," },
+                    { "body", "please confirm your email" },
+                    { "url", $"{HtmlEncoder.Default.Encode(callbackUrl!)}" },
+                    { "linkTitle", "Confirm Email" }
+                };
+
+            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
+
+            await _emailSender.SendEmailAsync(
+                   user.Email,
+                   "Confirm your email", body);
 
             ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
             return Page();

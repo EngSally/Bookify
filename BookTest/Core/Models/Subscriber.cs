@@ -28,6 +28,8 @@
         public Area? Area { get; set; }
         public int  GovernorateId { get; set; }
         public Governorate? Governorate { get; set; }
-        
+        public  ICollection<RenewalSubscribtion> RenewalSubscribtions { get;set; }=new List<RenewalSubscribtion>();
+
+
     }
 }

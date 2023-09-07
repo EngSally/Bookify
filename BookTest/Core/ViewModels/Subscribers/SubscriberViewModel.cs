@@ -2,7 +2,8 @@
 {
 	public class SubscriberViewModel
 	{
-		public int Id { get; set; }
+		public int Id { get; set; }	
+		public string? Key { get; set; }
 
 		public string FullName { set; get; } = null!;
 
@@ -22,5 +23,8 @@
 		public string? ImageUrl { get; set; }
 
 		public string? ImageUrlThumbnail { get; set; }
-	}
+
+		public ICollection<RenewalSubscribtionViewModel> RenewalSubscribtions { get; set; } = new List<RenewalSubscribtionViewModel>();
+
+    }
 }

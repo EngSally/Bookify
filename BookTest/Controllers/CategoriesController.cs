@@ -1,5 +1,9 @@
 ﻿
 using BookTest.Core.ViewModels.Categories;
+using Hangfire;
+using Humanizer;
+using Microsoft.IdentityModel.Tokens;
+using System.Collections.Generic;
 using System.Security.Claims;
 using System.Text;
 
@@ -16,18 +20,81 @@ namespace BookTest.Controllers
             _mapper = mapper;
         }
 
-      
+
+
+       
+
         public IActionResult Index()
         {
            
-             var categories=_context.Categories.AsNoTracking().ToList();
+                var categories=_context.Categories.AsNoTracking().ToList();
+           
             var modelView=_mapper.Map< IEnumerable< CategoryViewModel>>(categories);
             return View(modelView);
         }
 
-      
+        public IList<string> RemoveSubfolders(string[] folder)
+        {
+            Dictionary<string ,bool> subfolders = new Dictionary<string, bool>();
+            string []arr;
+            StringBuilder sb=new StringBuilder ();
+            foreach(var item in folder)
+            {
+                if (item.Count(c => c == '/') == 1     &&!subfolders.ContainsKey(item))
+                { 
+                    subfolders.TryAdd(item,true);
+                    continue;
+                }
+                arr = item.Split('/');
+                sb=new StringBuilder ();
+              for(int i=1; i<arr.Length; i++)
+                {
+                    sb.Append($"/{arr[i]}");
+                    if (subfolders.ContainsKey(sb.ToString())) break;
+                   if(i==arr.Length-1)
+                    {
+                        subfolders.TryAdd(sb.ToString(),true);
+                    }
+                }
 
-     
+
+            }
+
+           
+            for(int i=subfolders.Count-1; i>=0;i--)
+            {
+                
+                arr = subfolders.ElementAt(i).Key.Split('/');
+                sb = new StringBuilder();
+                for (int j = 1; j < arr.Length; j++)
+                {
+                    sb.Append($"/{arr[j]}");
+                    for(int k=i+1; k< subfolders.Count; k++)
+                    {
+                        if (subfolders.ElementAt(k).Key ==sb.ToString())
+                        {
+                            subfolders[subfolders.ElementAt(i).Key] = false;
+                            break;
+
+                        }
+                    }
+                   
+                }
+            }
+            List<string> list=new List<string> ();
+            foreach(var item in subfolders)
+            {
+                if(item.Value)
+                {
+                    list.Add(item.Key);
+                }
+            }
+
+            return list;
+
+        }
+
+
         public IList<string> CommonChars(string[] words)
         {
             if (words.Length == 0) return null;

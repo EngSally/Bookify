@@ -4,6 +4,7 @@ using BookTest.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BookTest.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230816234434_AddRenewalSubscribtions")]
+    partial class AddRenewalSubscribtions
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -442,7 +445,10 @@ namespace BookTest.Data.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("SubscriberId")
+                    b.Property<int?>("SubscriberId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubscribrId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -825,9 +831,7 @@ namespace BookTest.Data.Migrations
 
                     b.HasOne("BookTest.Core.Models.Subscriber", "Subscriber")
                         .WithMany("RenewalSubscribtions")
-                        .HasForeignKey("SubscriberId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("SubscriberId");
 
                     b.Navigation("CreatedBy");
 

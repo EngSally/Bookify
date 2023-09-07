@@ -1,4 +1,5 @@
 ﻿using BookTest.Core.ViewModels.BookCopy;
+using System.Text;
 
 namespace BookTest.Core.ViewModels.Books
 {
@@ -19,5 +20,7 @@ namespace BookTest.Core.ViewModels.Books
         public IEnumerable<BookCopyViewModel> BookCopies { get; set; } = null!;
         public bool Deleted { get; set; }
         public DateTime CreatedOn { get; set; } = DateTime.Now;
-    }
+	
+
+	}
 }

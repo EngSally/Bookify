@@ -5,7 +5,7 @@ namespace BookTest.Core.ViewModels.Subscribers
 {
     public class SubscriberFormViewModel
     {
-        public int Id { get; set; }
+        public string? Key { get; set; }
 
 
         [MaxLength(100)]
@@ -19,20 +19,20 @@ namespace BookTest.Core.ViewModels.Subscribers
 
         [MaxLength(15)]
         [RegularExpression(RegexPatterns.NationalId,ErrorMessage =Errors.InvalidNatialId)]
-        [Remote("AllowNationalId",null!, AdditionalFields="Id",ErrorMessage =Errors.Duplicated)]
+        [Remote("AllowNationalId",null!, AdditionalFields= "Key", ErrorMessage =Errors.Duplicated)]
         public string NationalId { get; set; } = null!;
 
        
         [MaxLength(20)]
         [RegularExpression(RegexPatterns.MobileNumber,ErrorMessage =Errors.InvalidUsername)]
-        [Remote("AllowMobilNum", null!, AdditionalFields= "Id", ErrorMessage = Errors.Duplicated)]
+        [Remote("AllowMobilNum", null!, AdditionalFields= "Key", ErrorMessage = Errors.Duplicated)]
         public string MobilNum { get; set; } = null!;
         public bool HasWhatsApp { get; set; }
 
 
         [MaxLength(150)]
         [EmailAddress]
-        [Remote("AllowEmail", null!, AdditionalFields= "Id", ErrorMessage = Errors.Duplicated)]
+        [Remote("AllowEmail", null!, AdditionalFields= "Key", ErrorMessage = Errors.Duplicated)]
         public string Email { get; set; } = null!;
 
 
@@ -42,7 +42,9 @@ namespace BookTest.Core.ViewModels.Subscribers
 
         [MaxLength(500)]
         public string? ImageUrlThumbnail { get; set; }
-        public IFormFile Image { get; set; }
+
+        [RequiredIf("Key == ''", ErrorMessage = Errors.EmptyImage)]
+        public IFormFile? Image { get; set; }
         public string Address { get; set; } = null!;
         public bool IsBlackListed { get; set; }
         public int AreaId { get; set; }
