@@ -20,7 +20,7 @@ namespace BookTest.Data
                 .HasDefaultValueSql("Next  Value For Shared.SerialNumberSequance");
 
             builder.Entity<BookCategory>().HasKey(k => new { k.CategoryId, k.BookId });
-
+            builder.Entity<RentalCopy>().HasKey(k => new { k.RentalId, k.BookCopyId });
             builder.Entity<Category>().Property(e => e.CreatedOn).HasDefaultValueSql("GETDATE()");
             base.OnModelCreating(builder);
         }
@@ -32,6 +32,9 @@ namespace BookTest.Data
         public DbSet<BookCopy> BooksCopies { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Governorate> Governorates { get; set; }
+        public DbSet<Rental> Rentals { get; set; }
+        public DbSet<RentalCopy> RentalCopies { get; set; }
+
         public  DbSet<Subscriber> Subscribers { get; set; }
         public  DbSet<RenewalSubscribtion> RenewalSubscribtions { get; set; }
 

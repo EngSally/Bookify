@@ -1,0 +1,27 @@
+﻿@model RentalFormViewModel
+@{
+    ViewData["Title"] = "Add Rental";
+}
+
+<div class="card mb-7">
+    <div class="card-header">
+        <h3 class="card-title">Add Rental</h3>
+    </div>
+    <!--begin::Card body-->
+    <div class="card-body">
+        <partial name="_SearchBookCopy" model="new SearchFormViewModel()" />
+    </div>
+    <!--end::Card body-->
+</div>
+</div>
+<!--end::Card-->
+
+@section Scripts
+	{
+	<partial name="_ValidationScriptsPartial" />
+	
+   <script src="/js/rental-form.js"  asp-append-version="true"></script>" 
+
+}
+
+

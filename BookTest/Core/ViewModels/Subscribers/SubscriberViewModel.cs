@@ -1,4 +1,6 @@
-﻿namespace BookTest.Core.ViewModels.Subscribers
+﻿using BookTest.Core.ViewModels.Rental;
+
+namespace BookTest.Core.ViewModels.Subscribers
 {
 	public class SubscriberViewModel
 	{
@@ -25,6 +27,7 @@
 		public string? ImageUrlThumbnail { get; set; }
 
 		public ICollection<RenewalSubscribtionViewModel> RenewalSubscribtions { get; set; } = new List<RenewalSubscribtionViewModel>();
+		public ICollection<RentalViewModel> Rentals { get; set; } = new List<RentalViewModel>();
 
     }
 }

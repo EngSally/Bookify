@@ -1,5 +1,6 @@
 ﻿global using AutoMapper;
 global using BookTest.Core.Const;
+global using BookTest.Core.Enums;
 global using BookTest.Core.Models;
 global using BookTest.Core.ViewModels;
 global using BookTest.Data;
