@@ -247,6 +247,8 @@ namespace BookTest.Controllers
                 .Include(s=>s.Area)
                 .Include(s=>s.Governorate)
                 .Include(s=> s.RenewalSubscribtions)
+                .Include(s=>s.Rentals)
+                .ThenInclude(r=>r.RentalCopies)
                 .FirstOrDefault(s=>s.Id==subscriberId);
             if (subscriber is null) return NotFound();
             var viewModel=_mapper.Map<SubscriberViewModel>(subscriber);

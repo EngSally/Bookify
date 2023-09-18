@@ -19,9 +19,10 @@
         public  const  string OnlyArabicLetters = "Only Arabic letters are allowed.";
         public  const  string OnlyNumbersAndLetters = "Only Arabic/English letters or digits are allowed.";
         public  const  string DenySpecialCharacters = "Special characters are not allowed.";
-        public const   string InvalidMobileNumber = "Invalid mobile number.";
-        public const   string InvalidNatialId = "Invalid National Id.";
-        public const string EmptyImage = "Please select an image.";
+        public  const  string InvalidMobileNumber = "Invalid mobile number.";
+        public  const  string InvalidNatialId = "Invalid National Id.";
+        public  const  string EmptyImage = "Please select an image.";
+        public  const  string NOBookCopy = "Invalid BookCopy SerailNumber.";
 
     }
 }

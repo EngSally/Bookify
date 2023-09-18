@@ -5,6 +5,7 @@ using BookTest.Core.ViewModels.Categories;
 using BookTest.Core.ViewModels.Users;
 using BookTest.Core.ViewModels.Subscribers;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using BookTest.Core.ViewModels.Rental;
 
 namespace BookTest.Core.Mapper
 {
@@ -38,7 +39,9 @@ namespace BookTest.Core.Mapper
 
             //BookCopy
             CreateMap<BookCopy, BookCopyViewModel>()
-                    .ForMember(des => des.BookTitle, opt => opt.MapFrom(src => src.Book!.Title));
+                    .ForMember(des => des.BookTitle, opt => opt.MapFrom(src => src.Book!.Title))
+                    .ForMember(des => des.BookId, opt => opt.MapFrom(src => src.Book!.Id))
+                    .ForMember(des => des.BookThumbnailURL, opt => opt.MapFrom(src => src.Book!.ImageUrlThumbnail));
 
             CreateMap<BookCopyFormViewModel, BookCopy>().ReverseMap();
 
@@ -55,9 +58,11 @@ namespace BookTest.Core.Mapper
                      .ForMember(des => des.FullName, opt => opt.MapFrom(src => $"{src.FristName} {src.LastName}"))
                      .ForMember(des => des.Area, opt => opt.MapFrom(src => src.Area!.Name))
                      .ForMember(des => des.Governorate, opt => opt.MapFrom(src => src.Governorate!.Name));
-            CreateMap<RenewalSubscribtion, RenewalSubscribtionViewModel>(); 
-        
-        
+            CreateMap<RenewalSubscribtion, RenewalSubscribtionViewModel>();
+
+            //Rental
+            CreateMap<Rental, RentalViewModel>();
+            CreateMap<RentalCopy, RentalCopyViewModel>();
         }
     }
 }

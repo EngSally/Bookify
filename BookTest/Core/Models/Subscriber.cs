@@ -29,6 +29,7 @@
         public int  GovernorateId { get; set; }
         public Governorate? Governorate { get; set; }
         public  ICollection<RenewalSubscribtion> RenewalSubscribtions { get;set; }=new List<RenewalSubscribtion>();
+        public  ICollection<Rental> Rentals { get;set; }=new List<Rental>();
 
 
     }

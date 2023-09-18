@@ -46,6 +46,7 @@ function ShowToastrMessagError(Message) {
         "hideMethod": "fadeOut"
     };
 
+
     toastr.error('Error');
 
 }
@@ -58,7 +59,16 @@ function DisabledSumitButton() {
 function OnmodelBegin() {
     DisabledSumitButton();
 }
-
+function showErrorMessage(message = 'Something went wrong!') {
+    Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message.responseText !== undefined ? message.responseText : message,
+        customClass: {
+            confirmButton: "btn btn-primary"
+        }
+    });
+}
 
 function ApplySelect2() {
     $('.js-select2').select2();
