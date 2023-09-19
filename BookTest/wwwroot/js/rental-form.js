@@ -1,4 +1,4 @@
 ﻿function OnSerachSuccess(copy) {
-    console.log(copy);
+    $('#CopiesForm').prepend(copy);
 
 }
