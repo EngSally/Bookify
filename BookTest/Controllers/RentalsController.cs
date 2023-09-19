@@ -33,13 +33,18 @@ namespace BookTest.Controllers
         [ValidateAntiForgeryToken]
         public  IActionResult SearchBookCopy(SearchFormViewModel model)
         {
+            if(!ModelState.IsValid) return BadRequest(); 
             var copy=_context.BooksCopies
                 .Include(c=>c.Book)
                 .SingleOrDefault(c=>c.SerialNumber.ToString()==model.Value &&!c.Book!.Deleted && !c.Deleted);
             if (copy is null)
-                return NotFound(Errors.NOBookCopy);
+                return NotFound(Errors.InvalidSertailNum);
+            if (!copy.IsAvailableForRental || !copy.Book!.IsAvailableForRental)
+                return BadRequest(Errors.NotAvailableForRental);
+
+            //ToDo Check If Copy Is Not  Rental  By  Another Subscribe
             var bookCopy=_mapper.Map<BookCopyViewModel>(copy);
-            return Ok(bookCopy);
+            return PartialView("_CopyDetails", bookCopy);
 
         }
 
