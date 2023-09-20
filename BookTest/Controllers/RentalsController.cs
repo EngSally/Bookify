@@ -1,6 +1,7 @@
 ﻿using BookTest.Core.ViewModels.BookCopy;
 using BookTest.Core.ViewModels.Rental;
 using BookTest.Core.ViewModels.Subscribers;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookTest.Controllers
@@ -9,20 +10,43 @@ namespace BookTest.Controllers
 	public class RentalsController : Controller
     {
         private readonly  ApplicationDbContext _context;
+        private readonly IDataProtector _dataProtector;
         private readonly IMapper _mapper;
 
-		public RentalsController(ApplicationDbContext context, IMapper mapper)
+		public RentalsController(ApplicationDbContext context, IDataProtector dataProtector,IMapper mapper)
 		{
 			_context = context;
+            _dataProtector = dataProtector;
 			_mapper = mapper;
 		}
 
-		[HttpGet]
+     
+
+        [HttpGet]
         public IActionResult Create(string sKey)
+
         {
+            var subscriberId=int.Parse(_dataProtector.Unprotect(sKey));
+            var subscriber=_context.Subscribers
+                .Include(s=>s.RenewalSubscribtions)
+                .Include(s=>s.Rentals)
+                .ThenInclude(r=>r.RentalCopies)
+                .FirstOrDefault(s=>s.Id == subscriberId);
+            if (subscriber is null)
+                return NotFound();
+            if (subscriber.IsBlackListed)
+                return View("NotAvailbleForRental", Errors.BlackListedSubscriber);
+            if (subscriber.RenewalSubscribtions.Last().EndDate < DateTime.Now.AddDays((int)RentalsConfigurations.RentalDuration))
+                return View("NotAvailbleForRental", Errors.InactiveSubscriber);
+            var currentRentals = subscriber.Rentals.SelectMany(r => r.RentalCopies).Count(c => !c.ReturnDate.HasValue);
+            var allowRentalCopy=(int)RentalsConfigurations.MaxAllowedCopies-currentRentals;
+            if(allowRentalCopy.Equals(0))
+                return View("NotAvailbleForRental", Errors.MaxCopiesReached);
             RentalFormViewModel model = new ()
             {
-                SubscriberKey = sKey
+                SubscriberKey = sKey,
+                CountAvailableForRntal=allowRentalCopy
+
             };
             return View(model);
         }

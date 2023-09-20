@@ -19,7 +19,7 @@
         <div class="card-header border-0 pt-5">
             <h3 class="card-title align-items-start flex-column">
                 <span class="card-label fw-bold text-dark">Books</span>
-                <span class="text-muted mt-1 fw-semibold fs-7">You can add up to @((int)RentalsConfigurations.MaxAllowedCopies) books</span>
+                <span class="text-muted mt-1 fw-semibold fs-7">You can add up to @(Model.CountAvailableForRental) book(s)</span>
             </h3>
         </div>
         <!--end::Header-->
@@ -46,7 +46,7 @@
     {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        var maxAllowedCopies = @((int)RentalsConfigurations.MaxAllowedCopies)
+        var maxAllowedCopies = @(Model.CountAvailableForRental)
     </script>
     <script src="/js/rental-form.js" asp-append-version="true"></script>
     }
