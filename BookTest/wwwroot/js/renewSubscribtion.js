@@ -30,6 +30,8 @@
                                 activeIcon.siblings('svg').remove();
                                 activeIcon.parents('.card').removeClass('bg-warning').addClass('bg-success');
 
+                                $('#RentalButton').removeClass('d-none');
+
                                 $('#CardStatus').text('Active subscriber');
                                 $('#StatusBadge').removeClass('badge-light-warning').addClass('badge-light-success').text('Active subscriber');
                                 ShowToastrMessageSuccess('Saved Successful!');

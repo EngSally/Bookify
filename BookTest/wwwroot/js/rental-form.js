@@ -12,7 +12,7 @@ $(document).ready(function () {
         }
 
         if (selectedBookCopies.length >= maxAllowedCopies) {
-            showErrorMessage(`You cannot add more that ${maxAllowedCopies} books`);
+            showErrorMessage(`You cannot add more that ${maxAllowedCopies} book(s)`);
             return;
         }
 
