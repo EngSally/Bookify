@@ -13,11 +13,11 @@ namespace BookTest.Controllers
         private readonly IDataProtector _dataProtector;
         private readonly IMapper _mapper;
 
-		public RentalsController(ApplicationDbContext context, IDataProtector dataProtector,IMapper mapper)
+		public RentalsController(ApplicationDbContext context, IDataProtectionProvider dataProtector, IMapper mapper)
 		{
 			_context = context;
-            _dataProtector = dataProtector;
-			_mapper = mapper;
+            _dataProtector = dataProtector.CreateProtector("MySecureKey");
+         	_mapper = mapper;
 		}
 
      
@@ -45,7 +45,7 @@ namespace BookTest.Controllers
             RentalFormViewModel model = new ()
             {
                 SubscriberKey = sKey,
-                CountAvailableForRntal=allowRentalCopy
+                CountAvailableForRental=allowRentalCopy
 
             };
             return View(model);
@@ -66,7 +66,10 @@ namespace BookTest.Controllers
             if (!copy.IsAvailableForRental || !copy.Book!.IsAvailableForRental)
                 return BadRequest(Errors.NotAvailableForRental);
 
-            //ToDo Check If Copy Is Not  Rental  By  Another Subscribe
+            // Check If Copy Is Not  Rental  By  Another Subscribe
+            var copyIsRental=_context.RentalCopies.Any(c=>c.BookCopyId==copy.Id&&!c.ReturnDate.HasValue);
+            if(copyIsRental)
+                return BadRequest(Errors.CopyIsInRental);
             var bookCopy=_mapper.Map<BookCopyViewModel>(copy);
             return PartialView("_CopyDetails", bookCopy);
 

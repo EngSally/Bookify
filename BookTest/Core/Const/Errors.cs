@@ -25,8 +25,8 @@
         public  const  string InvalidSertailNum = "Invatlid BookCopy SerailNumber.";
         public  const  string NotAvailableForRental = "This Copy Not Available For Rental";
         public  const  string BlackListedSubscriber = "This subscriber is blacklisted.";
-        public  const string InactiveSubscriber = "This subscriber is inactive.";
-        public  const string MaxCopiesReached = "This subscriber has reached the max number for rentals.";
-        public  const string CopyIsInRental = "This copy is already rentaled.";
+        public  const  string InactiveSubscriber = "This subscriber is inactive.";
+        public  const  string MaxCopiesReached = "This subscriber has reached the max number for rentals.";
+        public  const  string CopyIsInRental = "This copy is already rentaled.";
     }
 }
