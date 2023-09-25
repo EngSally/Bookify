@@ -66,7 +66,7 @@ namespace BookTest.Controllers
             if (!copy.IsAvailableForRental || !copy.Book!.IsAvailableForRental)
                 return BadRequest(Errors.NotAvailableForRental);
 
-            //ToDo Check If Copy Is Not  Rental  By  Another Subscribe
+            // Check If Copy Is Not  Rental  By  Another Subscribe
             var copyIsRental=_context.RentalCopies.Any(c=>c.BookCopyId==copy.Id&&!c.ReturnDate.HasValue);
             if(copyIsRental)
                 return BadRequest(Errors.CopyIsInRental);
