@@ -30,6 +30,9 @@ function OnSerachSuccess(copy) {
         return;
     }
     $('#CopiesForm').prepend(copy);
+    $('#CopiesForm').find(':submit').disabled = false;
+    $('#CopiesForm').find(':submit').removeClass('btn-secondary');
+    $('#CopiesForm').find(':submit').addClass('btn btn-primary');
     selectedBookCopies = []
     var bookCopies = $('.js-copy');
     $.each(bookCopies, function (i, htmlInput) {
