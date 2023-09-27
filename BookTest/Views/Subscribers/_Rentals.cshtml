@@ -56,6 +56,10 @@ else
                             @rental.CreatedOn
                         </td>
                         <td class="text-end pe-4">
+                            @if (rental.CreatedOn.Date == DateTime.Today)
+                            {
+                                <a href="javascript:;" class="btn btn-light-danger btn-sm js-cancel-rental" data-id="@rental.Id">Cancel</a>
+                            }
                             <a class="btn btn-primary btn-sm" asp-controller="Rentals" asp-action="Details" asp-route-id="@rental.Id">Details</a>
                         </td>
                     </tr>

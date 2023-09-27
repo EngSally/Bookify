@@ -18,7 +18,24 @@ $(document).ready(function () {
 
         $('#searchForm').submit();
     });
+
+
+    $('body').delegate('.js-remove', 'click', function () {
+        console.log('ffffffffff');
+        $(this).parents('.js-copy-container').remove();
+        prepareInput();
+        if ($.isEmptyObject(selectedBookCopies)) {
+           
+            $('#CopiesForm').find(':submit').addClass('btn-secondary');
+            $('#CopiesForm').find(':submit').removeClass('btn-primary');
+            $('#CopiesForm').find(':submit').attr("disabled", true);
+            console.log()
+        }
+    });
 });
+
+
+
 
 function OnSerachSuccess(copy) {
     $('#searchinput').val('');
@@ -32,7 +49,12 @@ function OnSerachSuccess(copy) {
     $('#CopiesForm').prepend(copy);
     $('#CopiesForm').find(':submit').disabled = false;
     $('#CopiesForm').find(':submit').removeClass('btn-secondary');
-    $('#CopiesForm').find(':submit').addClass('btn btn-primary');
+    $('#CopiesForm').find(':submit').addClass('btn-primary');
+    prepareInput();
+
+}
+
+function prepareInput() {
     selectedBookCopies = []
     var bookCopies = $('.js-copy');
     $.each(bookCopies, function (i, htmlInput) {
@@ -40,6 +62,5 @@ function OnSerachSuccess(copy) {
         selectedBookCopies.push({ serial: objectInput.val(), bookId: objectInput.data('book-id') });// SerialBookNum
         objectInput.attr('name', `SelectedCopies[${i}]`).attr('id', `SelectedCopies_${i}_`);
     });
-    console.log(selectedBookCopies);
-
+    
 }

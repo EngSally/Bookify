@@ -51,13 +51,13 @@ function ShowToastrMessagError(Message) {
 
 }
 
-function DisabledSumitButton() {
-    $('body :submit').attr('disabled', 'disabled').attr('data-kt-indicator', 'on');
+function DisabledSumitButton(btn) {
+    $(btn).attr('disabled', 'disabled').attr('data-kt-indicator', 'on');
 
 }
 
 function OnmodelBegin() {
-    DisabledSumitButton();
+    DisabledSumitButton($('#staticBackdrop').find(':submit'));
 }
 function showErrorMessage(message = 'Something went wrong!') {
     Swal.fire({
@@ -223,7 +223,7 @@ $(document).ready(function () {
             });
         }
         var isValid = $(this).valid();
-        if (isValid)  DisabledSumitButton();
+        if (isValid) DisabledSumitButton($(this).find(':submit'));
     });
 
     KTUtil.onDOMContentLoaded(function () {

@@ -1,5 +1,5 @@
 ﻿@model BookCopyViewModel
-
+<div class="js-copy-container">
 <!--begin::Item-->
 <div class="d-flex flex-stack">
     <input type="hidden" value="@Model.SerialNumber" data-book-id="@Model.BookId" class="js-copy" data-book-id="@Model.BookId" />
@@ -17,7 +17,7 @@
         </div>
         <!--end:Author-->
         <!--begin:Action-->
-        <a href="javascript:;" class="btn btn-sm btn-light-danger fs-8 fw-bold">Remove</a>
+        <a href="javascript:;" class="btn btn-sm btn-light-danger fs-8 fw-bold js-remove">Remove</a>
         <!--end:Action-->
     </div>
     <!--end::Section-->
@@ -26,3 +26,4 @@
 <!--begin::Separator-->
 <div class="separator separator-dashed my-4"></div>
 <!--end::Separator-->
+</div>

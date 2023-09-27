@@ -10,13 +10,6 @@
    data-ajax-failure="showErrorMessage"
    data-ajax-complete="OnmodelComplete"
       id="searchForm">
-	<!--begin::Card-->
-	<div class="card mb-7">
-		<div class="card-header">
-			<h3 class="card-title">Find a Book Copy</h3>
-		</div>
-		<!--begin::Card body-->
-		<div class="card-body">
 			<!--begin::Compact form-->
 			<div class="d-flex align-items-center">
 				<!--begin::Input group-->
@@ -33,15 +26,19 @@
 				</div>
 				<!--end::Input group-->
 				<!--begin:Action-->
-				<div class="d-flex align-items-center">
-					<button type="submit"  id="searchbuttom" class="btn btn-primary me-5">Search</button>
-				</div>
+		<div class="d-flex align-items-center">
+			<button type="submit" class="btn btn-primary  js-search">
+				<span class="indicator-label">
+					Search
+				</span>
+				<span class="indicator-progress">
+					Please wait... <span class="spinner-border spinner-border-sm align-middle ms-2"></span>
+				</span>
+			</button>
+		</div>
 				<!--end:Action-->
 			</div>
 			<!--end::Compact form-->
-		</div>
-		<!--end::Card body-->
-	</div>
-	<!--end::Card-->
+	
 </form>
 
