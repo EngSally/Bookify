@@ -23,23 +23,59 @@
                                 '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
                             },
                             success: function (row) {
-                                console.log(row);
                                 $('#SubscriptionsTable').find('tbody').append(row);
                                 var activeIcon = $('#ActiveStatusIcon');
                                 activeIcon.removeClass('d-none');
                                 activeIcon.siblings('svg').remove();
                                 activeIcon.parents('.card').removeClass('bg-warning').addClass('bg-success');
-
-                                $('#RentalButton').removeClass('d-none');
-
+                               $('#RentalButton').removeClass('d-none');
                                 $('#CardStatus').text('Active subscriber');
                                 $('#StatusBadge').removeClass('badge-light-warning').addClass('badge-light-success').text('Active subscriber');
                                 ShowToastrMessageSuccess('Saved Successful!');
+                            },
+                            error: function () {
+                                ShowToastrMessagError('Error');
                             }
                         });
                     }
                 }
+            });
+    });
 
-           });
-   });
- });
+
+    $('.js-cancel-rental').on('click', function () {
+        var btn = $(this);
+        bootbox.confirm({
+            message: 'Are You Sure You Want To Cancel this Rental?',
+            buttons: {
+                confirm: {
+                    label: 'Yes',
+                    className: 'btn-denger'
+                },
+                cancel: {
+                    label: 'No',
+                    className: 'btn-secondary'
+                }
+            },
+
+            callback: function (result) {
+                console.log(`/Rentals/CancelRental/${btn.data('id')}`)
+                if (result) {
+                    $.post({
+                        url: `/Rentals/CancelRental/${btn.data('id') }`,
+                        data: {
+                            '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                        },
+                        success: function (data) {
+                            console.log(data);
+                          
+                        },
+                        error: function () {
+                            ShowToastrMessagError('Error');
+                        }
+                    });
+                }
+            }
+        });
+    });
+});

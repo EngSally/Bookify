@@ -24,7 +24,6 @@ namespace BookTest.Controllers
 
         [HttpGet]
         public IActionResult Create(string sKey)
-
         {
             var subscriberId=int.Parse(_dataProtector.Unprotect(sKey));
             var subscriber=_context.Subscribers
@@ -34,23 +33,39 @@ namespace BookTest.Controllers
                 .FirstOrDefault(s=>s.Id == subscriberId);
             if (subscriber is null)
                 return NotFound();
-            if (subscriber.IsBlackListed)
-                return View("NotAvailbleForRental", Errors.BlackListedSubscriber);
-            if (subscriber.RenewalSubscribtions.Last().EndDate < DateTime.Now.AddDays((int)RentalsConfigurations.RentalDuration))
-                return View("NotAvailbleForRental", Errors.InactiveSubscriber);
-            var currentRentals = subscriber.Rentals.SelectMany(r => r.RentalCopies).Count(c => !c.ReturnDate.HasValue);
-            var allowRentalCopy=(int)RentalsConfigurations.MaxAllowedCopies-currentRentals;
-            if(allowRentalCopy.Equals(0))
-                return View("NotAvailbleForRental", Errors.MaxCopiesReached);
-            RentalFormViewModel model = new ()
+           var(errorMessage,  maxAllowedCopies) =  ValidateSubscriber(subscriber);
+            if(!string .IsNullOrEmpty(errorMessage))
+                return View("NotAvailbleForRental", errorMessage);
+                       RentalFormViewModel model = new ()
             {
                 SubscriberKey = sKey,
-                CountAvailableForRental=allowRentalCopy
+                CountAvailableForRental=maxAllowedCopies
 
             };
             return View(model);
         }
 
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(RentalFormViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View (model);
+            var subscriberId=int.Parse(_dataProtector.Unprotect(model.SubscriberKey));
+            var subscriber=_context.Subscribers
+                .Include(s=>s.RenewalSubscribtions)
+                .Include(s=>s.Rentals)
+                .ThenInclude(r=>r.RentalCopies)
+                .FirstOrDefault(s=>s.Id == subscriberId);
+            if (subscriber is null)
+                return NotFound();
+            var (errorMessage, maxAllowedCopies) = ValidateSubscriber(subscriber);
+            if (!string.IsNullOrEmpty(errorMessage))
+                return View("NotAvailbleForRental", errorMessage);
+            return Ok();
+        }
 
 
         [HttpPost]
@@ -62,7 +77,7 @@ namespace BookTest.Controllers
                 .Include(c=>c.Book)
                 .SingleOrDefault(c=>c.SerialNumber.ToString()==model.Value &&!c.Book!.Deleted && !c.Deleted);
             if (copy is null)
-                return NotFound(Errors.InvalidSertailNum);
+                return NotFound(Errors.InvalidSerialNumber);
             if (!copy.IsAvailableForRental || !copy.Book!.IsAvailableForRental)
                 return BadRequest(Errors.NotAvailableForRental);
 
@@ -75,5 +90,30 @@ namespace BookTest.Controllers
 
         }
 
-	}
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CancelRental(int id)
+        {
+            return Ok("Sallly");
+        }
+
+        private (string errorMessage, int? maxAllowedCopies) ValidateSubscriber(Subscriber subscriber)
+        {
+            if (subscriber.IsBlackListed)
+                   return (errorMessage: Errors.BlackListedSubscriber, maxAllowedCopies: null);
+
+            if (subscriber.RenewalSubscribtions.Last().EndDate < DateTime.Now.AddDays((int)RentalsConfigurations.RentalDuration))
+                   return (errorMessage: Errors.InactiveSubscriber, maxAllowedCopies: null);
+            var currentRentals = subscriber.Rentals.SelectMany(r => r.RentalCopies).Count(c => !c.ReturnDate.HasValue);
+            var allowRentalCopy=(int)RentalsConfigurations.MaxAllowedCopies-currentRentals;
+            if (allowRentalCopy.Equals(0))
+                   return (errorMessage: Errors.MaxCopiesReached, maxAllowedCopies: null);
+
+            return (errorMessage: string.Empty, maxAllowedCopies: allowRentalCopy);
+
+
+        }
+
+    }
 }

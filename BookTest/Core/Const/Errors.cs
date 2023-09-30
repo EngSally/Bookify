@@ -22,7 +22,7 @@
         public  const  string InvalidMobileNumber = "Invalid mobile number.";
         public  const  string InvalidNatialId = "Invalid National Id.";
         public  const  string EmptyImage = "Please select an image.";
-        public  const  string InvalidSertailNum = "Invatlid BookCopy SerailNumber.";
+        public  const  string InvalidSerialNumber = "Invalid BookCopy SerailNumber.";
         public  const  string NotAvailableForRental = "This Copy Not Available For Rental";
         public  const  string BlackListedSubscriber = "This subscriber is blacklisted.";
         public  const  string InactiveSubscriber = "This subscriber is inactive.";

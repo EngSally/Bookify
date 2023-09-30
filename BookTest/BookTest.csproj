@@ -141,7 +141,7 @@
     <None Include="wwwroot\js\book-copies.js" />
     <None Include="wwwroot\js\books.js" />
     <None Include="wwwroot\js\profile.js" />
-    <None Include="wwwroot\js\renewSubscribtion.js" />
+    <None Include="wwwroot\js\subscriberDetails.js" />
     <None Include="wwwroot\js\site.js" />
     <None Include="wwwroot\js\subscriber-form.js" />
     <None Include="wwwroot\js\validation-styling.js" />
