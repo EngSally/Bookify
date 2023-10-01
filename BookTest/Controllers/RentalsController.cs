@@ -69,7 +69,7 @@ namespace BookTest.Controllers
             var selectedBookCopies=_context.BooksCopies
                 .Include(c=>c.Book)
                 .Include(c=>c.Rentals)
-                .Where(c=>model.SelectedBookCopiesForRental.Contains(c.SerialNumber))
+                .Where(c=>model.SelectedCopies.Contains(c.SerialNumber))
                 .ToList();
 
             var subscriberRentals=_context.Rentals
@@ -98,6 +98,7 @@ namespace BookTest.Controllers
                 CreatedById=User.FindFirst(ClaimTypes.NameIdentifier)!.Value
             };
             _context.Rentals.Add(rental);
+            _context.SaveChanges();
             return Ok();
         }
 

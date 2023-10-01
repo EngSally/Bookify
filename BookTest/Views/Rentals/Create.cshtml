@@ -27,7 +27,7 @@
         <div class="card-body pt-5">
             <form asp-action="Create" id="CopiesForm">
                 <input type="hidden" asp-for="SubscriberKey" />
-                <input type="hidden" asp-for="SelectedBookCopiesForRental" />
+                @*<input type="hidden" asp-for="SelectedBookCopiesForRental" />*@
                 @* Copies will be added here *@
                 <button type="submit" class="btn btn-secondary" disabled="true">
                     <span class="indicator-label">
@@ -47,7 +47,7 @@
     {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        var maxAllowedCopies = @(Model.CountAvailableForRental)
+        var maxAllowedCopies = @(Model.CountAvailableForRental);
     </script>
     <script src="/js/rental-form.js" asp-append-version="true"></script>
     }

@@ -1,17 +1,17 @@
 ﻿
-var selectedBookCopiesForRental = [];
+var selectedCopies = [];
 $(document).ready(function () {
     $('#searchbuttom').on('click', function (e) {
         e.preventDefault();
 
         var serial = $('#searchinput').val();
 
-        if (selectedBookCopiesForRental.find(c => c.serial == serial)) {
+        if (selectedCopies.find(c => c.serial == serial)) {
             showErrorMessage('You cannot add the same copy');
             return;
         }
 
-        if (selectedBookCopiesForRental.length >= maxAllowedCopies) {
+        if (selectedCopies.length >= maxAllowedCopies) {
             showErrorMessage(`You cannot add more that ${maxAllowedCopies} book(s)`);
             return;
         }
@@ -24,7 +24,7 @@ $(document).ready(function () {
         console.log('ffffffffff');
         $(this).parents('.js-copy-container').remove();
         prepareInput();
-        if ($.isEmptyObject(selectedBookCopies)) {
+        if ($.isEmptyObject(selectedCopies)) {
            
             $('#CopiesForm').find(':submit').addClass('btn-secondary');
             $('#CopiesForm').find(':submit').removeClass('btn-primary');
@@ -42,7 +42,7 @@ function OnSerachSuccess(copy) {
 
     var bookId = $(copy).find('.js-copy').data('book-id');
 
-    if (selectedBookCopiesForRental.find(c => c.bookId == bookId)) {
+    if (selectedCopies.find(c => c.bookId == bookId)) {
         showErrorMessage('You cannot add more than one copy for the same book');
         return;
     }
@@ -51,16 +51,16 @@ function OnSerachSuccess(copy) {
     $('#CopiesForm').find(':submit').removeClass('btn-secondary');
     $('#CopiesForm').find(':submit').addClass('btn-primary');
     prepareInput();
-    console.log(selectedBookCopiesForRental);
+    console.log(selectedCopies);
 
 }
 
 function prepareInput() {
-    selectedBookCopiesForRental = []
+    selectedCopies = []
     var bookCopies = $('.js-copy');
     $.each(bookCopies, function (i, htmlInput) {
         var objectInput = $(htmlInput);
-        selectedBookCopiesForRental.push({ serial: objectInput.val(), bookId: objectInput.data('book-id') });// SerialBookNum
+        selectedCopies.push({ serial: objectInput.val(), bookId: objectInput.data('book-id') });// SerialBookNum
         objectInput.attr('name', `SelectedCopies[${i}]`).attr('id', `SelectedCopies_${i}_`);
     });
     
