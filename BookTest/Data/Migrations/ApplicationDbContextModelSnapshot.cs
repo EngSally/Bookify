@@ -160,7 +160,7 @@ namespace BookTest.Data.Migrations
                     b.HasIndex("Name", "GovernorateId")
                         .IsUnique();
 
-                    b.ToTable("Areas");
+                    b.ToTable("Areas", (string)null);
                 });
 
             modelBuilder.Entity("BookTest.Core.Models.Author", b =>
@@ -200,7 +200,7 @@ namespace BookTest.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Authors");
+                    b.ToTable("Authors", (string)null);
                 });
 
             modelBuilder.Entity("BookTest.Core.Models.Book", b =>
@@ -274,7 +274,7 @@ namespace BookTest.Data.Migrations
                     b.HasIndex("Title", "AuthorId")
                         .IsUnique();
 
-                    b.ToTable("Books");
+                    b.ToTable("Books", (string)null);
                 });
 
             modelBuilder.Entity("BookTest.Core.Models.BookCategory", b =>
@@ -289,7 +289,7 @@ namespace BookTest.Data.Migrations
 
                     b.HasIndex("BookId");
 
-                    b.ToTable("BooksCategories");
+                    b.ToTable("BooksCategories", (string)null);
                 });
 
             modelBuilder.Entity("BookTest.Core.Models.BookCopy", b =>
@@ -337,7 +337,7 @@ namespace BookTest.Data.Migrations
 
                     b.HasIndex("LastUpdateById");
 
-                    b.ToTable("BooksCopies");
+                    b.ToTable("BooksCopies", (string)null);
                 });
 
             modelBuilder.Entity("BookTest.Core.Models.Category", b =>
@@ -379,7 +379,7 @@ namespace BookTest.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("BookTest.Core.Models.Governorate", b =>
@@ -419,7 +419,7 @@ namespace BookTest.Data.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("Governorates");
+                    b.ToTable("Governorates", (string)null);
                 });
 
             modelBuilder.Entity("BookTest.Core.Models.RenewalSubscribtion", b =>
@@ -451,7 +451,7 @@ namespace BookTest.Data.Migrations
 
                     b.HasIndex("SubscriberId");
 
-                    b.ToTable("RenewalSubscribtions");
+                    b.ToTable("RenewalSubscribtions", (string)null);
                 });
 
             modelBuilder.Entity("BookTest.Core.Models.Rental", b =>
@@ -494,7 +494,7 @@ namespace BookTest.Data.Migrations
 
                     b.HasIndex("SubscriberId");
 
-                    b.ToTable("Rentals");
+                    b.ToTable("Rentals", (string)null);
                 });
 
             modelBuilder.Entity("BookTest.Core.Models.RentalCopy", b =>
@@ -521,7 +521,7 @@ namespace BookTest.Data.Migrations
 
                     b.HasIndex("BookCopyId");
 
-                    b.ToTable("RentalCopies");
+                    b.ToTable("RentalCopies", (string)null);
                 });
 
             modelBuilder.Entity("BookTest.Core.Models.Subscriber", b =>
@@ -618,7 +618,7 @@ namespace BookTest.Data.Migrations
                     b.HasIndex("NationalId")
                         .IsUnique();
 
-                    b.ToTable("Subscribers");
+                    b.ToTable("Subscribers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

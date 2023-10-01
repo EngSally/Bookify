@@ -3,7 +3,7 @@
     public class RentalFormViewModel
     {
         public string SubscriberKey { get; set; } = null!;
-        public  IList<int> BookCopiesForRental { get; set; }=new  List<int>();  
+        public  IList<int> SelectedBookCopiesForRental { get; set; }=new  List<int>();  
         public  int? CountAvailableForRental { get; set; }
     }
 }

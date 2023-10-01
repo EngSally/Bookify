@@ -3,6 +3,7 @@ using BookTest.Core.ViewModels.Rental;
 using BookTest.Core.ViewModels.Subscribers;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace BookTest.Controllers
 {
@@ -52,7 +53,7 @@ namespace BookTest.Controllers
         public IActionResult Create(RentalFormViewModel model)
         {
             if (!ModelState.IsValid)
-                return View (model);
+                return View(model);
             var subscriberId=int.Parse(_dataProtector.Unprotect(model.SubscriberKey));
             var subscriber=_context.Subscribers
                 .Include(s=>s.RenewalSubscribtions)
@@ -64,6 +65,39 @@ namespace BookTest.Controllers
             var (errorMessage, maxAllowedCopies) = ValidateSubscriber(subscriber);
             if (!string.IsNullOrEmpty(errorMessage))
                 return View("NotAvailbleForRental", errorMessage);
+
+            var selectedBookCopies=_context.BooksCopies
+                .Include(c=>c.Book)
+                .Include(c=>c.Rentals)
+                .Where(c=>model.SelectedBookCopiesForRental.Contains(c.SerialNumber))
+                .ToList();
+
+            var subscriberRentals=_context.Rentals
+                .Include(r=>r.RentalCopies)
+                .ThenInclude(rc=>rc.BookCopy)
+                .Where(r=>r.SubscriberId== subscriberId )
+                .SelectMany(r=>r.RentalCopies)
+                .Where(rc=>!rc.ReturnDate.HasValue)
+                .Select(rc=>rc.BookCopy!.BookId)
+                .ToList();
+            List<RentalCopy>rentalCopies = new List<RentalCopy>();
+            foreach (var copy in selectedBookCopies)
+            {
+                if (!copy.IsAvailableForRental || !copy.Book!.IsAvailableForRental)
+                    return View("NotAvailbleForRental", Errors.NotAvailableForRental);
+                if (copy.Rentals.Any(c => c.BookCopyId == copy.Id && c.ReturnDate.HasValue))
+                    return View("NotAvailbleForRental", Errors.CopyIsInRental);
+                if (subscriberRentals.Any(BookId => BookId == copy.BookId))
+                    return View("NotAvailbleForRental", $"This Subscriber Already  has acopy of {copy.Book.Title} book");
+                rentalCopies.Add(new() { BookCopyId = copy.Id });
+            }
+            Rental rental= new()
+            {
+                RentalCopies = rentalCopies,
+                SubscriberId = subscriberId,
+                CreatedById=User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+            };
+            _context.Rentals.Add(rental);
             return Ok();
         }
 
