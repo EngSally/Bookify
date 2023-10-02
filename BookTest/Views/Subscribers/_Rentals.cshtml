@@ -1,7 +1,6 @@
 ﻿@model ICollection<RentalViewModel> 
-@if(!@Model.Any())
-{
-		<div class="alert bg-light-info border border-info border-3 border-dashed d-flex flex-column flex-sm-row w-100 p-5 mt-10">
+
+		<div class="alert bg-light-info border border-info border-3 border-dashed d-flex flex-column flex-sm-row w-100 p-5 mt-10" id="RentalAlert" style="display:@(Model.Any()?"none !important":"unset")" >
 			<!--begin::Icon-->
 			<!--begin::Svg Icon | path: icons/duotune/general/gen007.svg-->
 			<span class="svg-icon svg-icon-2hx svg-icon-info me-4 mb-5 mb-sm-0">
@@ -18,11 +17,9 @@
 			</div>
 			<!--end::Content-->
 		</div>
-}
-else
-{
 
-    <div class="table-responsive">
+
+<div class="table-responsive" id="rentalTable" style="display:@(Model.Any()?"unset":"none !important")">
         <!--begin::Table-->
         <table class="table align-middle gs-0 gy-4">
             <!--begin::Table head-->
@@ -69,4 +66,3 @@ else
         </table>
         <!--end::Table-->
     </div>
-}

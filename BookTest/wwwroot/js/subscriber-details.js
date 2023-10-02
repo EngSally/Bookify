@@ -50,7 +50,7 @@
             buttons: {
                 confirm: {
                     label: 'Yes',
-                    className: 'btn-denger'
+                    className: 'btn-danger'
                 },
                 cancel: {
                     label: 'No',
@@ -67,8 +67,7 @@
                             '__RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
                         },
                         success: function (data) {
-                            console.log(data);
-                          
+                            btn.parents('tr').remove();
                         },
                         error: function () {
                             ShowToastrMessagError('Error');

@@ -95,6 +95,7 @@ namespace BookTest.Controllers
             {
                 RentalCopies = rentalCopies,
                 SubscriberId = subscriberId,
+
                 CreatedById=User.FindFirst(ClaimTypes.NameIdentifier)!.Value
             };
             _context.Rentals.Add(rental);
@@ -130,7 +131,14 @@ namespace BookTest.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult CancelRental(int id)
         {
-            return Ok("Sallly");
+            var rental=_context.Rentals.Find(id);
+            if(rental  is  null || rental.StartDate.Date!=DateTime.Today)
+                return NotFound();
+            rental.Deleted = true;
+            rental.LastUpdateById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            rental.LastUpdateOn = DateTime.Now;
+            _context.SaveChanges();
+            return Ok();
         }
 
         private (string errorMessage, int? maxAllowedCopies) ValidateSubscriber(Subscriber subscriber)
