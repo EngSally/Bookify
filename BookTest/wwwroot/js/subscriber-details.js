@@ -68,6 +68,14 @@
                         },
                         success: function (data) {
                             btn.parents('tr').remove();
+                            if ($('#rentalTable  tbody tr').length === 0) {
+                                $('#rentalTable').fadeOut();
+                                $('#RentalAlert').fadeIn();
+                            }
+                            var cancelNum = btn.parents('tr').find('#numofrental').data('num')
+                            
+                            $('#numRental').text( parseInt( $('#numRental').text()) - cancelNum)
+                           
                         },
                         error: function () {
                             ShowToastrMessagError('Error');

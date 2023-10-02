@@ -9,7 +9,7 @@ namespace BookTest.Core.ViewModels.Rental
         public DateTime EndDate { set; get; } 
         public DateTime? ReturnDate { set; get; }
         public DateTime? ExtendedOn { get; set; }
-        public int DelayInDate {
+        public int DelayInDays {
             get
             {
                 int delay=0;

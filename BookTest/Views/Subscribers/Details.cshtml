@@ -153,8 +153,8 @@
                                             </svg>
                                         </span>
                                         <!--end::Svg Icon-->
-                                        <div class="ms-2">
-                                           @Model.Rentals.Sum(r=>r.NumberOfCopies)
+                                        <div class="ms-2" >
+                                            <span id="numRental"> @Model.Rentals.Sum(r=>r.NumberOfCopies)</span>
                                         </div>
                                     </div>
                                     <div class="fs-7 fw-normal text-muted">Total number Of Copies</div>

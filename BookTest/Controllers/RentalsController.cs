@@ -141,7 +141,18 @@ namespace BookTest.Controllers
             return Ok();
         }
 
-        private (string errorMessage, int? maxAllowedCopies) ValidateSubscriber(Subscriber subscriber)
+        public  IActionResult Details(int id)
+        {
+            var rental=_context.Rentals
+                .Include(r=>r.RentalCopies)
+                .ThenInclude(c=>c.BookCopy)
+                .ThenInclude(b=>b!.Book)
+                .SingleOrDefault(r=>r.Id==id);
+            if(rental is null) return NotFound();
+            RentalViewModel model=_mapper.Map<RentalViewModel>(rental);
+            return View(model);
+        }
+       private (string errorMessage, int? maxAllowedCopies) ValidateSubscriber(Subscriber subscriber)
         {
             if (subscriber.IsBlackListed)
                    return (errorMessage: Errors.BlackListedSubscriber, maxAllowedCopies: null);

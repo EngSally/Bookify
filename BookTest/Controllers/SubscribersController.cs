@@ -249,13 +249,13 @@ namespace BookTest.Controllers
                 .Include(s=> s.RenewalSubscribtions)
                 .Include(s=>s.Rentals)
                 .ThenInclude(r=>r.RentalCopies)
-               // .SelectMany(r=>r.Rentals).Where(r=>!r.Deleted)
                 .FirstOrDefault(s=>s.Id==subscriberId )
+                
                 ;
             if (subscriber is null) return NotFound();
             var viewModel=_mapper.Map<SubscriberViewModel>(subscriber);
             viewModel.Key = id;
-            			return View("Details",viewModel);
+            return View("Details",viewModel);
         }
 
         public IActionResult AllowMobilNum(SubscriberFormViewModel model)

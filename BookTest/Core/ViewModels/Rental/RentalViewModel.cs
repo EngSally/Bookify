@@ -14,7 +14,7 @@ namespace BookTest.Core.ViewModels.Rental
             {
                 get
                 {
-                    return RentalCopies.Sum(c => c.DelayInDate);
+                    return RentalCopies.Sum(c => c.DelayInDays);
                 }
             }
         public int NumberOfCopies

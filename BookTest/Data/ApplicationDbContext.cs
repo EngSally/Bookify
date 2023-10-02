@@ -22,6 +22,8 @@ namespace BookTest.Data
             builder.Entity<BookCategory>().HasKey(k => new { k.CategoryId, k.BookId });
             builder.Entity<RentalCopy>().HasKey(k => new { k.RentalId, k.BookCopyId });
             builder.Entity<Category>().Property(e => e.CreatedOn).HasDefaultValueSql("GETDATE()");
+            builder.Entity<Rental>().HasQueryFilter(r => !r.Deleted);
+            builder.Entity<RentalCopy>().HasQueryFilter(r => !r.Rental!.Deleted);
             base.OnModelCreating(builder);
         }
 
