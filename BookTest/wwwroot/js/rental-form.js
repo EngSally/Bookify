@@ -1,6 +1,12 @@
 ﻿
 var selectedCopies = [];
 $(document).ready(function () {
+    prepareInput();
+    console.log(selectedCopies);
+
+
+
+
     $('#searchbuttom').on('click', function (e) {
         e.preventDefault();
 

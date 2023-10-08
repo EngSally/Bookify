@@ -121,22 +121,48 @@ namespace BookTest.Controllers
                 .ThenInclude(r=>r.RentalCopies)
                 .FirstOrDefault(s=>s.Id == rental.SubscriberId);
            
-            var (errorMessage, maxAllowedCopies) = ValidateSubscriber(subscriber!);
+            var (errorMessage, maxAllowedCopies) = ValidateSubscriber(subscriber!,rental.Id);
             if (!string.IsNullOrEmpty(errorMessage))
                 return View("NotAvailbleForRental", errorMessage);
-           
+            var currentBookCopyIds=rental.RentalCopies.Select(r=>r.BookCopyId).ToList();
+            var currentBookCopy=_context.BooksCopies
+                                    .Where(b=>currentBookCopyIds.Contains(b.Id))
+                                    .Include(b=>b.Book)
+                                    .ToList();
             RentalFormViewModel model = new ()
             {   Id=rental.Id,
                 SubscriberKey = _dataProtector.Protect(rental.SubscriberId.ToString()),
-               
+                CurrentBookCopy=_mapper.Map<IEnumerable<BookCopyViewModel>>(currentBookCopy),
                 CountAvailableForRental=maxAllowedCopies
 
             };
             return View("Form", model);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public  IActionResult Edit(RentalFormViewModel model)
+        {
+            if (!ModelState.IsValid) return BadRequest();
+            var rental=_context.Rentals
+                .Include(r=>r.RentalCopies)
+                .SingleOrDefault(r=>r.Id==model.Id);
+
+            if (rental is null || rental.StartDate.Date != DateTime.Now.Date)
+                return BadRequest();
 
 
+            //foreach(var rentalcopy in rental.RentalCopies)
+            //{
+            //    if(!model.SelectedCopies.Contains( rentalcopy.BookCopyId))
+            //    {
+            //        _context.RentalCopies.Remove(rentalcopy);
+            //    }
+            //}
+
+            return Ok();
+
+        }
 
 
         [HttpPost]
@@ -187,14 +213,17 @@ namespace BookTest.Controllers
             RentalViewModel model=_mapper.Map<RentalViewModel>(rental);
             return View(model);
         }
-       private (string errorMessage, int? maxAllowedCopies) ValidateSubscriber(Subscriber subscriber)
+       private (string errorMessage, int? maxAllowedCopies) ValidateSubscriber(Subscriber subscriber,int? rentalId=null)
         {
             if (subscriber.IsBlackListed)
                    return (errorMessage: Errors.BlackListedSubscriber, maxAllowedCopies: null);
 
             if (subscriber.RenewalSubscribtions.Last().EndDate < DateTime.Now.AddDays((int)RentalsConfigurations.RentalDuration))
                    return (errorMessage: Errors.InactiveSubscriber, maxAllowedCopies: null);
-            var currentRentals = subscriber.Rentals.SelectMany(r => r.RentalCopies).Count(c => !c.ReturnDate.HasValue);
+            var currentRentals = subscriber.Rentals
+                .Where (r=> rentalId  is null ||r.Id != rentalId)
+                .SelectMany(r => r.RentalCopies)
+                .Count(c => !c.ReturnDate.HasValue);
             var allowRentalCopy=(int)RentalsConfigurations.MaxAllowedCopies-currentRentals;
             if (allowRentalCopy.Equals(0))
                    return (errorMessage: Errors.MaxCopiesReached, maxAllowedCopies: null);

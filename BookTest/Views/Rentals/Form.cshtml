@@ -26,9 +26,13 @@
         <!--end::Header-->
         <!--begin::Body-->
         <div class="card-body pt-5">
-            <form asp-action="Create" id="CopiesForm">
+            <form asp-controller="Rentals" id="CopiesForm">
                 <input type="hidden" asp-for="SubscriberKey" />
-                @*<input type="hidden" asp-for="SelectedBookCopiesForRental" />*@
+                
+                @foreach(var copy in Model.CurrentBookCopy)
+                {
+                    <partial name="_CopyDetails" model="@copy"/>
+                }
                 @* Copies will be added here *@
                 <button type="submit" class="btn btn-secondary" disabled="true">
                     <span class="indicator-label">
