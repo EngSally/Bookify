@@ -84,7 +84,7 @@
     <None Include="Views\Categories\_PartialRowCategory.cshtml" />
     <None Include="Views\Home\Index.cshtml" />
     <None Include="Views\Home\Privacy.cshtml" />
-    <None Include="Views\Rentals\Create.cshtml" />
+    <None Include="Views\Rentals\Form.cshtml" />
     <None Include="Views\Rentals\_SearchBookCopy.cshtml" />
     <None Include="Views\Shared\Error.cshtml" />
     <None Include="Views\Shared\_Aside.cshtml" />

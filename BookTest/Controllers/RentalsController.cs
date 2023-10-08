@@ -1,4 +1,5 @@
-﻿using BookTest.Core.ViewModels.BookCopy;
+﻿using BookTest.Core.Models;
+using BookTest.Core.ViewModels.BookCopy;
 using BookTest.Core.ViewModels.Rental;
 using BookTest.Core.ViewModels.Subscribers;
 using Microsoft.AspNetCore.DataProtection;
@@ -43,7 +44,7 @@ namespace BookTest.Controllers
                 CountAvailableForRental=maxAllowedCopies
 
             };
-            return View(model);
+            return View("Form",model);
         }
 
 
@@ -102,6 +103,40 @@ namespace BookTest.Controllers
             _context.SaveChanges();
             return Ok();
         }
+
+
+
+       
+         public  IActionResult Edit(int id)
+        {
+            var rental=_context.Rentals
+                        .Include(r=>r.RentalCopies)
+                        .ThenInclude(r=>r.BookCopy)
+                        .FirstOrDefault(r=>r.Id==id);
+            if (rental is null ||rental.StartDate.Date!=DateTime.Today)
+                return NotFound();
+            var subscriber=_context.Subscribers
+                .Include(s=>s.RenewalSubscribtions)
+                .Include(s=>s.Rentals)
+                .ThenInclude(r=>r.RentalCopies)
+                .FirstOrDefault(s=>s.Id == rental.SubscriberId);
+           
+            var (errorMessage, maxAllowedCopies) = ValidateSubscriber(subscriber!);
+            if (!string.IsNullOrEmpty(errorMessage))
+                return View("NotAvailbleForRental", errorMessage);
+           
+            RentalFormViewModel model = new ()
+            {   Id=rental.Id,
+                SubscriberKey = _dataProtector.Protect(rental.SubscriberId.ToString()),
+               
+                CountAvailableForRental=maxAllowedCopies
+
+            };
+            return View("Form", model);
+        }
+
+
+
 
 
         [HttpPost]

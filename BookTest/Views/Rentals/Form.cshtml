@@ -1,13 +1,14 @@
 ﻿@model RentalFormViewModel
 
 @{
-    ViewData["Title"] = "Add Rental";
+    var title= (Model.Id > 0)? "Edit" : "Add";
+    ViewData["Title"] = $"{title} Rental";
 }
 
 <!--begin::Card-->
 <div class="card mb-7">
     <div class="card-header">
-        <h3 class="card-title">Add Rental</h3>
+        <h3 class="card-title">@title Rental</h3>
     </div>
     <!--begin::Card body-->
     <div class="card-body">
