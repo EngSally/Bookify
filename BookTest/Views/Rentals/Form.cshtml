@@ -1,4 +1,5 @@
-﻿@model RentalFormViewModel
+﻿@using Newtonsoft.Json;
+@model RentalFormViewModel
 
 @{
     var title= (Model.Id > 0)? "Edit" : "Add";
@@ -28,8 +29,9 @@
         <div class="card-body pt-5">
             <form asp-controller="Rentals" id="CopiesForm">
                 <input type="hidden" asp-for="SubscriberKey" />
+                <input type="hidden" asp-for="Id"  id="rental-id"/>
                 
-                @foreach(var copy in Model.CurrentBookCopy)
+                @foreach (var copy in Model.CurrentCopies)
                 {
                     <partial name="_CopyDetails" model="@copy"/>
                 }
@@ -53,6 +55,7 @@
     <partial name="_ValidationScriptsPartial" />
     <script>
         var maxAllowedCopies = @(Model.CountAvailableForRental);
+       
     </script>
     <script src="/js/rental-form.js" asp-append-version="true"></script>
     }

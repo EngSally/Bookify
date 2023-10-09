@@ -132,7 +132,7 @@ namespace BookTest.Controllers
             RentalFormViewModel model = new ()
             {   Id=rental.Id,
                 SubscriberKey = _dataProtector.Protect(rental.SubscriberId.ToString()),
-                CurrentBookCopy=_mapper.Map<IEnumerable<BookCopyViewModel>>(currentBookCopy),
+                CurrentCopies=_mapper.Map<IEnumerable<BookCopyViewModel>>(currentBookCopy),
                 CountAvailableForRental=maxAllowedCopies
 
             };
@@ -141,7 +141,7 @@ namespace BookTest.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public  IActionResult Edit(RentalFormViewModel model)
+        public  IActionResult Edit( int id,RentalFormViewModel model)
         {
             if (!ModelState.IsValid) return BadRequest();
             var rental=_context.Rentals

@@ -7,7 +7,7 @@ namespace BookTest.Core.ViewModels.Rental
         public  int? Id { get; set; }    
         public string SubscriberKey { get; set; } = null!;
         public  IList<int> SelectedCopies { get; set; }=new  List<int>();  
-        public IEnumerable<BookCopyViewModel>  CurrentBookCopy { get; set; }=new List<BookCopyViewModel>();
+        public IEnumerable<BookCopyViewModel> CurrentCopies { get; set; }=new List<BookCopyViewModel>();
         public  int? CountAvailableForRental { get; set; }
     }
 }
