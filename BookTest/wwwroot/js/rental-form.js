@@ -1,11 +1,13 @@
 ﻿
 var selectedCopies = [];
 var isEditMode = false;
+var currentCopies = [];
 $(document).ready(function () {
   
     if($('#rental-id')[0].value !== "") {
-    isEditMode = true;
+        isEditMode = true;
         prepareInputs();
+        currentCopies = selectedCopies;
     }
     
 
@@ -43,18 +45,10 @@ $(document).ready(function () {
 
         prepareInputs();
 
-        if ($.isEmptyObject(selectedCopies) || JSON.stringify(currentCopies) == JSON.stringify(selectedCopies)) { 
-        $('#CopiesForm').find(':submit').addClass('btn-secondary');
-        $('#CopiesForm').find(':submit').removeClass('btn-primary');
-        $('#CopiesForm').find(':submit').attr("disabled", true);
-    }
+        if ($.isEmptyObject(selectedCopies) || JSON.stringify(currentCopies) == JSON.stringify(selectedCopies)) 
+            $('#CopiesForm').find(':submit').addClass('d-none');
         else
-        {
-            $('#CopiesForm').find(':submit').disabled = false;
-            $('#CopiesForm').find(':submit').removeClass('btn-secondary');
-            $('#CopiesForm').find(':submit').addClass('btn-primary');
-        }
-      
+            $('#CopiesForm').find(':submit').removeClass('d-none');
     });
 
 
@@ -69,16 +63,11 @@ $(document).ready(function () {
 
         prepareInputs();
 
-        if (JSON.stringify(currentCopies) == JSON.stringify(selectedCopies)) { 
-        $('#CopiesForm').find(':submit').addClass('btn-secondary');
-        $('#CopiesForm').find(':submit').removeClass('btn-primary');
-        $('#CopiesForm').find(':submit').attr("disabled", true);
-    }
-        else {
-            $('#CopiesForm').find(':submit').disabled = false;
-            $('#CopiesForm').find(':submit').removeClass('btn-secondary');
-            $('#CopiesForm').find(':submit').addClass('btn-primary');
-        }
+        if (JSON.stringify(currentCopies) == JSON.stringify(selectedCopies)) 
+            $('#CopiesForm').find(':submit').addClass('d-none');
+        else
+            $('#CopiesForm').find(':submit').removeClass('d-none');
+        
     });
 
 });
@@ -96,9 +85,7 @@ function OnSerachSuccess(copy) {
         return;
     }
     $('#CopiesForm').prepend(copy);
-    $('#CopiesForm').find(':submit').disabled = false;
-    $('#CopiesForm').find(':submit').removeClass('btn-secondary');
-    $('#CopiesForm').find(':submit').addClass('btn-primary');
+    $('#CopiesForm').find(':submit').removeClass('d-none');
     prepareInputs();
     console.log(selectedCopies);
 
