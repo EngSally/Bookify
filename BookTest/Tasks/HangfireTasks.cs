@@ -1,4 +1,5 @@
-﻿using BookTest.Services;
+﻿using BookTest.Core.Models;
+using BookTest.Services;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 
@@ -48,6 +49,50 @@ namespace BookTest.Tasks
                 await _emailSender.SendEmailAsync(subscriber.Email, "Bookify Subscription Renewal", body);
 
             }
+        }
+
+        public async Task PrepareRentalEnd()
+        {
+            var tomorrow=DateTime.Today.AddDays(1);
+            var rentals =_dbContext.Rentals
+                .Include(r=>r.Subscriber)
+                .Include(r=>r.RentalCopies)
+                .ThenInclude(c=>c.BookCopy)
+                .ThenInclude(b=>b.Book)
+                .Where(r=>r.RentalCopies
+                            .Any( r=>!r.ReturnDate.HasValue 
+                            &&r.EndDate==tomorrow))
+                .ToList();
+            foreach (var rental in rentals)
+            {
+                var expiredCopies = rental.RentalCopies.Where(c => c.EndDate.Date == tomorrow && !c.ReturnDate.HasValue).ToList();
+
+                var message = $"your rental for the below book(s) will be expired by tomorrow {tomorrow.ToString("dd MMM, yyyy")} 💔:";
+                message += "<ul>";
+
+                foreach (var copy in expiredCopies)
+                {
+                    message += $"<li>{copy.BookCopy!.Book!.Title}</li>";
+                }
+
+                message += "</ul>";
+
+                var placeholders = new Dictionary<string, string>()
+                {
+                    { "imageUrl", "https://res.cloudinary.com/devcreed/image/upload/v1671062674/calendar_zfohjc.png" },
+                    { "header", $"Hello {rental.Subscriber!.FristName}," },
+                    { "body", message }
+                };
+
+                var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Notification, placeholders);
+
+                await _emailSender.SendEmailAsync(
+                    rental.Subscriber!.Email,
+                    "Bookify Rental Expiration 🔔", body);
+            }
+
+
+
         }
     }
 }

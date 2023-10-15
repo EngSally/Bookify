@@ -67,7 +67,7 @@ namespace BookTest.Controllers
             if (!string.IsNullOrEmpty(errorMessage))
                 return View("NotAvailbleForRental", errorMessage);
 
-            var (rentalsError, copies) = ValidateCopies(model.SelectedCopies, subscriberId, rental.Id);
+            var (rentalsError, copies) = ValidateCopies(model.SelectedCopies, subscriberId);
 
             if (!string.IsNullOrEmpty(rentalsError))
                 return View("NotAllowedRental", rentalsError);

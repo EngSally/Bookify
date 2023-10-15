@@ -88,6 +88,7 @@ var webHost = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
 HangfireTasks hangfireTasks= new HangfireTasks(dbContext, emailBodyBuilder,emailSender,webHost);
 
 RecurringJob.AddOrUpdate( () =>  hangfireTasks.PrepareExpirationAlert(), "0 14 * * *");
+RecurringJob.AddOrUpdate(() => hangfireTasks.PrepareRentalEnd(), "0 14 * * *");
 
 
 app.MapControllerRoute(
