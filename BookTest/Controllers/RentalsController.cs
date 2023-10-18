@@ -159,6 +159,29 @@ namespace BookTest.Controllers
         }
 
 
+
+        public  IActionResult Return(int id)
+        {
+            var rental=_context.Rentals
+                        .Include(r=>r.RentalCopies)
+                        .ThenInclude(r=>r.BookCopy)
+                        .ThenInclude(b=>b!.Book)
+                        .FirstOrDefault(r=>r.Id==id);
+            if (rental is null || rental.StartDate.Date == DateTime.Today)
+                return NotFound();
+            var subscriber=_context.Subscribers
+                .Include(s=>s.RenewalSubscribtions)
+            .FirstOrDefault(s=>s.Id == rental.SubscriberId);
+
+            var model =new ReturnViewModel
+            {
+                Id = id,
+                Copies=_mapper.Map<IList<RentalCopyViewModel>>(rental.RentalCopies),
+                SelectedCopies=rental.RentalCopies.Select(r=>new ReturnCopyViewModel{ Id=r.BookCopyId}).ToList()
+            };
+            return View(model);
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public  IActionResult SearchBookCopy(SearchFormViewModel model)
