@@ -57,10 +57,7 @@
                             {
                             <a href="javascript:;" class="btn btn-light-danger btn-sm js-cancel-rental" data-id="@rental.Id">Cancel</a>
                         }
-                        else
-                        {
-                            <a class="btn btn-primary btn-sm" asp-controller="Rentals" asp-action="Return" asp-route-id="@rental.Id">Return/Extend</a>
-                        }
+                       
                         <a class="btn btn-primary btn-sm" asp-controller="Rentals" asp-action="Details" asp-route-id="@rental.Id">Details</a>
                         </td>
                     </tr>

@@ -33,6 +33,15 @@
             </a>
         </div>
     }
+    else if(Model.RentalCopies.Any(r=>!r.ReturnDate.HasValue))
+    {
+        <div>
+            <a class="btn btn-sm btn-primary" asp-action="Return" asp-route-id="@Model.Id">
+                <i class="bi bi-plus-square-dotted"></i>
+            Return
+            </a>
+        </div>
+    }
 </div>
 
 <div class="card pt-4 mb-6 mb-xl-9">
@@ -74,7 +83,7 @@
                         <th class="min-w-125px">End Date</th>
                         <th class="min-w-150px">Total Delay (Days)</th>
                         <th class="min-w-150px">Extend Date</th>
-                        <th class="min-w-150px">Return Date</th>
+                        <th class="pe-4 min-w-150px text-end rounded-end">Return Date</th>
                     </tr>
                 </thead>
                 <!--end::Table head-->

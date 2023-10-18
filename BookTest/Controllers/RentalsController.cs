@@ -177,8 +177,12 @@ namespace BookTest.Controllers
             {
                 Id = id,
                 Copies=_mapper.Map<IList<RentalCopyViewModel>>(rental.RentalCopies),
-                SelectedCopies=rental.RentalCopies.Select(r=>new ReturnCopyViewModel{ Id=r.BookCopyId}).ToList()
+                SelectedCopies=rental.RentalCopies.Select(r=>new ReturnCopyViewModel{ Id=r.BookCopyId}).ToList(),
+                AllowExtend=!subscriber!.IsBlackListed 
+                             &&subscriber.RenewalSubscribtions.Last().EndDate.Date>= DateTime.Today.AddDays((int) RentalsConfigurations.MaxRentalExtended)
+                             && rental.StartDate.AddDays((int) RentalsConfigurations.RentalDuration )>=DateTime.Today.Date    
             };
+
             return View(model);
         }
 
