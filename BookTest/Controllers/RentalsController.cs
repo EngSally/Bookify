@@ -162,28 +162,37 @@ namespace BookTest.Controllers
 
         public  IActionResult Return(int id)
         {
-            var rental=_context.Rentals
-                        .Include(r=>r.RentalCopies)
-                        .ThenInclude(r=>r.BookCopy)
-                        .ThenInclude(b=>b!.Book)
-                        .FirstOrDefault(r=>r.Id==id);
-            if (rental is null || rental.StartDate.Date == DateTime.Today)
-                return NotFound();
-            var subscriber=_context.Subscribers
-                .Include(s=>s.RenewalSubscribtions)
-            .FirstOrDefault(s=>s.Id == rental.SubscriberId);
+            var rental = _context.Rentals
+                .Include(r => r.RentalCopies)
+                .ThenInclude(c => c.BookCopy)
+                .ThenInclude(c => c!.Book)
+                .SingleOrDefault(r => r.Id == id);
 
-            var model =new ReturnViewModel
+            if (rental is null || rental.CreatedOn.Date == DateTime.Today)
+                return NotFound();
+
+            var subscriber = _context.Subscribers
+                .Include(s => s.RenewalSubscribtions)
+                .SingleOrDefault(s => s.Id == rental.SubscriberId);
+
+            var viewModel = new ReturnViewModel
             {
                 Id = id,
-                Copies=_mapper.Map<IList<RentalCopyViewModel>>(rental.RentalCopies),
-                SelectedCopies=rental.RentalCopies.Select(r=>new ReturnCopyViewModel{ Id=r.BookCopyId}).ToList(),
-                AllowExtend=!subscriber!.IsBlackListed 
-                             &&subscriber.RenewalSubscribtions.Last().EndDate.Date>= DateTime.Today.AddDays((int) RentalsConfigurations.MaxRentalExtended)
-                             && rental.StartDate.AddDays((int) RentalsConfigurations.RentalDuration )>=DateTime.Today.Date    
+                Copies = _mapper.Map<IList<RentalCopyViewModel>>(rental.RentalCopies.Where(c => !c.ReturnDate.HasValue).ToList()),
+                SelectedCopies = rental.RentalCopies.Where(c => !c.ReturnDate.HasValue).Select(c => new ReturnCopyViewModel { Id = c.BookCopyId, IsReturn = c.ExtendedOn.HasValue ? false : null }).ToList(),
+                AllowExtend = !subscriber!.IsBlackListed
+                    && subscriber.RenewalSubscribtions.Last().EndDate >= rental.StartDate.AddDays((int)RentalsConfigurations.MaxRentalExtended)
+                    && rental.StartDate.AddDays((int)RentalsConfigurations.RentalDuration) >= DateTime.Today
             };
 
-            return View(model);
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Return(ReturnViewModel model)
+        {
+            return Ok();
         }
 
         [HttpPost]

@@ -3,7 +3,7 @@
     public class ReturnCopyViewModel
     {
          public int Id { get; set; }
-        public  bool?IsReturnes { get; set; }
+        public  bool?IsReturn { get; set; }
 
     }
 }
