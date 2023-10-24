@@ -96,17 +96,17 @@ else
                                     </td>
                                     <td>
                                         <div class="form-check form-check-custom form-check-success form-check-solid">
-                                            <input class="form-check-input" type="radio" value="true" asp-for="@Model.SelectedCopies[i].IsReturn" id="@($"{Model.SelectedCopies[i].Id}_true")" />
-                                            <input type="hidden" asp-for="@Model.SelectedCopies[i].Id" id="@($"{Model.SelectedCopies[i].Id}_true_id")" />
-                                            <label class="form-check-label" for="@($"{Model.SelectedCopies[i].Id}_true")"></label>
+                                            <input class="form-check-input" type="radio" value="true" asp-for="@Model.SelectedCopies[i].IsReturn" id="@($"{Model.SelectedCopies[i].Id}_return")" />
+                                            <input type="hidden" asp-for="@Model.SelectedCopies[i].Id" id="@($"{Model.SelectedCopies[i].Id}_return_id")" />
+                                            <label class="form-check-label" for="@($"{Model.SelectedCopies[i].Id}_return")"></label>
                                         </div>
                                     </td>
                                     <td class="text-end pe-4">
                                         <div class="form-check form-check-custom form-check-solid">
-                                            <input class="form-check-input" type="radio" value="false" asp-for="@Model.SelectedCopies[i].IsReturn" id="@($"{Model.SelectedCopies[i].Id}_false")"
+                                            <input class="form-check-input" type="radio" value="false" asp-for="@Model.SelectedCopies[i].IsReturn" id="@($"{Model.SelectedCopies[i].Id}_extend")"
                                                    disabled="@(Model.AllowExtend ? null : "disabled")" />
-                                            <input type="hidden" asp-for="@Model.SelectedCopies[i].Id" id="@($"{Model.SelectedCopies[i].Id}_false_id")" />
-                                            <label class="form-check-label" for="@($"{Model.SelectedCopies[i].Id}_false")"></label>
+                                            <input type="hidden" asp-for="@Model.SelectedCopies[i].Id" id="@($"{Model.SelectedCopies[i].Id}_extend_id")" />
+                                            <label class="form-check-label" for="@($"{Model.SelectedCopies[i].Id}_extend")"></label>
                                         </div>
                                     </td>
                                 </tr>

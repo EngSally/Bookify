@@ -4,6 +4,7 @@ using BookTest.Core.ViewModels.Rental;
 using BookTest.Core.ViewModels.Subscribers;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Security.Claims;
 
 namespace BookTest.Controllers
@@ -181,7 +182,7 @@ namespace BookTest.Controllers
                 Copies = _mapper.Map<IList<RentalCopyViewModel>>(rental.RentalCopies.Where(c => !c.ReturnDate.HasValue).ToList()),
                 SelectedCopies = rental.RentalCopies.Where(c => !c.ReturnDate.HasValue).Select(c => new ReturnCopyViewModel { Id = c.BookCopyId, IsReturn = c.ExtendedOn.HasValue ? false : null }).ToList(),
                 AllowExtend = !subscriber!.IsBlackListed
-                    && subscriber.RenewalSubscribtions.Last().EndDate >= rental.StartDate.AddDays((int)RentalsConfigurations.MaxRentalExtended)
+                    && subscriber!.RenewalSubscribtions.Last().EndDate >= rental.StartDate.AddDays((int)RentalsConfigurations.MaxRentalExtended)
                     && rental.StartDate.AddDays((int)RentalsConfigurations.RentalDuration) >= DateTime.Today
             };
 
@@ -190,9 +191,36 @@ namespace BookTest.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Return(ReturnViewModel model)
+        public IActionResult Return (ReturnViewModel model)
         {
-            return Ok();
+            var rental = _context.Rentals
+                .Include(r => r.RentalCopies)
+                .ThenInclude(c => c.BookCopy)
+                .ThenInclude(c => c!.Book)
+                .SingleOrDefault(r => r.Id == model.Id);
+
+            if (rental is null || rental.CreatedOn.Date == DateTime.Today)
+                return NotFound();
+            if(!ModelState.IsValid)
+            {
+                model.Copies = _mapper.Map<IList<RentalCopyViewModel>>(rental.RentalCopies.Where(c => !c.ReturnDate.HasValue).ToList());
+                return View(model);
+            }
+            var subscriber = _context.Subscribers
+                .Include(s => s.RenewalSubscribtions)
+                .SingleOrDefault(s => s.Id == rental.SubscriberId);
+            if(model.SelectedCopies.Any(c=>c.IsReturn.HasValue&&!c.IsReturn.Value))
+            {
+                if(subscriber!.IsBlackListed)
+                {
+                    model.Copies = _mapper.Map<IList<RentalCopyViewModel>>(rental.RentalCopies.Where(c => !c.ReturnDate.HasValue).ToList());
+                    ModelState.AddModelError("",Errors.ExtendNotAllowForBlockList);
+                    return View(model);
+                }
+            }
+            return View();
+
+
         }
 
         [HttpPost]
