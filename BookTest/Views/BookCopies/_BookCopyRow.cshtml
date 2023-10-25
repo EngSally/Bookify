@@ -5,6 +5,9 @@
     <td>@Model.EditionNumber</td>
     <td> <span class="    badge badge-light-@(Model.IsAvailableForRental?"success":"warning")">     @(Model.IsAvailableForRental ? "Available" : "Not Available")</span></td>
     <td><span class=" js-status    badge badge-light-@(Model.Deleted?"danger":"success")"> @(Model.Deleted ? "Deleted" : "Available")</span></td>
+    <td>
+        <a class="btn btn-light-primary btn-sm" asp-controller="BookCopies" asp-action="RentalHistory" asp-route-id="@Model.Id">History</a>
+    </td>
     <td>@Model.CreatedOn.ToString("dd MMM, yyyy") </td>
     <td class="text-end">
         <a href="#" class="btn btn-light btn-active-light-primary btn-sm" data-kt-menu-trigger="click" data-kt-menu-placement="bottom-end" data-kt-menu-flip="top-end">

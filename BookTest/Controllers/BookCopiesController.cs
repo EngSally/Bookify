@@ -76,7 +76,11 @@ namespace BookTest.Controllers
 
 
         }
+        public IActionResult RentalHistory(int id)
+        {
 
+            return View();
+        }
 
         [HttpPost]
          [ValidateAntiForgeryToken]

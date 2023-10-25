@@ -257,7 +257,7 @@ namespace BookTest.Controllers
             {
                 rental.LastUpdateOn = DateTime.Now;
                 rental.LastUpdateById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
-              //  rental.PenaltyPaid = model.PenaltyPaid;
+                 rental.PenaltyPaid = model.PenaltyPaid;
 
                 _context.SaveChanges();
             }

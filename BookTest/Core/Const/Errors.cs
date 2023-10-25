@@ -31,6 +31,7 @@
         public  const  string ExtendNotAllowForBlockList= "Rental Not allow Extend For BlackList Subscriber.";
         public  const  string ExtendNotAllowForInActive= "Rental Not allow Extend For  this Subscriber before renewal.";
         public  const  string ExtendNotAllow= "Rental Not allow Extend ";
+        public  const  string PenaltyShouldBePaid= "Penalty Should Be Paid ";
     
     }
 }
