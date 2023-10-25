@@ -211,14 +211,58 @@ namespace BookTest.Controllers
                 .SingleOrDefault(s => s.Id == rental.SubscriberId);
             if(model.SelectedCopies.Any(c=>c.IsReturn.HasValue&&!c.IsReturn.Value))
             {
+                string error="";
                 if(subscriber!.IsBlackListed)
+                         error = Errors.ExtendNotAllowForBlockList;
+                else if(subscriber!.RenewalSubscribtions.Last().EndDate < rental.StartDate.AddDays((int)RentalsConfigurations.MaxRentalExtended))
+                          error = Errors.ExtendNotAllowForInActive;
+                else if(rental.StartDate.AddDays((int)RentalsConfigurations.RentalDuration) < DateTime.Today)
+                         error= Errors.ExtendNotAllow;
+                if(!string.IsNullOrEmpty(error))
                 {
                     model.Copies = _mapper.Map<IList<RentalCopyViewModel>>(rental.RentalCopies.Where(c => !c.ReturnDate.HasValue).ToList());
-                    ModelState.AddModelError("",Errors.ExtendNotAllowForBlockList);
+                    ModelState.AddModelError("", error);
                     return View(model);
                 }
             }
-            return View();
+            var isUpdated = false;
+
+            foreach (var copy in model.SelectedCopies)
+            {
+                if (!copy.IsReturn.HasValue) continue;
+
+                var currentCopy = rental.RentalCopies.SingleOrDefault(c => c.BookCopyId == copy.Id);
+
+                if (currentCopy is null) continue;
+
+                if (copy.IsReturn.HasValue && copy.IsReturn.Value)
+                {
+                    if (currentCopy.ReturnDate.HasValue) continue;
+
+                    currentCopy.ReturnDate = DateTime.Now;
+                    isUpdated = true;
+                }
+
+                if (copy.IsReturn.HasValue && !copy.IsReturn.Value)
+                {
+                    if (currentCopy.ExtendedOn.HasValue) continue;
+
+                    currentCopy.ExtendedOn = DateTime.Now;
+                    currentCopy.EndDate = currentCopy.RentalDate.AddDays((int)RentalsConfigurations.MaxRentalExtended);
+                    isUpdated = true;
+                }
+            }
+
+            if (isUpdated)
+            {
+                rental.LastUpdateOn = DateTime.Now;
+                rental.LastUpdateById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+              //  rental.PenaltyPaid = model.PenaltyPaid;
+
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction(nameof(Details), new { id = rental.Id });
 
 
         }

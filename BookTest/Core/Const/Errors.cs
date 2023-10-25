@@ -28,7 +28,9 @@
         public  const  string InactiveSubscriber = "This subscriber is inactive.";
         public  const  string MaxCopiesReached = "This subscriber has reached the max number for rentals.";
         public  const  string CopyIsInRental = "This copy is already rentaled.";
-        public  const  string ExtendNotAllowForBlockList= "Not allow Extend For BlackList Subscriber.";
+        public  const  string ExtendNotAllowForBlockList= "Rental Not allow Extend For BlackList Subscriber.";
+        public  const  string ExtendNotAllowForInActive= "Rental Not allow Extend For  this Subscriber before renewal.";
+        public  const  string ExtendNotAllow= "Rental Not allow Extend ";
     
     }
 }
