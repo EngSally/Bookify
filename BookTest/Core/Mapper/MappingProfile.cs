@@ -63,6 +63,12 @@ namespace BookTest.Core.Mapper
             //Rental
             CreateMap<Rental, RentalViewModel>();
             CreateMap<RentalCopy, RentalCopyViewModel>();
+
+            //BookCopyRentalHistory
+            CreateMap<RentalCopy, BookCopyRentalHistoryViewModel>()
+                    .ForMember(des => des.SubscriberName, opt => opt.MapFrom(src => $"{src.Rental!.Subscriber!.FristName} {src.Rental!.Subscriber!.LastName}"))
+                    .ForMember(des => des.SubscriberNum, opt => opt.MapFrom(src => src.Rental!.Subscriber!.MobilNum));
+                   
         }
     }
 }

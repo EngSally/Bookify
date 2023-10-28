@@ -78,8 +78,12 @@ namespace BookTest.Controllers
         }
         public IActionResult RentalHistory(int id)
         {
-
-            return View();
+            var rentals=_context.RentalCopies
+                .Include(r=>r.Rental)
+                .ThenInclude(r=>r.Subscriber)
+                .Where(c=>c.BookCopyId==id).ToList();
+            var model=_mapper.Map<IEnumerable<BookCopyRentalHistoryViewModel>>(rentals);
+            return View(model);
         }
 
         [HttpPost]

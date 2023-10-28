@@ -88,7 +88,7 @@
     <None Include="Views\Rentals\_SearchBookCopy.cshtml" />
     <None Include="Views\Shared\Error.cshtml" />
     <None Include="Views\Shared\_Aside.cshtml" />
-    <None Include="Views\BookCopies\_BookCopyRow.cshtml" />
+    <None Include="Views\Shared\_BookCopyRow.cshtml" />
     <None Include="Views\Shared\_DatatablesCardHeader.cshtml" />
     <None Include="Views\Shared\_Header.cshtml" />
     <None Include="Views\Shared\_Layout.cshtml" />
