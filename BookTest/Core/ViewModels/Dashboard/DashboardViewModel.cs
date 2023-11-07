@@ -6,7 +6,7 @@ namespace BookTest.Core.ViewModels.Dashboard
     {
         public  int NumberOfCopies { get; set; }
         public int NumberOfSubscribers { set; get; }
-        public IList<BookDetailsViewModel> LastAddedBooks { get; set; } = new List<BookDetailsViewModel>();
-        public IList<BookDetailsViewModel> TopBooks { get; set; } = new List<BookDetailsViewModel>();
+        public IEnumerable<BookDetailsViewModel> LastAddedBooks { get; set; } = new List<BookDetailsViewModel>();
+        public IEnumerable<BookDetailsViewModel> TopBooks { get; set; } = new List<BookDetailsViewModel>();
     }
 }
