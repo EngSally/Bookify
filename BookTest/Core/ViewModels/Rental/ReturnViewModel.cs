@@ -9,7 +9,8 @@ namespace BookTest.Core.ViewModels.Rental
 
         public List<ReturnCopyViewModel> SelectedCopies { get; set; } = new();
         public  bool AllowExtend { get; set; }
-        public  int TotalDelayinDays {
+        public  int TotalDelayInDays
+		{
             get {
                 return Copies.Sum(c => c.DelayInDays);
                     } 

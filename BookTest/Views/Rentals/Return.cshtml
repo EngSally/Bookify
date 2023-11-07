@@ -116,11 +116,11 @@ else
                     </table>
                     <!--end::Table-->
                 </div>
-                @if (Model.TotalDelayinDays > 0)
+                @if (Model.TotalDelayInDays > 0)
                 {
                     <div class="ps-4">
                         <div class="form-check form-check-custom form-check-solid me-10">
-                            <input type="hidden" asp-for="TotalDelayinDays" />
+                            <input type="hidden" asp-for="TotalDelayInDays" />
                             <input class="form-check-input" type="checkbox" asp-for="PenaltyPaid" />
                             <label class="form-check-label" asp-for="PenaltyPaid"></label>
                         </div>

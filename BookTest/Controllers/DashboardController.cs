@@ -1,4 +1,5 @@
 ﻿using BookTest.Core.ViewModels.Books;
+using BookTest.Core.ViewModels.Charts;
 using BookTest.Core.ViewModels.Dashboard;
 using Microsoft.AspNetCore.Mvc;
 
@@ -77,16 +78,37 @@ namespace BookTest.Controllers
         [AjaxOnly]
         public IActionResult GetRentalsPerDay(DateTime? startDate, DateTime? endDate)
         {
-            
+            startDate = startDate ?? DateTime.Today.AddDays(-29);
+            endDate = endDate ?? DateTime.Today;
 
-            return Ok();
+            var data=_context.RentalCopies
+                                .Where(r=>r.RentalDate>=startDate &&r.RentalDate<endDate)
+                                .GroupBy(r=>new {Date= r.RentalDate.Date })
+                                .Select(  g=> new ChartItemViewModel()
+                                {
+                                    Label=g.Key.Date.ToString("d MMM"),
+                                    Value=g.Count().ToString()
+                                }).ToList();
+            //var vv=_context.RentalCopies.Where(r=>r.RentalDate>=startDate &&r.RentalDate<endDate).ToList();
+            return Ok(data);
         }
 
         [AjaxOnly]
         public IActionResult GetSubscribersPerCity()
         {
-            
-            return Ok();
+
+            var data = _context.Subscribers
+                .Include(s => s.Governorate)
+                .Where(s => !s.Deleted)
+                .GroupBy(s => new { GovernorateName = s.Governorate!.Name })
+                .Select(g => new ChartItemViewModel
+                {
+                    Label = g.Key.GovernorateName,
+                    Value = g.Count().ToString()
+                })
+                .ToList();
+
+            return Ok(data);
         }
     }
 
