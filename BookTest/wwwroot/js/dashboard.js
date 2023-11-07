@@ -3,7 +3,6 @@
 $(document).ready(function () {
     $('#DateRange').on('DOMSubtreeModified', function () {
         var selectedRange = $(this).html();
-
         if (selectedRange !== '') {
             var dateRange = selectedRange.split(' - ');
             chart.destroy();

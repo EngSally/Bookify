@@ -78,8 +78,8 @@ namespace BookTest.Controllers
         [AjaxOnly]
         public IActionResult GetRentalsPerDay(DateTime? startDate, DateTime? endDate)
         {
-            startDate = startDate ?? DateTime.Today.AddDays(-29);
-            endDate = endDate ?? DateTime.Today;
+            startDate ??= DateTime.Today.AddDays(-29);
+            endDate  ??= DateTime.Today;
 
             var data=_context.RentalCopies
                                 .Where(r=>r.RentalDate>=startDate &&r.RentalDate<endDate)
@@ -89,8 +89,21 @@ namespace BookTest.Controllers
                                     Label=g.Key.Date.ToString("d MMM"),
                                     Value=g.Count().ToString()
                                 }).ToList();
-            //var vv=_context.RentalCopies.Where(r=>r.RentalDate>=startDate &&r.RentalDate<endDate).ToList();
-            return Ok(data);
+            List<ChartItemViewModel> figures = new ();
+
+            for (var day = startDate; day <= endDate; day = day.Value.AddDays(1))
+            {
+                var dayData = data.SingleOrDefault(d => d.Label == day.Value.ToString("d MMM"));
+
+                ChartItemViewModel item = new()
+                {
+                    Label = day.Value.ToString("d MMM"),
+                    Value = dayData is null ? "0" : dayData.Value
+                };
+
+                figures.Add(item);
+            }
+            return Ok(figures);
         }
 
         [AjaxOnly]
