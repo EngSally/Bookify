@@ -5,7 +5,7 @@ using System.Diagnostics;
 
 namespace BookTest.Controllers
 {
-    [Authorize(Roles =   AppRole.Admin )]
+    
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -20,10 +20,7 @@ namespace BookTest.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
+       
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
