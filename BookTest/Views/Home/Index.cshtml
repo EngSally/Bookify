@@ -108,7 +108,34 @@
 				<!--begin::Scroll-->
 				<div class="hover-scroll-y me-n6 pe-6" id="kt_sidebar_body" data-kt-scroll="true" data-kt-scroll-height="auto" data-kt-scroll-dependencies="#kt_sidebar_header, #kt_sidebar_footer" data-kt-scroll-wrappers="#kt_page, #kt_sidebar, #kt_sidebar_body" data-kt-scroll-offset="0">
 					<div class="pb-20">
-					
+						@foreach (var book in Model)
+						{
+							<!--begin::Item-->
+							<a class="d-flex flex-stack" asp-controller="Search" asp-action="Details">@* asp-route-bKey="@book.Key">*@
+								<!--begin::Symbol-->
+								<div class="symbol symbol-60px me-4">
+									<img src="@book.ImageUrlThumbnail" class="" alt="@book.Title" />
+								</div>
+								<!--end::Symbol-->
+								<!--begin::Section-->
+								<div class="d-flex align-items-center flex-row-fluid flex-wrap">
+									<!--begin:Author-->
+									<div class="flex-grow-1 me-2">
+										<h5 class="text-white text-hover-primary fs-5 fw-bolder">@book.Title</h5>
+										<span class="text-gray-400 fw-semibold d-block fs-6">@book.Author</span>
+									</div>
+									<!--end:Author-->
+								</div>
+								<!--end::Section-->
+							</a>
+							<!--end::Item-->
+							@if (book != Model.Last())
+							{
+								<!--begin::Separator-->
+								<div class="separator separator-dashed my-5"></div>
+								<!--end::Separator-->
+							}
+						}
 					</div>
 				</div>
 				<!--end::Scroll-->
