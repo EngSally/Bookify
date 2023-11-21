@@ -110,8 +110,10 @@ namespace BookTest.Controllers
         [HttpGet]
         public IActionResult Edit(string id)
         {
-            int subscriberId=int.Parse(_dataProtector.Unprotect(id));
-            var subscriber=_dbContext.Subscribers.Find(subscriberId);
+            var subscriberId=_dataProtector.Unprotect(id);
+            if (subscriberId.Length == 0)
+                return NotFound();
+            var subscriber=_dbContext.Subscribers.Find(int.Parse(subscriberId));
             if (subscriber is null) return NotFound();
             SubscriberFormViewModel model= _mapper.Map<SubscriberFormViewModel>(subscriber);
 			model.Key= id;
@@ -124,13 +126,15 @@ namespace BookTest.Controllers
       
         public async Task<IActionResult> Edit(SubscriberFormViewModel model)
         {
-            int subscriberId=int.Parse(_dataProtector.Unprotect(model.Key));
-
-			var subscriber = _dbContext.Subscribers.Find(subscriberId);
+            var subscriberId=_dataProtector.Unprotect(model.Key!);
+            if (subscriberId.Length == 0)
+                return NotFound();
+          
+			var subscriber = _dbContext.Subscribers.Find(int.Parse(subscriberId));
             if (subscriber is null) return NotFound();
             if (model.Image != null)
             {
-                _imageService.Delete(subscriber.ImageUrl, subscriber.ImageUrlThumbnail);
+                _imageService.Delete(subscriber.ImageUrl!, subscriber.ImageUrlThumbnail);
                 string extension=Path.GetExtension(model.Image.FileName.ToLower());
                 string imageName=$"{Guid.NewGuid()}{extension}";
                 string imagPath="/images/subscribers";
@@ -163,10 +167,13 @@ namespace BookTest.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult RenewalSubscribtion(string key)
         {
-            int subscriberId=int.Parse(_dataProtector.Unprotect(key));
+            var subscriberId=_dataProtector.Unprotect(key);
+            if (subscriberId.Length == 0)
+                return NotFound();
+       
             var subscriber=_dbContext.Subscribers
                 .Include(s=>s.RenewalSubscribtions)
-                .FirstOrDefault(s=>s.Id==subscriberId);
+                .FirstOrDefault(s=>s.Id==int.Parse(subscriberId));
             if (subscriber is null) return NotFound();
             if (subscriber.IsBlackListed) return BadRequest();
             DateTime start;

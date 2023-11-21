@@ -21,9 +21,18 @@ namespace BookTest.Controllers
 		{
 			return View();
 		}
-		
+        public IActionResult Find(string query)
+        {
+            var books = _context.Books
+                .Include(b => b.Author)
+                .Where(b => !b.Deleted && (b.Title.Contains(query) || b.Author!.Name.Contains(query)))
+                .Select(b => new { b.Title, Author = b.Author!.Name, Key = _hashids.EncodeHex(b.Id.ToString()) })
+                .ToList();
 
-	public IActionResult Details( string bKey)
+            return Ok(books);
+        }
+
+        public IActionResult Details( string bKey)
 		{
             var bookId = _hashids.DecodeHex(bKey);
 
