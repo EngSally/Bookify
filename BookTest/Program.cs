@@ -15,6 +15,7 @@ using Hangfire;
 using Hangfire.Dashboard;
 using Microsoft.IdentityModel.Tokens;
 using BookTest.Tasks;
+using HashidsNet;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -31,6 +32,7 @@ builder.Services.AddIdentity<ApplicationUser,IdentityRole>(options =>
     .AddDefaultTokenProviders();
 builder.Services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
 builder.Services.AddHangfireServer();
+builder.Services.AddSingleton<IHashids>(_=>new Hashids());
 builder.Services.AddDataProtection().SetApplicationName(nameof(BookTest));
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 builder.Services.AddTransient<IImageService, ImageService>();

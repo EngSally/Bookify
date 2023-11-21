@@ -4,6 +4,7 @@ using BookTest.Seed;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
+using HashidsNet;
 
 namespace BookTest.Controllers
 {
@@ -13,13 +14,14 @@ namespace BookTest.Controllers
 		private readonly ApplicationDbContext _context;
 		private readonly IMapper _mapper;
 		private readonly ILogger<HomeController> _logger;
-	//	private readonly IHashids _hashids;
+		private readonly IHashids _hashids;
 
-		public HomeController(ApplicationDbContext context, IMapper mapper,  ILogger<HomeController> logger)
+		public HomeController(ApplicationDbContext context, IMapper mapper,  ILogger<HomeController> logger, IHashids hashids)
         {
             _context = context;
             _mapper = mapper;
             _logger = logger;
+            _hashids = hashids;
         }
 
         public IActionResult Index()
@@ -33,8 +35,8 @@ namespace BookTest.Controllers
 									.Take(10)
 									.ToList();
 			var viewModel=_mapper.Map<IEnumerable<BookDetailsViewModel>>(lastAddedBooks);
-            //foreach (var book in viewModel)
-            //    book.Key = _hashids.EncodeHex(book.Id.ToString());
+            foreach (var book in viewModel)
+                book.Key = _hashids.EncodeHex(book.Id.ToString());
             return View(viewModel);
         }
 

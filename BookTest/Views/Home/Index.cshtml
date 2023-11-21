@@ -111,7 +111,7 @@
 						@foreach (var book in Model)
 						{
 							<!--begin::Item-->
-							<a class="d-flex flex-stack" asp-controller="Search" asp-action="Details">@* asp-route-bKey="@book.Key">*@
+							<a class="d-flex flex-stack" asp-controller="Search" asp-action="Details"asp-route-bKey="@book.Key">
 								<!--begin::Symbol-->
 								<div class="symbol symbol-60px me-4">
 									<img src="@book.ImageUrlThumbnail" class="" alt="@book.Title" />
