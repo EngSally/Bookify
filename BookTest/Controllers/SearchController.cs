@@ -22,7 +22,7 @@ namespace BookTest.Controllers
 			return View();
 		}
         public IActionResult Find(string query)
-        {
+         {
             var books = _context.Books
                 .Include(b => b.Author)
                 .Where(b => !b.Deleted && (b.Title.Contains(query) || b.Author!.Name.Contains(query)))

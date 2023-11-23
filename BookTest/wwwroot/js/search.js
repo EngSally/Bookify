@@ -9,7 +9,7 @@
     });
 
     $('#Search').typeahead({
-        minLength: 4,
+        minLength: 3,
         highlight: true
     }, {
         name: 'book',
