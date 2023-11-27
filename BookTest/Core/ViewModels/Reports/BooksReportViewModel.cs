@@ -1,5 +1,4 @@
-﻿using BookTest.Core.Utilities;
-using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel;
 
 namespace BookTest.Core.ViewModels.Reports
