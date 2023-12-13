@@ -26,7 +26,9 @@ namespace BookTest.Controllers
 
         public IActionResult Index()
         {
-			if (User.Identity!.IsAuthenticated)
+           
+
+            if (User.Identity!.IsAuthenticated)
 				return RedirectToAction(nameof(Index), "Dashboard");
 			var lastAddedBooks = _context.Books
 									.Include(b => b.Author)
@@ -39,8 +41,8 @@ namespace BookTest.Controllers
                 book.Key = _hashids.EncodeHex(book.Id.ToString());
             return View(viewModel);
         }
+      
 
-       
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

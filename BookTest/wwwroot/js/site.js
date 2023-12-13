@@ -224,7 +224,7 @@ var KTDatatables = function () {
 
 $(document).ready(function () {
 
-    $('form').not('#signOutForm').on('submit', function () {
+    $('form').not('#signOutForm').not('.js-excluded-validation'). on('submit', function () {
 
         if ($('.js-tinymce').length > 0) {
             $('.js-tinymce').each(function () {
