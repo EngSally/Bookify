@@ -3,6 +3,8 @@ using BookTest.Core.ViewModels.Reports;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using OpenHtmlToPdf;
+using System.IO;
 
 namespace BookTest.Controllers
 {
@@ -10,10 +12,12 @@ namespace BookTest.Controllers
     {
        private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
-        public ReportsController(ApplicationDbContext context, IMapper mapper)
+        private readonly IWebHostEnvironment _webHost;
+        public ReportsController(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHost)
         {
             _context = context;
             _mapper = mapper;
+            _webHost = webHost;
         }
         public IActionResult Index()
         {
@@ -64,15 +68,20 @@ namespace BookTest.Controllers
          using  XLWorkbook workbook = new XLWorkbook();
             var sheet=workbook.AddWorksheet("Books");
              
-            sheet.Cell(1, 1).SetValue("Title");
-            sheet.Cell(1, 2).SetValue("Author");
-            sheet.Cell(1, 3).SetValue("Categories");
-            sheet.Cell(1, 4).SetValue("Publisher");
-            sheet.Cell(1, 5).SetValue("Publishing Date");
-            sheet.Cell(1, 6).SetValue("Hall");
-            sheet.Cell(1, 7).SetValue("Available for rental");
-            sheet.Cell(1, 8).SetValue("Status");
-            var header=sheet.Range(1,1,1,8);
+            //sheet.Cell(1, 1).SetValue("Title");
+            //sheet.Cell(1, 2).SetValue("Author");
+            //sheet.Cell(1, 3).SetValue("Categories");
+            //sheet.Cell(1, 4).SetValue("Publisher");
+            //sheet.Cell(1, 5).SetValue("Publishing Date");
+            //sheet.Cell(1, 6).SetValue("Hall");
+            //sheet.Cell(1, 7).SetValue("Available for rental");
+            //sheet.Cell(1, 8).SetValue("Status");
+            var cellHeader=new string []{ "Title", "Author", "Categories", "Publisher", "Publishing Date", "Hall", "Available for rental", "Status"};
+            for (int i = 0; i < cellHeader.Length; i++)
+            {
+                sheet.Cell(1, i + 1).SetValue(cellHeader[i]);
+            }
+            var header=sheet.Range(1,1,1,cellHeader.Length);
             header.Style.Fill.BackgroundColor = XLColor.Black;
             header.Style.Font.FontColor = XLColor.White;
             header.Style.Font.Bold = true;
@@ -102,5 +111,31 @@ namespace BookTest.Controllers
             return File(stream.ToArray(), "application/octet-stream", $"Books{DateTime.Today.Date}.xlsx");
         }
 
-    }
+        public async Task<IActionResult> ExportBooksToPDF(string authors, string categories)
+        {
+            var selectedAuthors=authors?.Split(',');
+            var selectedCategories=categories?.Split(',');
+
+            var books = _context.Books
+                        .Include(b => b.Author)
+                        .Include(b => b.Categories)
+                        .ThenInclude(c => c.Category)
+                        .Where(b => (string.IsNullOrEmpty(authors) || selectedAuthors.Contains(b.AuthorId.ToString()))
+                        && (string.IsNullOrEmpty(categories)|| b.Categories.Any(c => selectedCategories.Contains(c.CategoryId.ToString()))))
+                        .ToList();
+            var html= await System.IO.File.ReadAllTextAsync($"{_webHost.WebRootPath}/templates/report.html");
+            html=    html.Replace("[Title]", "Books");
+            var body="<table><thead><tr><th>Title</th><th>Author</th></tr></thead><tbody>";
+           foreach(var book in books)
+            {
+                body += $"<tr><td>{book.Title}</td><td>{book.Author!.Name}</td></tr>";
+            }
+            body += "</tbody></table>";
+            html=   html.Replace("[body]", body);
+            var pdf=Pdf.From(html).Content();
+
+            return File(pdf.ToArray(), "application/octet-stream", $"Books{DateTime.Today.Date}.pdf");
+        }
+
+        }
 }
