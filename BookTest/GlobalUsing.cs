@@ -4,6 +4,7 @@ global using BookTest.Core.Enums;
 global using BookTest.Core.Models;
 global using BookTest.Core.ViewModels;
 global using BookTest.Core.Utilities;
+global using BookTest.Services;
 global using BookTest.Data;
 global using BookTest.Filters;
 global using Microsoft.AspNetCore.Mvc;

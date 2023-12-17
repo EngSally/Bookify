@@ -36,6 +36,7 @@ builder.Services.AddSingleton<IHashids>(_=>new Hashids());
 builder.Services.AddDataProtection().SetApplicationName(nameof(BookTest));
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 builder.Services.AddTransient<IImageService, ImageService>();
+builder.Services.AddTransient<IViewToHTMLService, ViewToHTMLService>();
 builder.Services.AddTransient<IEmailSender, EmailSender>();
 builder.Services.AddTransient<IEmailBodyBuilder, EmailBodyBuilder>();
 builder.Services.AddControllersWithViews();

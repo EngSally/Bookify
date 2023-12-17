@@ -1,4 +1,5 @@
 ﻿using BookTest.Core.Models;
+using BookTest.Core.ViewModels.Books;
 using BookTest.Core.ViewModels.Reports;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
@@ -13,11 +14,13 @@ namespace BookTest.Controllers
        private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHost;
-        public ReportsController(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHost)
+        private readonly IViewToHTMLService _viewToHtml;
+        public ReportsController(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHost, IViewToHTMLService viewToHtml)
         {
             _context = context;
             _mapper = mapper;
             _webHost = webHost;
+            _viewToHtml = viewToHtml;
         }
         public IActionResult Index()
         {
@@ -123,15 +126,20 @@ namespace BookTest.Controllers
                         .Where(b => (string.IsNullOrEmpty(authors) || selectedAuthors.Contains(b.AuthorId.ToString()))
                         && (string.IsNullOrEmpty(categories)|| b.Categories.Any(c => selectedCategories.Contains(c.CategoryId.ToString()))))
                         .ToList();
-            var html= await System.IO.File.ReadAllTextAsync($"{_webHost.WebRootPath}/templates/report.html");
-            html=    html.Replace("[Title]", "Books");
-            var body="<table><thead><tr><th>Title</th><th>Author</th></tr></thead><tbody>";
-           foreach(var book in books)
-            {
-                body += $"<tr><td>{book.Title}</td><td>{book.Author!.Name}</td></tr>";
-            }
-            body += "</tbody></table>";
-            html=   html.Replace("[body]", body);
+            // var html= await System.IO.File.ReadAllTextAsync($"{_webHost.WebRootPath}/templates/report.html");
+            // html=    html.Replace("[Title]", "Books");
+            // var body="<table><thead><tr><th>Title</th><th>Author</th></tr></thead><tbody>";
+            //foreach(var book in books)
+            // {
+            //     body += $"<tr><td>{book.Title}</td><td>{book.Author!.Name}</td></tr>";
+            // }
+            // body += "</tbody></table>";
+            // html=   html.Replace("[body]", body);
+
+            var viewModel = _mapper.Map<IEnumerable<BookDetailsViewModel>>(books);
+
+            var templatePath = "~/Views/Reports/BooksViewReport.cshtml";
+            var html = await _viewToHtml.RenderViewToStringAsync(ControllerContext, templatePath, viewModel);
             var pdf=Pdf.From(html).Content();
 
             return File(pdf.ToArray(), "application/octet-stream", $"Books{DateTime.Today.Date}.pdf");
