@@ -47,6 +47,33 @@
       "files": [
         "handlebars.min.js"
       ]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "bootstrap-daterangepicker@3.0.5",
+      "destination": "wwwroot/bootstrap-daterangepicker/",
+      "files": [
+        "daterangepicker.min.js"
+      ]
+    },
+    {
+      "provider": "cdnjs",
+      "library": "ng-bs-daterangepicker@0.0.6",
+      "destination": "wwwroot/ng-bs-daterangepicker/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "ng-bs-daterangepicker@0.0.6",
+      "destination": "wwwroot/templates/ng-bs-daterangepicker/",
+      "files": [
+        "ng-bs-daterangepicker.min.js"
+      ]
     }
-  ]
+  ,
+{
+  "provider": "cdnjs",
+  "library": "ng-bs-daterangepicker@0.0.6",
+  "destination": "wwwroot/lib/ng-bs-daterangepicker/"
+}
+]
 }

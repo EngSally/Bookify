@@ -11,6 +11,8 @@
         public  const  string  AllowedImageSize="Only 2M size are allowed";
         public  const  string  DateNotAtFuture="Publishing Date Not Allowed Future Date";
         public  const  string  RangNotBetween="{0} Must be between {1} and {2} ";
+        public  const  string  InvalidStartDate=" Invalid Start Date";
+        public  const  string  InvalidEndDate=" Invalid End Date";
         public  const  string  InvalidUsername="Username only  contain letter or digit ";
         public  const  string  MaxMinLength="The {0} must be at least {2} and at max {1} characters long.";
         public  const  string  ConfirmPasswordNotMatch="The password and confirmation password do not match.";

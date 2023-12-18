@@ -1,11 +1,13 @@
 ﻿using BookTest.Core.Models;
 using BookTest.Core.ViewModels.Books;
 using BookTest.Core.ViewModels.Reports;
+using BookTest.Extensions;
 using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OpenHtmlToPdf;
 using System.IO;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace BookTest.Controllers
 {
@@ -26,6 +28,8 @@ namespace BookTest.Controllers
         {
             return View();
         }
+
+        #region BookReport
         public IActionResult Books(IList<int> selectedAuthors, IList<int> selectedCategories,
             int? pageNumber)
         {
@@ -65,8 +69,8 @@ namespace BookTest.Controllers
                         .Include(b => b.Author)
                         .Include(b => b.Categories)
                         .ThenInclude(c => c.Category)
-                        .Where(b => (string.IsNullOrEmpty(authors) || selectedAuthors.Contains(b.AuthorId.ToString()))
-                        && (string.IsNullOrEmpty(categories)|| b.Categories.Any(c => selectedCategories.Contains(c.CategoryId.ToString()))))
+                        .Where(b => (string.IsNullOrEmpty(authors) || selectedAuthors!.Contains(b.AuthorId.ToString()))
+                        && (string.IsNullOrEmpty(categories)|| b.Categories.Any(c => selectedCategories!.Contains(c.CategoryId.ToString()))))
                         .ToList();
          using  XLWorkbook workbook = new XLWorkbook();
             var sheet=workbook.AddWorksheet("Books");
@@ -80,14 +84,7 @@ namespace BookTest.Controllers
             //sheet.Cell(1, 7).SetValue("Available for rental");
             //sheet.Cell(1, 8).SetValue("Status");
             var cellHeader=new string []{ "Title", "Author", "Categories", "Publisher", "Publishing Date", "Hall", "Available for rental", "Status"};
-            for (int i = 0; i < cellHeader.Length; i++)
-            {
-                sheet.Cell(1, i + 1).SetValue(cellHeader[i]);
-            }
-            var header=sheet.Range(1,1,1,cellHeader.Length);
-            header.Style.Fill.BackgroundColor = XLColor.Black;
-            header.Style.Font.FontColor = XLColor.White;
-            header.Style.Font.Bold = true;
+            sheet.AddHeader(cellHeader);
 
             for(int i = 0;i < books.Count; i++) 
             {
@@ -100,16 +97,8 @@ namespace BookTest.Controllers
                 sheet.Cell(i+2, 7).SetValue(books[i].IsAvailableForRental ? "Yes" : "No");
                 sheet.Cell(i+2, 8).SetValue(books[i].Deleted ? "Deleted" : "Available");
             }
-            sheet.ColumnsUsed().AdjustToContents();
-            sheet.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-            sheet.CellsUsed().Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
-            sheet.Columns("A,C").Style.Fill.BackgroundColor = XLColor.RedRyb;
-
-            sheet.CellsUsed().Style.Border.OutsideBorderColor = XLColor.Red;
-
-
+            sheet.Formate();
             await   using  var stream=new MemoryStream();
-
             workbook.SaveAs(stream);
             return File(stream.ToArray(), "application/octet-stream", $"Books{DateTime.Today.Date}.xlsx");
         }
@@ -140,10 +129,97 @@ namespace BookTest.Controllers
 
             var templatePath = "~/Views/Reports/BooksViewReport.cshtml";
             var html = await _viewToHtml.RenderViewToStringAsync(ControllerContext, templatePath, viewModel);
-            var pdf=Pdf.From(html).Content();
+            var pdf = Pdf
+                .From(html)
+                .EncodedWith("Utf-8")
+                .OfSize(PaperSize.A4)
+                .WithMargins(1.Centimeters())
+                .Landscape()
+                .Content();
 
             return File(pdf.ToArray(), "application/octet-stream", $"Books{DateTime.Today.Date}.pdf");
         }
+        #endregion
 
+        #region   rental report
+
+        public IActionResult Rentals(string duration, int? pageNumber)
+        {
+            var viewModel = new RentalsReportViewModel { Duration = duration };
+
+            if (!string.IsNullOrEmpty(duration))
+            {
+                if (!DateTime.TryParse(duration.Split(" - ")[0], out DateTime from))
+                {
+                    ModelState.AddModelError("Duration", Errors.InvalidStartDate);
+                    return View(viewModel);
+                }
+
+                if (!DateTime.TryParse(duration.Split(" - ")[1], out DateTime to))
+                {
+                    ModelState.AddModelError("Duration", Errors.InvalidEndDate);
+                    return View(viewModel);
+                }
+                IQueryable<RentalCopy> rentals=
+                 _context.RentalCopies
+                 .Include(c => c.Rental)
+                 .ThenInclude(r => r.Subscriber)
+                 .Include(c => c.BookCopy)
+                 .ThenInclude(b => b.Book)
+                 .ThenInclude(b=>b.Author)
+                 .Where(c => (c.RentalDate >= from && c.RentalDate <= to))
+                 ;
+                if (pageNumber is not null)
+                    viewModel.Rentals = PaginatedList<RentalCopy>.Create(rentals, pageNumber ?? 0, (int)ReportsConfigurations.PageSize);
+            }
+            
+           
+
+            return View(viewModel);
         }
+
+
+        public async Task<IActionResult> ExportRentalsToExcel(string duration)
+        {
+                var from = DateTime.Parse(duration.Split(" - ")[0]);
+                var to = DateTime.Parse(duration.Split(" - ")[1]);
+                var rentals=
+                 _context.RentalCopies
+                 .Include(c => c.Rental)
+                 .ThenInclude(r => r.Subscriber)
+                 .Include(c => c.BookCopy)
+                 .ThenInclude(b => b.Book)
+                 .ThenInclude(b=>b.Author)
+                 .Where(c => (c.RentalDate >= from && c.RentalDate <= to)).ToList()
+                 ;
+                using  XLWorkbook workbook = new XLWorkbook();
+            var sheet=workbook.AddWorksheet("Rentals");
+
+            var cellHeader=new string []{ "Subscriber ID", "Subscriber Name", "Subscriber Phone", "Book Title", "Book Author", "Book Serial", "Rental Date", "End Date","Return Date","Extended On"};
+            sheet.AddHeader(cellHeader);
+
+            for (int i = 0; i < rentals.Count; i++)
+            {
+                sheet.Cell(i + 2, 1).SetValue(rentals[i].Rental!.Subscriber!.Id );
+                sheet.Cell(i + 2, 2).SetValue($"{rentals[i].Rental!.Subscriber!.FristName} {rentals[i].Rental!.Subscriber!.LastName}");
+                sheet.Cell(i + 2, 3).SetValue(rentals[i].Rental!.Subscriber!.MobilNum);
+                sheet.Cell(i + 2, 4).SetValue(rentals[i].BookCopy!.Book!.Title);
+                sheet.Cell(i + 2, 5).SetValue(rentals[i].BookCopy!.Book!.Author!.Name);
+                sheet.Cell(i + 2, 6).SetValue(rentals[i].BookCopy!.SerialNumber);
+                sheet.Cell(i + 2, 7).SetValue(rentals[i].RentalDate.ToString("d MMM, yyyy"));
+                sheet.Cell(i + 2, 8).SetValue(rentals[i].EndDate.ToString("d MMM, yyyy"));
+                sheet.Cell(i + 2, 8).SetValue(rentals[i].ReturnDate?.ToString("d MMM, yyyy"));
+                sheet.Cell(i + 2, 8).SetValue(rentals[i].ExtendedOn?.ToString("d MMM, yyyy"));
+            }
+            sheet.Formate();
+            await   using  var stream=new MemoryStream();
+            workbook.SaveAs(stream);
+            return File(stream.ToArray(), "application/octet-stream", $"Books{DateTime.Today.Date}.xlsx");
+        }
+
+        #endregion
+
+
+
+    }
 }
