@@ -172,8 +172,8 @@ namespace BookTest.Controllers
                 if (pageNumber is not null)
                     viewModel.Rentals = PaginatedList<RentalCopy>.Create(rentals, pageNumber ?? 0, (int)ReportsConfigurations.PageSize);
             }
-            
-           
+
+            ModelState.Clear();
 
             return View(viewModel);
         }
@@ -216,6 +216,124 @@ namespace BookTest.Controllers
             workbook.SaveAs(stream);
             return File(stream.ToArray(), "application/octet-stream", $"Books{DateTime.Today.Date}.xlsx");
         }
+
+
+
+        public async Task<IActionResult> ExportRentalsToPDF(string duration)
+        {
+            var from = DateTime.Parse(duration.Split(" - ")[0]);
+            var to = DateTime.Parse(duration.Split(" - ")[1]);
+            var rentals=
+                 _context.RentalCopies
+                 .Include(c => c.Rental)
+                 .ThenInclude(r => r.Subscriber)
+                 .Include(c => c.BookCopy)
+                 .ThenInclude(b => b.Book)
+                 .ThenInclude(b=>b.Author)
+                 .Where(c => (c.RentalDate >= from && c.RentalDate <= to)).ToList()  ;
+            var viewModel = _mapper.Map<IEnumerable<RentalCopy>>(rentals);
+
+            var templatePath = "~/Views/Reports/RentalsViewReport.cshtml";
+            var html = await _viewToHtml.RenderViewToStringAsync(ControllerContext, templatePath, viewModel);
+            var pdf = Pdf
+                .From(html)
+                .EncodedWith("Utf-8")
+                .OfSize(PaperSize.A4)
+                .WithMargins(1.Centimeters())
+                .Landscape()
+                .Content();
+
+            return File(pdf.ToArray(), "application/octet-stream", $"Rentals{DateTime.Today.Date}.pdf");
+        }
+
+        #endregion
+
+
+        #region DelayedRentals
+        public IActionResult DelayedRentals(int pageNumber=1)
+        {
+            var viewModel = new DelayedRentalsReportViewModel();
+
+            IQueryable<RentalCopy> rentals=
+                 _context.RentalCopies
+                 .Include(c => c.Rental)
+                 .ThenInclude(r => r.Subscriber)
+                 .Include(c => c.BookCopy)
+                 .ThenInclude(b => b.Book)
+                 .ThenInclude(b=>b.Author).Where(r=> !r.ReturnDate.HasValue &&r.EndDate<DateTime.Today);
+                  viewModel.Rentals = PaginatedList<RentalCopy>.Create(rentals, pageNumber , (int)ReportsConfigurations.PageSize);
+          
+            return View(viewModel);
+        }
+
+
+        //public async Task<IActionResult> ExportRentalsToExcel(string duration)
+        //{
+        //    var from = DateTime.Parse(duration.Split(" - ")[0]);
+        //    var to = DateTime.Parse(duration.Split(" - ")[1]);
+        //    var rentals=
+        //         _context.RentalCopies
+        //         .Include(c => c.Rental)
+        //         .ThenInclude(r => r.Subscriber)
+        //         .Include(c => c.BookCopy)
+        //         .ThenInclude(b => b.Book)
+        //         .ThenInclude(b=>b.Author)
+        //         .Where(c => (c.RentalDate >= from && c.RentalDate <= to)).ToList()
+        //     ;
+        //    using  XLWorkbook workbook = new XLWorkbook();
+        //    var sheet=workbook.AddWorksheet("Rentals");
+
+        //    var cellHeader=new string []{ "Subscriber ID", "Subscriber Name", "Subscriber Phone", "Book Title", "Book Author", "Book Serial", "Rental Date", "End Date","Return Date","Extended On"};
+        //    sheet.AddHeader(cellHeader);
+
+        //    for (int i = 0; i < rentals.Count; i++)
+        //    {
+        //        sheet.Cell(i + 2, 1).SetValue(rentals[i].Rental!.Subscriber!.Id);
+        //        sheet.Cell(i + 2, 2).SetValue($"{rentals[i].Rental!.Subscriber!.FristName} {rentals[i].Rental!.Subscriber!.LastName}");
+        //        sheet.Cell(i + 2, 3).SetValue(rentals[i].Rental!.Subscriber!.MobilNum);
+        //        sheet.Cell(i + 2, 4).SetValue(rentals[i].BookCopy!.Book!.Title);
+        //        sheet.Cell(i + 2, 5).SetValue(rentals[i].BookCopy!.Book!.Author!.Name);
+        //        sheet.Cell(i + 2, 6).SetValue(rentals[i].BookCopy!.SerialNumber);
+        //        sheet.Cell(i + 2, 7).SetValue(rentals[i].RentalDate.ToString("d MMM, yyyy"));
+        //        sheet.Cell(i + 2, 8).SetValue(rentals[i].EndDate.ToString("d MMM, yyyy"));
+        //        sheet.Cell(i + 2, 8).SetValue(rentals[i].ReturnDate?.ToString("d MMM, yyyy"));
+        //        sheet.Cell(i + 2, 8).SetValue(rentals[i].ExtendedOn?.ToString("d MMM, yyyy"));
+        //    }
+        //    sheet.Formate();
+        //    await   using  var stream=new MemoryStream();
+        //    workbook.SaveAs(stream);
+        //    return File(stream.ToArray(), "application/octet-stream", $"Books{DateTime.Today.Date}.xlsx");
+        //}
+
+
+
+        //public async Task<IActionResult> ExportRentalsToPDF(string duration)
+        //{
+        //    var from = DateTime.Parse(duration.Split(" - ")[0]);
+        //    var to = DateTime.Parse(duration.Split(" - ")[1]);
+        //    var rentals=
+        //         _context.RentalCopies
+        //         .Include(c => c.Rental)
+        //         .ThenInclude(r => r.Subscriber)
+        //         .Include(c => c.BookCopy)
+        //         .ThenInclude(b => b.Book)
+        //         .ThenInclude(b=>b.Author)
+        //         .Where(c => (c.RentalDate >= from && c.RentalDate <= to)).ToList()  ;
+        //    var viewModel = _mapper.Map<IEnumerable<RentalCopy>>(rentals);
+
+        //    var templatePath = "~/Views/Reports/RentalsViewReport.cshtml";
+        //    var html = await _viewToHtml.RenderViewToStringAsync(ControllerContext, templatePath, viewModel);
+        //    var pdf = Pdf
+        //        .From(html)
+        //        .EncodedWith("Utf-8")
+        //        .OfSize(PaperSize.A4)
+        //        .WithMargins(1.Centimeters())
+        //        .Landscape()
+        //        .Content();
+
+        //    return File(pdf.ToArray(), "application/octet-stream", $"Rentals{DateTime.Today.Date}.pdf");
+        //}
+
 
         #endregion
 
