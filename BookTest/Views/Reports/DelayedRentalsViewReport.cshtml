@@ -1,4 +1,4 @@
-﻿@model IEnumerable<RentalCopy>
+﻿@model IEnumerable<RentalCopyViewModel>
 
 @{
     Layout = "_ReportsLayout";
@@ -11,11 +11,11 @@
             <th>Subscriber Name</th>
             <th>Subscriber Phone</th>
             <th>Book Title</th>
-            <th>Book Author</th>
             <th>Book Serial</th>
             <th>Rental Date</th>
             <th>End Date</th>
             <th>Extended On</th>
+            <th>Delay in Days</th>
         </tr>
     </thead>
     <tbody>
@@ -23,14 +23,14 @@
         {
             <tr>
                 <td>@copy.Rental!.Subscriber!.Id</td>
-                <td>@($"{copy.Rental!.Subscriber!.FristName} {copy.Rental!.Subscriber!.LastName}")</td>
+                <td>@copy.Rental!.Subscriber.FullName</td>
                 <td>@copy.Rental!.Subscriber!.MobilNum</td>
-                <td>@copy.BookCopy!.Book!.Title</td>
-                <td>@copy.BookCopy!.Book!.Author!.Name</td>
+                <td>@copy.BookCopy!.BookTitle</td>
                 <td>@copy.BookCopy!.SerialNumber</td>
                 <td>@copy.RentalDate.ToString("d MMM, yyyy")</td>
                 <td>@copy.EndDate.ToString("d MMM, yyyy")</td>
                 <td>@copy.ExtendedOn?.ToString("d MMM, yyyy")</td>
+                <td>@copy.DelayInDays</td>
             </tr>
         }
     </tbody>

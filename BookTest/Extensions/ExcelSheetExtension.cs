@@ -23,5 +23,11 @@ namespace BookTest.Extensions
             sheet.CellsUsed().Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
             sheet.CellsUsed().Style.Border.OutsideBorderColor = XLColor.Red;
         }
+        public static void AddLocalImage(this IXLWorksheet sheet, string imagePath)
+        {
+            sheet.AddPicture(imagePath)
+                .MoveTo(sheet.Cell("A1"))
+                .Scale(.02);
+        }
     }
 }

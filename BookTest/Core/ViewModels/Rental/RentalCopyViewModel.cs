@@ -4,6 +4,8 @@ namespace BookTest.Core.ViewModels.Rental
 {
     public class RentalCopyViewModel
     {
+      
+        public RentalViewModel? Rental { get; set; }
         public BookCopyViewModel? BookCopy { get; set; }
         public DateTime RentalDate { set; get; } 
         public DateTime EndDate { set; get; } 
