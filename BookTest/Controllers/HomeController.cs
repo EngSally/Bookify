@@ -26,8 +26,8 @@ namespace BookTest.Controllers
 
         public IActionResult Index()
         {
-           
 
+            throw new Exception("dddddddddddddddd");
             if (User.Identity!.IsAuthenticated)
 				return RedirectToAction(nameof(Index), "Dashboard");
 			var lastAddedBooks = _context.Books
@@ -47,7 +47,7 @@ namespace BookTest.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new ErrorViewModel {ErrorCode= 404,ErrorDescription="Testttttttt" });
         }
     }
 }
