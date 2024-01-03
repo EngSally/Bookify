@@ -78,6 +78,7 @@ app.UseExceptionHandler("/Home/Error");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseCookiePolicy(new CookiePolicyOptions {Secure=CookieSecurePolicy.Always });
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHangfireDashboard("/HangFire", new DashboardOptions
