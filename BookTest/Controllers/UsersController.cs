@@ -65,7 +65,7 @@ namespace BookTest.Controllers
        
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public  async  Task<IActionResult>   Create(UserFormViewModel model)
         {
             if(!ModelState.IsValid) {
@@ -134,7 +134,7 @@ namespace BookTest.Controllers
 
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public  async Task <IActionResult> Edit(UserFormViewModel model )
         {
             if(!ModelState.IsValid)  return BadRequest(ModelState);
@@ -162,7 +162,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public async Task<IActionResult> ChangeStatue(string Id)
         {
             var user = await   _userManager.FindByIdAsync(Id); 
@@ -177,7 +177,7 @@ namespace BookTest.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public async Task<IActionResult> UnLockAccount(string Id)
         {
             var user = await   _userManager.FindByIdAsync(Id);
@@ -202,7 +202,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public async Task<IActionResult> RestPassword(RestPasswordViewModel model )
         {
             if(!ModelState.IsValid) return BadRequest(ModelState);  

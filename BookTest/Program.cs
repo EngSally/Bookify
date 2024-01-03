@@ -16,6 +16,8 @@ using Hangfire.Dashboard;
 using Microsoft.IdentityModel.Tokens;
 using BookTest.Tasks;
 using HashidsNet;
+using Serilog;
+using CloudinaryDotNet;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -51,7 +53,15 @@ Options.AddPolicy("AdminOnly", policy =>
     policy.RequireRole(AppRole.Admin);
 
 }));
+
+//Add Serilog
+Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
+builder.Host.UseSerilog();
 builder.Services.AddExpressiveAnnotations();
+builder.Services.AddMvc(option =>
+{
+    option.Filters.Add( new  AutoValidateAntiforgeryTokenAttribute());
+});
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -79,6 +89,7 @@ app.UseHangfireDashboard("/HangFire", new DashboardOptions
         new HangFireAuthorizationFilter("AdminOnly")
     }
 }) ;
+
 var scopeFactory=app.Services.GetRequiredService<IServiceScopeFactory>();
 using  var scope = scopeFactory.CreateScope();
 var roleManger=scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();

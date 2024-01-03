@@ -40,7 +40,7 @@ namespace BookTest.Controllers
 
       
             [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public IActionResult Create(CategoriesFormViewModel model)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -72,7 +72,7 @@ namespace BookTest.Controllers
      
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public IActionResult Edit(CategoriesFormViewModel model)
         {
             
@@ -92,7 +92,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public IActionResult ChangeStatue(int id)
         {
             var category = _context.Categories.Find(id);

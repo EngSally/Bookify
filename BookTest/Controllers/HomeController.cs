@@ -26,8 +26,6 @@ namespace BookTest.Controllers
 
         public IActionResult Index()
         {
-
-            throw new Exception("dddddddddddddddd");
             if (User.Identity!.IsAuthenticated)
 				return RedirectToAction(nameof(Index), "Dashboard");
 			var lastAddedBooks = _context.Books

@@ -51,7 +51,7 @@ namespace BookTest.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public IActionResult Create(RentalFormViewModel model)
         {
             if (!ModelState.IsValid)
@@ -120,7 +120,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public  IActionResult Edit( int id,RentalFormViewModel model)
         {
             if (!ModelState.IsValid) return View("Form", model);
@@ -190,7 +190,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public IActionResult Return (ReturnViewModel model)
         {
             var rental = _context.Rentals
@@ -268,7 +268,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public  IActionResult SearchBookCopy(SearchFormViewModel model)
         {
             if(!ModelState.IsValid) return BadRequest(); 
@@ -291,7 +291,7 @@ namespace BookTest.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public IActionResult CancelRental(int id)
         {
             var rental=_context.Rentals.Find(id);

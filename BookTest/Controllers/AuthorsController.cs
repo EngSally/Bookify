@@ -31,8 +31,8 @@ namespace BookTest.Controllers
             return PartialView("_FormAuthor");
         }
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Create(AuthorsFormViewModel model)
+		//                   added   at option.Filters.Add( new  AutoValidateAntiforgeryTokenAttribute());
+		public IActionResult Create(AuthorsFormViewModel model)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
@@ -58,7 +58,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+       
         public IActionResult Edit(AuthorsFormViewModel model)
         {
             if (!ModelState.IsValid) return BadRequest();
@@ -82,7 +82,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+       
         public IActionResult ChangeStatue(int id)
         {
             var author= _context.Authors.Find(id);

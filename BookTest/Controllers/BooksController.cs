@@ -61,7 +61,7 @@ namespace BookTest.Controllers
             return View(BookDetails);
         }
 
-        [HttpPost]
+        [HttpPost][IgnoreAntiforgeryToken]
         
         public  IActionResult GetBooks()
         {
@@ -100,7 +100,7 @@ namespace BookTest.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public   async Task<IActionResult> Create(int id,BooksFormViewModel model)
         {
             if (!ModelState.IsValid)
@@ -163,7 +163,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public async Task<IActionResult> Edit([FromForm] BooksFormViewModel FormViewModel)
         {
             if (!ModelState.IsValid) return View("Form", PopulateViewModel(FormViewModel));
@@ -247,7 +247,7 @@ namespace BookTest.Controllers
      
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public IActionResult ToggleStatus(int id)
         {
             var book = _context.Books.Find(id);

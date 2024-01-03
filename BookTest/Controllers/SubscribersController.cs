@@ -48,7 +48,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public async Task<IActionResult> Create(SubscriberFormViewModel model)
         {
             if (!ModelState.IsValid)
@@ -122,7 +122,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
       
         public async Task<IActionResult> Edit(SubscriberFormViewModel model)
         {
@@ -164,7 +164,7 @@ namespace BookTest.Controllers
 
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public IActionResult RenewalSubscribtion(string key)
         {
             var subscriberId=_dataProtector.Unprotect(key);
@@ -233,7 +233,7 @@ namespace BookTest.Controllers
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
+                         
         public  IActionResult Search(SearchFormViewModel model)
         {
 			var subscriber = _dbContext.Subscribers
