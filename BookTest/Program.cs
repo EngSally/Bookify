@@ -18,6 +18,7 @@ using BookTest.Tasks;
 using HashidsNet;
 using Serilog;
 using CloudinaryDotNet;
+using DocumentFormat.OpenXml.InkML;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -79,6 +80,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCookiePolicy(new CookiePolicyOptions {Secure=CookieSecurePolicy.Always });
+app.Use(async (context, next) => 
+{
+    context.Response.Headers.Add("X-Frame-Options", "Deny");
+    await next();
+});
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHangfireDashboard("/HangFire", new DashboardOptions
