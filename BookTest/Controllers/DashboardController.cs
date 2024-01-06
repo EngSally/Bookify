@@ -20,8 +20,9 @@ namespace BookTest.Controllers
 
 
         public IActionResult Index()
-        {
-            var numberOfCopies = _context.BooksCopies.Count(c => !c.Deleted);
+		{
+			throw new Exception("hhhhhhhhhhhhh");
+			var numberOfCopies = _context.BooksCopies.Count(c => !c.Deleted);
             numberOfCopies = numberOfCopies <= 10 ? numberOfCopies : numberOfCopies / 10 * 10;
 
             var numberOfsubscribers = _context.Subscribers.Count(c => !c.Deleted);

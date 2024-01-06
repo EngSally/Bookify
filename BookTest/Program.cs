@@ -19,6 +19,8 @@ using HashidsNet;
 using Serilog;
 using CloudinaryDotNet;
 using DocumentFormat.OpenXml.InkML;
+using Serilog.Context;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -111,7 +113,13 @@ HangfireTasks hangfireTasks= new HangfireTasks(dbContext, emailBodyBuilder,email
 
 RecurringJob.AddOrUpdate( () =>  hangfireTasks.PrepareExpirationAlert(), "0 14 * * *");
 RecurringJob.AddOrUpdate(() => hangfireTasks.PrepareRentalEnd(), "0 14 * * *");
+app.Use(async (context, next) =>
+{
+    LogContext.PushProperty("UserId", "dddddddddddd"); //context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+    LogContext.PushProperty("UserName", "eeeeeeeeeeee");// context.User.FindFirst(ClaimTypes.Name)?.Value);
 
+	await next();
+});
 
 app.MapControllerRoute(
     name: "default",
