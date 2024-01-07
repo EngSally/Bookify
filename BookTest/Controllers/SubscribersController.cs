@@ -72,7 +72,7 @@ namespace BookTest.Controllers
             }
             subscriber.ImageUrl = $"{imagPath}/{imageName}";
             subscriber.ImageUrlThumbnail = $"{imagPath}/thumb/{imageName}";
-            subscriber.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            subscriber.CreatedById = User.GetUserId();
             RenewalSubscribtion renewal=new()
             {
                  CreatedById=subscriber.CreatedById,
@@ -154,7 +154,7 @@ namespace BookTest.Controllers
                 model.ImageUrlThumbnail = subscriber.ImageUrlThumbnail;
             }
             subscriber = _mapper.Map(model, subscriber);
-            subscriber.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            subscriber.CreatedById = User.GetUserId();
             subscriber.LastUpdateOn = DateTime.Now;
 
             _dbContext.SaveChanges();
@@ -192,7 +192,7 @@ namespace BookTest.Controllers
             RenewalSubscribtion renewal=new()
             {
                 CreatedOn= DateTime.Now,
-                CreatedById=User.FindFirst(ClaimTypes.NameIdentifier)!.Value,
+                CreatedById=User.GetUserId() ,
                 StartDate= start,
                 EndDate= start.AddYears(1)
             };

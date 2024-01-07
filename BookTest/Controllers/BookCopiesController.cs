@@ -1,5 +1,6 @@
 ﻿
 using BookTest.Core.ViewModels.BookCopy;
+using System.Security.Claims;
 
 
 namespace BookTest.Controllers
@@ -31,16 +32,27 @@ namespace BookTest.Controllers
         
         public IActionResult Create(BookCopyFormViewModel model)
         {
-            if (!ModelState.IsValid) return BadRequest();
-            var book=_context.Books.Find(model.BookId);
-            if (book is null) return NotFound();
-            var bookCopy=_mapper.Map<BookCopy>(model);
-            bookCopy.IsAvailableForRental = book.IsAvailableForRental ? model.IsAvailableForRental : false;
-            _context.BooksCopies.Add(bookCopy);
-            _context.SaveChanges();
-            var bookCopyViewModel=_mapper.Map<BookCopyViewModel>(bookCopy);
+			if (!ModelState.IsValid)
+				return BadRequest();
 
-            return PartialView("_BookCopyRow", bookCopyViewModel);
+			var book = _context.Books.Find(model.BookId);
+
+			if (book is null)
+				return NotFound();
+
+            BookCopy copy = new()
+            {
+                EditionNumber = model.EditionNumber,
+                IsAvailableForRental = book.IsAvailableForRental && model.IsAvailableForRental,
+                CreatedById =User.GetUserId()
+            };
+
+			book.BookCopies.Add(copy);
+			_context.SaveChanges();
+
+			var viewModel = _mapper.Map<BookCopyViewModel>(copy);
+
+			return PartialView("_BookCopyRow", viewModel);
         }
 
 
@@ -67,8 +79,8 @@ namespace BookTest.Controllers
 
             bookCopy = _mapper.Map(model, bookCopy);
             bookCopy.IsAvailableForRental = bookCopy.Book!.IsAvailableForRental ? model.IsAvailableForRental : false;
-          
-            bookCopy.LastUpdateOn = DateTime.Now;
+            bookCopy.LastUpdateById= User.GetUserId();
+			bookCopy.LastUpdateOn = DateTime.Now;
             _context.SaveChanges();
             var bookCopyViewModel=_mapper.Map<BookCopyViewModel>(bookCopy);
 

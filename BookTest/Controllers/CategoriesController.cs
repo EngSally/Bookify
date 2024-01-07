@@ -22,10 +22,11 @@ namespace BookTest.Controllers
 
         public IActionResult Index()
         {
-           
+            
                 var categories=_context.Categories.AsNoTracking().ToList();
            
             var modelView=_mapper.Map< IEnumerable< CategoryViewModel>>(categories);
+         
             return View(modelView);
         }
 
@@ -45,7 +46,7 @@ namespace BookTest.Controllers
         {
             if (!ModelState.IsValid) return BadRequest();
             var category= _mapper.Map<Category>(model);
-            category.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            category.CreatedById = User.GetUserId();
             _context.Categories.Add(category);
             _context.SaveChanges();
             var categoryViewModel=_mapper.Map<CategoryViewModel>(category);
@@ -85,7 +86,7 @@ namespace BookTest.Controllers
             if (category is null) { return NotFound(); }
             category = _mapper.Map(model, category);
             category.LastUpdateOn = DateTime.Now;
-            category.LastUpdateById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            category.LastUpdateById= User.GetUserId();
             _context.SaveChanges();
             var viewModel=_mapper.Map<CategoryViewModel>(category);
             return PartialView("_PartialRowCategory", viewModel);
@@ -100,7 +101,7 @@ namespace BookTest.Controllers
             { return NotFound(); }
             category.Deleted = !category.Deleted;
             category.LastUpdateOn = DateTime.Now;
-            category.LastUpdateById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            category.LastUpdateById= User.GetUserId();
             _context.SaveChanges();
             return Ok(DateTime.Now.ToString());
 

@@ -78,7 +78,7 @@ namespace BookTest.Controllers
                 UserName = model.UserName,
                 Email = model.Email,
                 FullName = model.FullName,
-                CreatedById=User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+                CreatedById=User.GetUserId()
             };
          var result=   await _userManager.CreateAsync(user,model.Password);
             if(result.Succeeded)
@@ -145,7 +145,7 @@ namespace BookTest.Controllers
                 user.Email = model.Email;
                 user.FullName = model.FullName;
                 user.LastUpdateOn = DateTime.Now;
-                user.LastUpdateById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+                user.LastUpdateById = User.GetUserId();
                var  result= await _userManager.UpdateAsync(user);
             if (result.Succeeded)
             {
@@ -169,7 +169,7 @@ namespace BookTest.Controllers
             if(user is null) return NotFound();
             user.Deleted = !user.Deleted;
             user.LastUpdateOn = DateTime.Now;
-            user.LastUpdateById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            user.LastUpdateById = User.GetUserId();
            await  _userManager.UpdateAsync(user);
             return Ok(DateTime.Now.ToString());
 
@@ -214,7 +214,7 @@ namespace BookTest.Controllers
             if(result.Succeeded) 
             { 
                 user.LastUpdateOn= DateTime.Now;
-                user.LastUpdateById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+                user.LastUpdateById = User.GetUserId();
                 await _userManager.UpdateAsync(user);
                 var RowUserModel=_mapper.Map<UserViewModel>(user);
                 return PartialView("_PartialRowUser", RowUserModel);

@@ -75,7 +75,7 @@ namespace BookTest.Controllers
             Rental rental = new()
             {
                 RentalCopies = copies,
-                CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value
+                CreatedById =                       
             };
 
             subscriber.Rentals.Add(rental);
@@ -149,7 +149,7 @@ namespace BookTest.Controllers
             if (!string.IsNullOrEmpty(rentalsError))
                 return View("NotAllowedRental", rentalsError);
             rental.RentalCopies = copies;
-            rental.LastUpdateById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            rental.LastUpdateById = User.GetUserId();
             rental.LastUpdateOn = DateTime.Now;
 
             _context.SaveChanges();
@@ -256,7 +256,7 @@ namespace BookTest.Controllers
             if (isUpdated)
             {
                 rental.LastUpdateOn = DateTime.Now;
-                rental.LastUpdateById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+                rental.LastUpdateById = User.GetUserId();
                  rental.PenaltyPaid = model.PenaltyPaid;
 
                 _context.SaveChanges();
@@ -298,7 +298,7 @@ namespace BookTest.Controllers
             if(rental  is  null || rental.StartDate.Date!=DateTime.Today)
                 return NotFound();
             rental.Deleted = true;
-            rental.LastUpdateById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            rental.LastUpdateById = User.GetUserId();
             rental.LastUpdateOn = DateTime.Now;
             _context.SaveChanges();
             return Ok();

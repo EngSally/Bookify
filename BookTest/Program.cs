@@ -57,31 +57,49 @@ Options.AddPolicy("AdminOnly", policy =>
 
 }));
 
-//Add Serilog
-Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
-builder.Host.UseSerilog();
+
 builder.Services.AddExpressiveAnnotations();
 builder.Services.AddMvc(option =>
 {
     option.Filters.Add( new  AutoValidateAntiforgeryTokenAttribute());
 });
+Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
+builder.Host.UseSerilog();
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseMigrationsEndPoint();
+	app.UseMigrationsEndPoint();
 }
 else
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+	app.UseExceptionHandler("/Home/Error");
+	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+	app.UseHsts();
 }
+
 app.UseExceptionHandler("/Home/Error");
+
+//app.UseStatusCodePages(async statusCodeContext =>
+//{
+//    // using static System.Net.Mime.MediaTypeNames;
+//    statusCodeContext.HttpContext.Response.ContentType = System.Net.Mime.MediaTypeNames.Text.Plain;
+
+//    await statusCodeContext.HttpContext.Response.WriteAsync(
+//        $"Status Code Page: {statusCodeContext.HttpContext.Response.StatusCode}");
+//});
+
+//app.UseStatusCodePagesWithRedirects("/Home/Error/{0}");
+app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
 app.UseHttpsRedirection();
+
 app.UseStaticFiles();
+
 app.UseRouting();
+
 app.UseCookiePolicy(new CookiePolicyOptions {Secure=CookieSecurePolicy.Always });
+
+
 app.Use(async (context, next) => 
 {
     context.Response.Headers.Add("X-Frame-Options", "Deny");
@@ -98,7 +116,15 @@ app.UseHangfireDashboard("/HangFire", new DashboardOptions
         new HangFireAuthorizationFilter("AdminOnly")
     }
 }) ;
+//Add Serilog
+app.Use(async (context, next) =>
+{
+	LogContext.PushProperty("UserId", context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+	LogContext.PushProperty("UserName", context.User.FindFirst(ClaimTypes.Name)?.Value);
 
+	await next();
+});
+app.UseSerilogRequestLogging();
 var scopeFactory=app.Services.GetRequiredService<IServiceScopeFactory>();
 using  var scope = scopeFactory.CreateScope();
 var roleManger=scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
@@ -113,13 +139,7 @@ HangfireTasks hangfireTasks= new HangfireTasks(dbContext, emailBodyBuilder,email
 
 RecurringJob.AddOrUpdate( () =>  hangfireTasks.PrepareExpirationAlert(), "0 14 * * *");
 RecurringJob.AddOrUpdate(() => hangfireTasks.PrepareRentalEnd(), "0 14 * * *");
-app.Use(async (context, next) =>
-{
-    LogContext.PushProperty("UserId", "dddddddddddd"); //context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-    LogContext.PushProperty("UserName", "eeeeeeeeeeee");// context.User.FindFirst(ClaimTypes.Name)?.Value);
 
-	await next();
-});
 
 app.MapControllerRoute(
     name: "default",

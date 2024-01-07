@@ -21,7 +21,7 @@ namespace BookTest.Controllers
 
         public IActionResult Index()
 		{
-			throw new Exception("hhhhhhhhhhhhh");
+			
 			var numberOfCopies = _context.BooksCopies.Count(c => !c.Deleted);
             numberOfCopies = numberOfCopies <= 10 ? numberOfCopies : numberOfCopies / 10 * 10;
 

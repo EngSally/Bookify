@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 using HashidsNet;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace BookTest.Controllers
 {
@@ -40,13 +41,13 @@ namespace BookTest.Controllers
                 book.Key = _hashids.EncodeHex(book.Id.ToString());
             return View(viewModel);
         }
-      
 
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel {ErrorCode= 404,ErrorDescription="Testttttttt" });
-        }
-    }
+
+		[ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+		public IActionResult Error(int statusCode=500)
+		{
+			return View(new ErrorViewModel { ErrorCode = statusCode, ErrorDescription = ReasonPhrases.GetReasonPhrase(statusCode) });
+		}
+	}
 }

@@ -142,7 +142,7 @@ namespace BookTest.Controllers
             {
                 book.Categories.Add(new BookCategory { CategoryId = category });
             }
-            book.CreatedById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            book.CreatedById= User.GetUserId();
             _context.Books.Add(book);
           
             _context.SaveChanges();
@@ -214,7 +214,7 @@ namespace BookTest.Controllers
                 book.Categories.Add(new BookCategory { CategoryId = category });
             }
             book.LastUpdateOn =DateTime.Now;
-            book.LastUpdateById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            book.LastUpdateById= User.GetUserId();
             if(!FormViewModel.IsAvailableForRental)
             {
                 foreach(var cop in  book.BookCopies)
@@ -257,7 +257,7 @@ namespace BookTest.Controllers
 
             book.Deleted = !book.Deleted;
             book.LastUpdateOn = DateTime.Now;
-            book.LastUpdateById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            book.LastUpdateById= User.GetUserId();
             _context.SaveChanges();
 
             return Ok();

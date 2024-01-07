@@ -17,6 +17,7 @@ namespace BookTest.Controllers
         }
         public IActionResult Index()
         {
+          
             var authers=_context.Authors.AsNoTracking().ToList();
             var modelView=_mapper.Map<IEnumerable<AuthorViewModel>>(authers);
 
@@ -38,7 +39,7 @@ namespace BookTest.Controllers
                 return BadRequest();
 
             var author=_mapper.Map<Author>(model);
-            author.CreatedById = User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            author.CreatedById = User.GetUserId();
             _context.Authors.Add(author);
             _context.SaveChanges();
             var viewModel=_mapper.Map<AuthorViewModel>(author);
@@ -66,7 +67,7 @@ namespace BookTest.Controllers
             if (author is null) return NotFound();
             author = _mapper.Map(model, author);
             author.LastUpdateOn = DateTime.Now;
-            author.LastUpdateById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            author.LastUpdateById= User.GetUserId();
             _context.SaveChanges();
             var authorViewModel=_mapper.Map<AuthorViewModel>(author);
             return PartialView("_PartialRowAuthors", authorViewModel);
@@ -89,7 +90,7 @@ namespace BookTest.Controllers
             if (author is null) return NotFound();
             author.Deleted = !author.Deleted;
             author.LastUpdateOn = DateTime.Now;
-            author.LastUpdateById= User.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+            author.LastUpdateById= User.GetUserId();
             _context.SaveChanges();
             return Ok(author.LastUpdateOn.ToString());
         }
