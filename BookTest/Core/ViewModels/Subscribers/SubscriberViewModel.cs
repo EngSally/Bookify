@@ -4,12 +4,12 @@ namespace BookTest.Core.ViewModels.Subscribers
 {
 	public class SubscriberViewModel
 	{
-		public int Id { get; set; }	
+		public int Id { get; set; }
 		public string? Key { get; set; }
 
 		public string FullName { set; get; } = null!;
 
-		public string Email { get; set; }= null!;
+		public string Email { get; set; } = null!;
 		public int MobilNum { get; set; }
 
 		public DateTime DateOfBirth { get; set; } = DateTime.Now;
@@ -29,5 +29,5 @@ namespace BookTest.Core.ViewModels.Subscribers
 		public ICollection<RenewalSubscribtionViewModel> RenewalSubscribtions { get; set; } = new List<RenewalSubscribtionViewModel>();
 		public ICollection<RentalViewModel> Rentals { get; set; } = new List<RentalViewModel>();
 
-    }
+	}
 }

@@ -1,43 +1,35 @@
 using BookTest.Core.Mapper;
-using BookTest.Seed;
-using Microsoft.AspNetCore.Identity;
-using System.Reflection;
-using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
-using Microsoft.EntityFrameworkCore;
-using BookTest.Data;
-using Microsoft.Data.SqlClient;
 using BookTest.Helpers;
-using Microsoft.Extensions.Options;
-using BookTest.Services;
-using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.DataProtection;
+using BookTest.Seed;
+using BookTest.Tasks;
 using Hangfire;
 using Hangfire.Dashboard;
-using Microsoft.IdentityModel.Tokens;
-using BookTest.Tasks;
 using HashidsNet;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Serilog;
-using CloudinaryDotNet;
-using DocumentFormat.OpenXml.InkML;
 using Serilog.Context;
+using System.Reflection;
 using System.Security.Claims;
+using UoN.ExpressiveAnnotations.NetCore.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+	options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-builder.Services.AddIdentity<ApplicationUser,IdentityRole>(options =>
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = true;
+	options.SignIn.RequireConfirmedAccount = true;
 })
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultUI()
-    .AddDefaultTokenProviders();
+	.AddEntityFrameworkStores<ApplicationDbContext>()
+	.AddDefaultUI()
+	.AddDefaultTokenProviders();
 builder.Services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
 builder.Services.AddHangfireServer();
-builder.Services.AddSingleton<IHashids>(_=>new Hashids());
+builder.Services.AddSingleton<IHashids>(_ => new Hashids());
 builder.Services.AddDataProtection().SetApplicationName(nameof(BookTest));
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 builder.Services.AddTransient<IImageService, ImageService>();
@@ -49,11 +41,11 @@ builder.Services.Configure<CloudinarySetting>(builder.Configuration.GetSection("
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSetting"));
 builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
 builder.Services.Configure<AuthorizationOptions>
-    (Options =>
+	(Options =>
 Options.AddPolicy("AdminOnly", policy =>
 {
-    policy.RequireAuthenticatedUser();
-    policy.RequireRole(AppRole.Admin);
+	policy.RequireAuthenticatedUser();
+	policy.RequireRole(AppRole.Admin);
 
 }));
 
@@ -61,7 +53,7 @@ Options.AddPolicy("AdminOnly", policy =>
 builder.Services.AddExpressiveAnnotations();
 builder.Services.AddMvc(option =>
 {
-    option.Filters.Add( new  AutoValidateAntiforgeryTokenAttribute());
+	option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
 });
 Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
 builder.Host.UseSerilog();
@@ -97,25 +89,25 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseCookiePolicy(new CookiePolicyOptions {Secure=CookieSecurePolicy.Always });
+app.UseCookiePolicy(new CookiePolicyOptions { Secure = CookieSecurePolicy.Always });
 
 
-app.Use(async (context, next) => 
+app.Use(async (context, next) =>
 {
-    context.Response.Headers.Add("X-Frame-Options", "Deny");
-    await next();
+	context.Response.Headers.Add("X-Frame-Options", "Deny");
+	await next();
 });
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHangfireDashboard("/HangFire", new DashboardOptions
 {
-    DashboardTitle = "Bookify-Dashboard",
-    IsReadOnlyFunc = (DashboardContext context) => true,
-    Authorization = new IDashboardAuthorizationFilter[]
-    {
-        new HangFireAuthorizationFilter("AdminOnly")
-    }
-}) ;
+	DashboardTitle = "Bookify-Dashboard",
+	IsReadOnlyFunc = (DashboardContext context) => true,
+	Authorization = new IDashboardAuthorizationFilter[]
+	{
+		new HangFireAuthorizationFilter("AdminOnly")
+	}
+});
 //Add Serilog
 app.Use(async (context, next) =>
 {
@@ -137,13 +129,13 @@ var emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender>();
 var webHost = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
 HangfireTasks hangfireTasks= new HangfireTasks(dbContext, emailBodyBuilder,emailSender,webHost);
 
-RecurringJob.AddOrUpdate( () =>  hangfireTasks.PrepareExpirationAlert(), "0 14 * * *");
+RecurringJob.AddOrUpdate(() => hangfireTasks.PrepareExpirationAlert(), "0 14 * * *");
 RecurringJob.AddOrUpdate(() => hangfireTasks.PrepareRentalEnd(), "0 14 * * *");
 
 
 app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+	name: "default",
+	pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();

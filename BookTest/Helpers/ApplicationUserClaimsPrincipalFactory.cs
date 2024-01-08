@@ -10,10 +10,10 @@ namespace BookTest.Helpers
 		{
 		}
 
-		protected override async Task<ClaimsIdentity> GenerateClaimsAsync( ApplicationUser user)
+		protected override async Task<ClaimsIdentity> GenerateClaimsAsync(ApplicationUser user)
 		{
 			var allClaimsIdentity = await base.GenerateClaimsAsync(user);
-			allClaimsIdentity.AddClaim(new Claim ("FullName",user.FullName));
+			allClaimsIdentity.AddClaim(new Claim("FullName", user.FullName));
 			return allClaimsIdentity;
 		}
 	}

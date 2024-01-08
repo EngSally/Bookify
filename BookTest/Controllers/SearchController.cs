@@ -1,6 +1,5 @@
 ﻿using BookTest.Core.ViewModels.Books;
 using HashidsNet;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BookTest.Controllers
 {
@@ -10,50 +9,50 @@ namespace BookTest.Controllers
 		private readonly ApplicationDbContext _context;
 		private readonly IMapper _mapper;
 
-        public SearchController(IHashids hashids, ApplicationDbContext dbContext, IMapper mapper)
-        {
-            _hashids = hashids;
-            _context = dbContext;
-            _mapper = mapper;
-        }
+		public SearchController(IHashids hashids, ApplicationDbContext dbContext, IMapper mapper)
+		{
+			_hashids = hashids;
+			_context = dbContext;
+			_mapper = mapper;
+		}
 
-        public IActionResult Index()
+		public IActionResult Index()
 		{
 			return View();
 		}
-        public IActionResult Find(string query)
-         {
-            var books = _context.Books
-                .Include(b => b.Author)
-                .Where(b => !b.Deleted && (b.Title.Contains(query) || b.Author!.Name.Contains(query)))
-                .Select(b => new { b.Title, Author = b.Author!.Name, Key = _hashids.EncodeHex(b.Id.ToString()) })
-                .ToList();
-
-            return Ok(books);
-        }
-
-        public IActionResult Details( string bKey)
+		public IActionResult Find(string query)
 		{
-            var bookId = _hashids.DecodeHex(bKey);
+			var books = _context.Books
+				.Include(b => b.Author)
+				.Where(b => !b.Deleted && (b.Title.Contains(query) || b.Author!.Name.Contains(query)))
+				.Select(b => new { b.Title, Author = b.Author!.Name, Key = _hashids.EncodeHex(b.Id.ToString()) })
+				.ToList();
 
-            if (bookId.Length == 0)
-                return NotFound();
+			return Ok(books);
+		}
 
-            var book = _context.Books
-                .Include(b => b.Author)
-                .Include(b => b.BookCopies)
-                .Include(b => b.Categories)
-                .ThenInclude(c => c.Category)
-                .SingleOrDefault(b => b.Id == int.Parse(bookId) && !b.Deleted);
+		public IActionResult Details(string bKey)
+		{
+			var bookId = _hashids.DecodeHex(bKey);
 
-            if (book is null)
-                return NotFound();
+			if (bookId.Length == 0)
+				return NotFound();
 
-            var viewModel = _mapper.Map<BookDetailsViewModel>(book);
+			var book = _context.Books
+				.Include(b => b.Author)
+				.Include(b => b.BookCopies)
+				.Include(b => b.Categories)
+				.ThenInclude(c => c.Category)
+				.SingleOrDefault(b => b.Id == int.Parse(bookId) && !b.Deleted);
 
-            return View(viewModel);
+			if (book is null)
+				return NotFound();
 
-        }
+			var viewModel = _mapper.Map<BookDetailsViewModel>(book);
+
+			return View(viewModel);
+
+		}
 
 
 	}

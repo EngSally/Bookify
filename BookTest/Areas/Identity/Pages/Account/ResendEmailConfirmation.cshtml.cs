@@ -2,30 +2,22 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
-using BookTest.Core.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.AspNetCore.Hosting;
-using BookTest.Services;
+using System.Text;
+using System.Text.Encodings.Web;
 
 namespace BookTest.Areas.Identity.Pages.Account
 {
-    [AllowAnonymous]
-    public class ResendEmailConfirmationModel : PageModel
-    {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly IEmailSender _emailSender;
+	[AllowAnonymous]
+	public class ResendEmailConfirmationModel : PageModel
+	{
+		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly IEmailSender _emailSender;
 
-        private readonly IEmailBodyBuilder _emailBodyBuilder;
+		private readonly IEmailBodyBuilder _emailBodyBuilder;
 
 		public ResendEmailConfirmationModel(UserManager<ApplicationUser> userManager, IEmailSender emailSender, IEmailBodyBuilder emailBodyBuilder)
 		{
@@ -39,79 +31,79 @@ namespace BookTest.Areas.Identity.Pages.Account
 		///     directly from your code. This API may change or be removed in future releases.
 		/// </summary>
 		[BindProperty]
-        public InputModel Input { get; set; }
+		public InputModel Input { get; set; }
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
-        public class InputModel
-        {
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
-            //[EmailAddress]
-            public string Username { get; set; }
-        }
+		/// <summary>
+		///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+		///     directly from your code. This API may change or be removed in future releases.
+		/// </summary>
+		public class InputModel
+		{
+			/// <summary>
+			///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
+			///     directly from your code. This API may change or be removed in future releases.
+			/// </summary>
+			[Required]
+			//[EmailAddress]
+			public string Username { get; set; }
+		}
 
-        public void OnGet(string username)
-        {
-            Input = new()
-            {
-                Username = username,
-            };
-        }
+		public void OnGet(string username)
+		{
+			Input = new()
+			{
+				Username = username,
+			};
+		}
 
-        public async Task<IActionResult> OnPostAsync()
-        {
-            if (!ModelState.IsValid)
-            {
-                return Page();
-            }
+		public async Task<IActionResult> OnPostAsync()
+		{
+			if (!ModelState.IsValid)
+			{
+				return Page();
+			}
 
 			var userName = Input.Username.ToUpper();
 			var user = await _userManager.Users
 				.SingleOrDefaultAsync(u => (u.NormalizedUserName == userName || u.NormalizedEmail == userName) && !u.Deleted);
 
 			if (user == null)
-            {
-                ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
-                return Page();
-            }
+			{
+				ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+				return Page();
+			}
 
-            var userId = await _userManager.GetUserIdAsync(user);
-            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-            var callbackUrl = Url.Page(
-                "/Account/ConfirmEmail",
-                pageHandler: null,
-                values: new { userId = userId, code = code },
-            protocol: Request.Scheme);
-            var url=  Url.Action("Index","Home",null,Request.Scheme);
-            var fullpath=$"{url}assets/images/icon-positive.svg";
-           
-
+			var userId = await _userManager.GetUserIdAsync(user);
+			var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+			code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+			var callbackUrl = Url.Page(
+				"/Account/ConfirmEmail",
+				pageHandler: null,
+				values: new { userId = userId, code = code },
+			protocol: Request.Scheme);
+			var url=  Url.Action("Index","Home",null,Request.Scheme);
+			var fullpath=$"{url}assets/images/icon-positive.svg";
 
 
-            var placeholders = new Dictionary<string, string>()
-                {
-                    { "imageUrl", fullpath},
-                    { "header", $"Hey {user.FullName}," },
-                    { "body", "please confirm your email" },
-                    { "url", $"{HtmlEncoder.Default.Encode(callbackUrl!)}" },
-                    { "linkTitle", "Confirm Email" }
-                };
 
-            var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
 
-            await _emailSender.SendEmailAsync(
-                   user.Email,
-                   "Confirm your email", body);
+			var placeholders = new Dictionary<string, string>()
+				{
+					{ "imageUrl", fullpath},
+					{ "header", $"Hey {user.FullName}," },
+					{ "body", "please confirm your email" },
+					{ "url", $"{HtmlEncoder.Default.Encode(callbackUrl!)}" },
+					{ "linkTitle", "Confirm Email" }
+				};
 
-            ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
-            return Page();
-        }
-    }
+			var body = _emailBodyBuilder.GetEmailBody(EmailTemplates.Email, placeholders);
+
+			await _emailSender.SendEmailAsync(
+				   user.Email,
+				   "Confirm your email", body);
+
+			ModelState.AddModelError(string.Empty, "Verification email sent. Please check your email.");
+			return Page();
+		}
+	}
 }
