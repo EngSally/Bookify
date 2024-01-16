@@ -109,7 +109,12 @@ namespace BookTest.Controllers
 			return Json(allow);
 		}
 
+		public bool IsSameAfterReversals(int num)
+		{ if (num < 10) return true;
+			if (num % 10 == 0) return false;
+			return true;
 
+		}
 
 
 	}

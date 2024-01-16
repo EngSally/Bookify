@@ -40,6 +40,9 @@ builder.Services.AddControllersWithViews();
 builder.Services.Configure<CloudinarySetting>(builder.Configuration.GetSection("CloudinarySetting"));
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSetting"));
 builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
+//Add Serilog
+Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
+builder.Host.UseSerilog();
 builder.Services.Configure<AuthorizationOptions>
 	(Options =>
 Options.AddPolicy("AdminOnly", policy =>
@@ -55,8 +58,7 @@ builder.Services.AddMvc(option =>
 {
 	option.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
 });
-Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
-builder.Host.UseSerilog();
+
 var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
