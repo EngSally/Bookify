@@ -1,15 +1,15 @@
-﻿using BookTest.Core.ViewModels.Books;
+﻿using Bookify.Web.Core.ViewModels.Books;
 using HashidsNet;
 
-namespace BookTest.Controllers
+namespace Bookify.Web.Controllers
 {
 	public class SearchController : Controller
 	{
 		private readonly IHashids _hashids;
-		private readonly ApplicationDbContext _context;
+		private readonly IApplicationDbContext _context;
 		private readonly IMapper _mapper;
 
-		public SearchController(IHashids hashids, ApplicationDbContext dbContext, IMapper mapper)
+		public SearchController(IHashids hashids, IApplicationDbContext dbContext, IMapper mapper)
 		{
 			_hashids = hashids;
 			_context = dbContext;

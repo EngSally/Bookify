@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace BookTest.Services
+namespace Bookify.Web.Services
 {
 	public class ViewToHTMLService : IViewToHTMLService
 	{

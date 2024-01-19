@@ -1,6 +1,6 @@
-﻿using BookTest.Core.ViewModels.Rental;
+﻿using Bookify.Web.Core.ViewModels.Rental;
 
-namespace BookTest.Core.ViewModels.Subscribers
+namespace Bookify.Web.Core.ViewModels.Subscribers
 {
 	public class SubscriberViewModel
 	{

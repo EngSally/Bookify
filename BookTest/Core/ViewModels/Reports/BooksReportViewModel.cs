@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel;
 
-namespace BookTest.Core.ViewModels.Reports
+namespace Bookify.Web.Core.ViewModels.Reports
 {
 	public class BooksReportViewModel
 	{

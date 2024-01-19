@@ -1,4 +1,4 @@
-﻿namespace BookTest.Core.ViewModels.Charts
+﻿namespace Bookify.Web.Core.ViewModels.Charts
 {
 	public class ChartItemViewModel
 	{

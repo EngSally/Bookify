@@ -1,4 +1,4 @@
-﻿namespace BookTest.Core.ViewModels.Rental
+﻿namespace Bookify.Web.Core.ViewModels.Rental
 {
 	public class ReturnCopyViewModel
 	{

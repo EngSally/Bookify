@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using UoN.ExpressiveAnnotations.NetCore.Attributes;
 
-namespace BookTest.Core.ViewModels.Books
+namespace Bookify.Web.Core.ViewModels.Books
 {
 	public class BooksFormViewModel
 	{

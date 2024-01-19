@@ -1,4 +1,4 @@
-﻿namespace BookTest.Core.ViewModels.Reports
+﻿namespace Bookify.Web.Core.ViewModels.Reports
 {
 	public class PaginationViewModel
 	{

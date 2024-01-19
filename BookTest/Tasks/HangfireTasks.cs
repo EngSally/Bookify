@@ -1,16 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
 
-namespace BookTest.Tasks
+namespace Bookify.Web.Tasks
 {
 	public class HangfireTasks
 	{
-		private readonly ApplicationDbContext _dbContext;
+		private readonly	IApplicationDbContext _dbContext;
 		private readonly IEmailBodyBuilder _emailBodyBuilder;
 		private readonly IEmailSender _emailSender;
 		private readonly IWebHostEnvironment _webHostEnvironment;
 		// private readonly IWhatsAppClient _whatsAppClient;
 
-		public HangfireTasks(ApplicationDbContext dbContext, IEmailBodyBuilder emailBodyBuilder, IEmailSender emailSender, IWebHostEnvironment webHostEnvironment)
+		public HangfireTasks(IApplicationDbContext dbContext, IEmailBodyBuilder emailBodyBuilder, IEmailSender emailSender, IWebHostEnvironment webHostEnvironment)
 		{
 			_dbContext = dbContext;
 			_emailBodyBuilder = emailBodyBuilder;

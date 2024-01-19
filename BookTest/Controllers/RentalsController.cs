@@ -1,18 +1,18 @@
-﻿using BookTest.Core.ViewModels.BookCopy;
-using BookTest.Core.ViewModels.Rental;
-using BookTest.Core.ViewModels.Subscribers;
+﻿using Bookify.Web.Core.ViewModels.BookCopy;
+using Bookify.Web.Core.ViewModels.Rental;
+using Bookify.Web.Core.ViewModels.Subscribers;
 using Microsoft.AspNetCore.DataProtection;
 
-namespace BookTest.Controllers
+namespace Bookify.Web.Controllers
 {
 	[Authorize(Roles = AppRole.Reception)]
 	public class RentalsController : Controller
 	{
-		private readonly  ApplicationDbContext _context;
+		private readonly  IApplicationDbContext _context;
 		private readonly IDataProtector _dataProtector;
 		private readonly IMapper _mapper;
 
-		public RentalsController(ApplicationDbContext context, IDataProtectionProvider dataProtector, IMapper mapper)
+		public RentalsController(IApplicationDbContext  context, IDataProtectionProvider dataProtector, IMapper mapper)
 		{
 			_context = context;
 			_dataProtector = dataProtector.CreateProtector("MySecureKey");

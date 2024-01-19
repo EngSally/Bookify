@@ -1,7 +1,7 @@
 ﻿using Hangfire.Annotations;
 using Hangfire.Dashboard;
 
-namespace BookTest.Filters
+namespace Bookify.Web.Filters
 {
 	public class HangFireAuthorizationFilter : IDashboardAuthorizationFilter
 	{

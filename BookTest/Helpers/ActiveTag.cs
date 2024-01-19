@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 
-namespace BookTest.Helpers
+namespace Bookify.Web.Helpers
 {
 	[HtmlTargetElement("a", Attributes = "active-when")]
 	public class ActiveTag : TagHelper

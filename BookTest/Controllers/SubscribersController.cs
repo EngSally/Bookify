@@ -1,22 +1,22 @@
-﻿using BookTest.Core.ViewModels.Subscribers;
+﻿using Bookify.Web.Core.ViewModels.Subscribers;
 using Hangfire;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace BookTest.Controllers
+namespace Bookify.Web.Controllers
 {
 	[Authorize(Roles = AppRole.Reception)]
 	public class SubscribersController : Controller
 	{
-		private readonly ApplicationDbContext _dbContext;
+		private readonly IApplicationDbContext _dbContext;
 		private readonly IDataProtector _dataProtector;
 		private readonly IImageService _imageService;
 		private readonly IEmailBodyBuilder _emailBodyBuilder;
 		private readonly IEmailSender _emailSender;
 		private readonly IMapper _mapper;
 
-		public SubscribersController(ApplicationDbContext dbContext, IDataProtectionProvider dataProtector, IImageService imageService, IMapper mapper, IEmailSender emailSender, IEmailBodyBuilder emailBodyBuilder)
+		public SubscribersController(IApplicationDbContext dbContext, IDataProtectionProvider dataProtector, IImageService imageService, IMapper mapper, IEmailSender emailSender, IEmailBodyBuilder emailBodyBuilder)
 		{
 			_dbContext = dbContext;
 			_dataProtector = dataProtector.CreateProtector("MySecureKey");

@@ -1,4 +1,4 @@
-﻿namespace BookTest.Filters
+﻿namespace Bookify.Web.Filters
 {
 	public class GreaterThanAttribute : ValidationAttribute
 	{

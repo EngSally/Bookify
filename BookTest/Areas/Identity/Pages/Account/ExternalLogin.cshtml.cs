@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 
-namespace BookTest.Areas.Identity.Pages.Account
+namespace Bookify.Web.Areas.Identity.Pages.Account
 {
 	[AllowAnonymous]
 	public class ExternalLoginModel : PageModel

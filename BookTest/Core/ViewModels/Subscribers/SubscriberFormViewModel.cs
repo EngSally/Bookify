@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 using UoN.ExpressiveAnnotations.NetCore.Attributes;
 
-namespace BookTest.Core.ViewModels.Subscribers
+namespace Bookify.Web.Core.ViewModels.Subscribers
 {
 	public class SubscriberFormViewModel
 	{

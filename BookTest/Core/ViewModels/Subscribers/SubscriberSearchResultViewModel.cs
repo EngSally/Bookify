@@ -1,4 +1,4 @@
-﻿namespace BookTest.Core.ViewModels.Subscribers
+﻿namespace Bookify.Web.Core.ViewModels.Subscribers
 {
 	public class SubscriberSearchResultViewModel
 	{

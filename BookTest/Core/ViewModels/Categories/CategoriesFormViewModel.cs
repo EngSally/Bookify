@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 
-namespace BookTest.Core.ViewModels.Categories
+namespace Bookify.Web.Core.ViewModels.Categories
 {
 	public class CategoriesFormViewModel
 	{

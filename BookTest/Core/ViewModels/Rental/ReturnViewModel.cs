@@ -1,6 +1,6 @@
 ﻿using UoN.ExpressiveAnnotations.NetCore.Attributes;
 
-namespace BookTest.Core.ViewModels.Rental
+namespace Bookify.Web.Core.ViewModels.Rental
 {
 	public class ReturnViewModel
 	{

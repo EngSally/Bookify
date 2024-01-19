@@ -1,13 +1,13 @@
-﻿using BookTest.Core.ViewModels.Authors;
-using BookTest.Core.ViewModels.BookCopy;
-using BookTest.Core.ViewModels.Books;
-using BookTest.Core.ViewModels.Categories;
-using BookTest.Core.ViewModels.Rental;
-using BookTest.Core.ViewModels.Subscribers;
-using BookTest.Core.ViewModels.Users;
+﻿using Bookify.Web.Core.ViewModels.Authors;
+using Bookify.Web.Core.ViewModels.BookCopy;
+using Bookify.Web.Core.ViewModels.Books;
+using Bookify.Web.Core.ViewModels.Categories;
+using Bookify.Web.Core.ViewModels.Rental;
+using Bookify.Web.Core.ViewModels.Subscribers;
+using Bookify.Web.Core.ViewModels.Users;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace BookTest.Core.Mapper
+namespace Bookify.Web.Core.Mapper
 {
 	public class MappingProfile : Profile
 	{

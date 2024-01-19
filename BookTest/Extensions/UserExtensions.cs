@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace BookTest.Extensions
+namespace Bookify.Web.Extensions
 {
 	public static class UserExtensions
 	{

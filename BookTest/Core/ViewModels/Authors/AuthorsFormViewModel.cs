@@ -1,4 +1,4 @@
-﻿namespace BookTest.Core.ViewModels.Authors
+﻿namespace Bookify.Web.Core.ViewModels.Authors
 {
 
 	public class AuthorsFormViewModel

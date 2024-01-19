@@ -1,4 +1,4 @@
-﻿namespace BookTest.Core.ViewModels.BookCopy
+﻿namespace Bookify.Web.Core.ViewModels.BookCopy
 {
 	public class BookCopyViewModel
 	{

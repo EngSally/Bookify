@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace BookTest.Data.Migrations
+namespace Bookify.Web.Data.Migrations
 {
 	/// <inheritdoc />
 	public partial class addSubscriber_Areas_Governorates : Migration

@@ -1,19 +1,19 @@
-﻿using BookTest.Core.ViewModels.Books;
-using BookTest.Core.ViewModels.Rental;
-using BookTest.Core.ViewModels.Reports;
+﻿using Bookify.Web.Core.ViewModels.Books;
+using Bookify.Web.Core.ViewModels.Rental;
+using Bookify.Web.Core.ViewModels.Reports;
 using ClosedXML.Excel;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using OpenHtmlToPdf;
 
-namespace BookTest.Controllers
+namespace Bookify.Web.Controllers
 {
 	public class ReportsController : Controller
 	{
-		private readonly ApplicationDbContext _context;
+		private readonly IApplicationDbContext _context;
 		private readonly IMapper _mapper;
 		private readonly IWebHostEnvironment _webHost;
 		private readonly IViewToHTMLService _viewToHtml;
-		public ReportsController(ApplicationDbContext context, IMapper mapper, IWebHostEnvironment webHost, IViewToHTMLService viewToHtml)
+		public ReportsController(IApplicationDbContext  context, IMapper mapper, IWebHostEnvironment webHost, IViewToHTMLService viewToHtml)
 		{
 			_context = context;
 			_mapper = mapper;

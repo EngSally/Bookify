@@ -1,13 +1,13 @@
-﻿using BookTest.Core.ViewModels.Authors;
+﻿using Bookify.Web.Core.ViewModels.Authors;
 
-namespace BookTest.Controllers
+namespace Bookify.Web.Controllers
 {
 	[Authorize(Roles = AppRole.Archive)]
 	public class AuthorsController : Controller
 	{
-		private readonly ApplicationDbContext _context;
+		private readonly IApplicationDbContext _context;
 		private readonly IMapper _mapper;
-		public AuthorsController(ApplicationDbContext context, IMapper mapper)
+		public AuthorsController(IApplicationDbContext  context, IMapper mapper)
 		{
 
 			_context = context;

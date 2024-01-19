@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace BookTest.Areas.Identity.Pages.Account
+namespace Bookify.Web.Areas.Identity.Pages.Account
 {
 	public class LoginModel : PageModel
 	{

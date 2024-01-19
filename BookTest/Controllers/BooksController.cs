@@ -1,19 +1,19 @@
 ﻿
-using BookTest.Core.ViewModels.Books;
+using Bookify.Web.Core.ViewModels.Books;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
 using System.Data;
 using System.Linq.Dynamic.Core;
 
-namespace BookTest.Controllers
+namespace Bookify.Web.Controllers
 {
 	[Authorize(Roles = AppRole.Archive)]
 	public class BooksController : Controller
 	{
 		private readonly IWebHostEnvironment _webHostEnvironment;
 		private readonly Cloudinary _cloudinary;
-		private readonly ApplicationDbContext _context;
+		private readonly IApplicationDbContext _context;
 		private readonly IMapper _mapper;
 		private readonly IImageService _imageService;
 
@@ -21,7 +21,7 @@ namespace BookTest.Controllers
 
 		private readonly List<string> _allowedImageExtension=new(){ ".jpg",".jpeg",".png",".ico"};
 		private readonly int _allowedSize=3145728;
-		public BooksController(ApplicationDbContext context, IMapper mapper
+		public BooksController(IApplicationDbContext  context, IMapper mapper
 			, IWebHostEnvironment webHostEnvironment, IOptions<CloudinarySetting> cloudinarySetting, IImageService imageService)
 		{
 			_context = context;

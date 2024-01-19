@@ -1,6 +1,6 @@
-﻿using BookTest.Core.ViewModels.BookCopy;
+﻿using Bookify.Web.Core.ViewModels.BookCopy;
 
-namespace BookTest.Core.ViewModels.Books
+namespace Bookify.Web.Core.ViewModels.Books
 {
 	public class BookDetailsViewModel
 	{

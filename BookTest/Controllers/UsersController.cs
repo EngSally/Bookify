@@ -1,4 +1,4 @@
-﻿using BookTest.Core.ViewModels.Users;
+﻿using Bookify.Web.Core.ViewModels.Users;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.WebUtilities;
 using System.Text;
 using System.Text.Encodings.Web;
 
-namespace BookTest.Controllers
+namespace Bookify.Web.Controllers
 {
 	[Authorize(Roles = AppRole.Admin)]
 	public class UsersController : Controller

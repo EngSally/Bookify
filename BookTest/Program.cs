@@ -1,7 +1,8 @@
-using BookTest.Core.Mapper;
-using BookTest.Helpers;
-using BookTest.Seed;
-using BookTest.Tasks;
+using Bookify.Web;
+using Bookify.Web.Core.Mapper;
+using Bookify.Web.Helpers;
+using Bookify.Web.Seed;
+using Bookify.Web.Tasks;
 using Hangfire;
 using Hangfire.Dashboard;
 using HashidsNet;
@@ -30,7 +31,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
 builder.Services.AddHangfireServer();
 builder.Services.AddSingleton<IHashids>(_ => new Hashids());
-builder.Services.AddDataProtection().SetApplicationName(nameof(BookTest));
+builder.Services.AddDataProtection().SetApplicationName(nameof(Bookify.Web));
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 builder.Services.AddTransient<IImageService, ImageService>();
 builder.Services.AddTransient<IViewToHTMLService, ViewToHTMLService>();
@@ -125,7 +126,7 @@ var roleManger=scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole
 var userManger=scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
 await DefaultRoles.SeedRoles(roleManger);
 await DefaultUser.SeedAdmin(userManger);
-var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+var dbContext = scope.ServiceProvider.GetRequiredService<IApplicationDbContext>();
 var emailBodyBuilder = scope.ServiceProvider.GetRequiredService<IEmailBodyBuilder>();
 var emailSender = scope.ServiceProvider.GetRequiredService<IEmailSender>();
 var webHost = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();

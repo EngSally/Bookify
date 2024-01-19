@@ -1,12 +1,12 @@
 ﻿using System.ComponentModel;
 
-namespace BookTest.Core.ViewModels.Reports
+namespace Bookify.Web.Core.ViewModels.Reports
 {
 	public class RentalsReportViewModel
 	{
 		[DisplayName("Duration")]
 		[Required(ErrorMessage = Errors.Required)]
 		public string Duration { get; set; } = null!;
-		public PaginatedList<Models.RentalCopy> Rentals { get; set; }
+		public PaginatedList<Bookify.Domain.Entities.RentalCopy> Rentals { get; set; }
 	}
 }

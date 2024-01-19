@@ -1,6 +1,6 @@
-﻿using BookTest.Core.ViewModels.Books;
+﻿using Bookify.Web.Core.ViewModels.Books;
 
-namespace BookTest.Core.ViewModels.Dashboard
+namespace Bookify.Web.Core.ViewModels.Dashboard
 {
 	public class DashboardViewModel
 	{

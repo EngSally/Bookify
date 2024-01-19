@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace BookTest.Seed
+namespace Bookify.Web.Seed
 {
 	public static class DefaultUser
 	{

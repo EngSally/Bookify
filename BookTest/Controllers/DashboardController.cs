@@ -1,17 +1,17 @@
-﻿using BookTest.Core.ViewModels.Books;
-using BookTest.Core.ViewModels.Charts;
-using BookTest.Core.ViewModels.Dashboard;
+﻿using Bookify.Web.Core.ViewModels.Books;
+using Bookify.Web.Core.ViewModels.Charts;
+using Bookify.Web.Core.ViewModels.Dashboard;
 
-namespace BookTest.Controllers
+namespace Bookify.Web.Controllers
 {
 	[Authorize]
 	public class DashboardController : Controller
 	{
 
-		private readonly ApplicationDbContext _context;
+		private readonly IApplicationDbContext _context;
 		private readonly IMapper _mapper;
 
-		public DashboardController(ApplicationDbContext context, IMapper mapper)
+		public DashboardController(IApplicationDbContext  context, IMapper mapper)
 		{
 			_context = context;
 			_mapper = mapper;

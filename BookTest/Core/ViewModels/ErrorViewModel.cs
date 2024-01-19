@@ -1,4 +1,4 @@
-namespace BookTest.Core.ViewModels
+namespace Bookify.Web.Core.ViewModels
 {
 	public class ErrorViewModel
 	{

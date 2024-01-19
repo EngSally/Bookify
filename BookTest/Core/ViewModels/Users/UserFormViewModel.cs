@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using UoN.ExpressiveAnnotations.NetCore.Attributes;
 
-namespace BookTest.Core.ViewModels.Users
+namespace Bookify.Web.Core.ViewModels.Users
 {
 	public class UserFormViewModel
 	{

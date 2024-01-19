@@ -1,19 +1,19 @@
 ﻿
-using BookTest.Core.ViewModels.Books;
+using Bookify.Web.Core.ViewModels.Books;
 using HashidsNet;
 using Microsoft.AspNetCore.WebUtilities;
 
-namespace BookTest.Controllers
+namespace Bookify.Web.Controllers
 {
 
 	public class HomeController : Controller
 	{
-		private readonly ApplicationDbContext _context;
+		private readonly IApplicationDbContext _context;
 		private readonly IMapper _mapper;
 		private readonly ILogger<HomeController> _logger;
 		private readonly IHashids _hashids;
 
-		public HomeController(ApplicationDbContext context, IMapper mapper, ILogger<HomeController> logger, IHashids hashids)
+		public HomeController(IApplicationDbContext  context, IMapper mapper, ILogger<HomeController> logger, IHashids hashids)
 		{
 			_context = context;
 			_mapper = mapper;
