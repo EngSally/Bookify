@@ -7,5 +7,7 @@ public class Governorate : BaseEntity
 	[MaxLength(100)]
 	public string Name { get; set; } = null!;
 	public ICollection<Area> Areas { get; set; } = new List<Area>();
-	
+
+  
+
 }

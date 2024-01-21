@@ -1,4 +1,7 @@
 ﻿
+using Bookify.Infrastructure.Persistence.EntityConfigrations;
+using System.Reflection;
+
 namespace Bookify.Infrastructure.Persistence
 {
 	public class ApplicationDbContext : IdentityDbContext<ApplicationUser> , IApplicationDbContext
@@ -13,11 +16,10 @@ namespace Bookify.Infrastructure.Persistence
 			//sequance
 			builder.HasSequence<int>("SerialNumberSequance", "Shared")
 				.StartsAt(10000);
-			builder.Entity<BookCopy>()
-				.Property(e => e.SerialNumber)
-				.HasDefaultValueSql("Next  Value For Shared.SerialNumberSequance");
+			builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+			
 
-			builder.Entity<BookCategory>().HasKey(k => new { k.CategoryId, k.BookId });
+			
 			builder.Entity<RentalCopy>().HasKey(k => new { k.RentalId, k.BookCopyId });
 			builder.Entity<Category>().Property(e => e.CreatedOn).HasDefaultValueSql("GETDATE()");
 			builder.Entity<Rental>().HasQueryFilter(r => !r.Deleted);

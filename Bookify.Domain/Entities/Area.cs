@@ -1,14 +1,9 @@
 ﻿
-
-namespace Bookify.Domain.Entities
+namespace Bookify.Domain.Entities;
+public class Area : BaseEntity
 {
-	[Index(nameof(Name), nameof(GovernorateId), IsUnique = true)]
-	public class Area : BaseEntity
-	{
-		public int Id { get; set; }
-		[MaxLength(100)]
-		public string Name { get; set; } = null!;
-		public int GovernorateId { get; set; }
-		public Governorate? Governorate { get; set; }
-	}
+	public int Id { get; set; }
+	public string Name { get; set; } = null!;
+	public int GovernorateId { get; set; }
+	public Governorate? Governorate { get; set; }
 }
