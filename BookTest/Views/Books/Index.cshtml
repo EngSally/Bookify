@@ -89,7 +89,7 @@
     </div>
 </div>
 
-<input type="hidden" name="__RequestVerificationToken" value="@antiforgery.GetAndStoreTokens(Context).RequestToken" />
+<input class="js-token" type="hidden" name="__RequestVerificationToken" value="@antiforgery.GetAndStoreTokens(Context).RequestToken" />
 @section Plugins
     {
     <script src="~/assets/plugins/datatables/datatables.bundle.js"></script>
