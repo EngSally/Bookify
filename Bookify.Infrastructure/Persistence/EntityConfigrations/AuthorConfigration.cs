@@ -2,18 +2,14 @@
 
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Bookify.Infrastructure.Persistence.EntityConfigrations
-{
-    internal class AuthorConfigration :IEntityTypeConfiguration<Author>
-{
-    public void Configure(EntityTypeBuilder<Author> builder)
-    {
-        builder.HasIndex(e => e.Name).IsUnique();
-        builder.Property(e => e.Name).HasMaxLength(100);
-        builder.Property(e => e.CreatedOn).HasDefaultValueSql("GETDATE();");
-    }
-}
+namespace Bookify.Infrastructure.Persistence.EntityConfigrations;
 
+internal class AuthorConfigration :IEntityTypeConfiguration<Author>
 {
-}
+        public void Configure(EntityTypeBuilder<Author> builder)
+        {
+            builder.HasIndex(e => e.Name).IsUnique();
+            builder.Property(e => e.Name).HasMaxLength(100);
+            builder.Property(e => e.CreatedOn).HasDefaultValueSql("GETDATE();");
+        }
 }

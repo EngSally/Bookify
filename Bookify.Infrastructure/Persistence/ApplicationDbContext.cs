@@ -18,12 +18,6 @@ namespace Bookify.Infrastructure.Persistence
 				.StartsAt(10000);
 			builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 			
-
-			
-			builder.Entity<RentalCopy>().HasKey(k => new { k.RentalId, k.BookCopyId });
-			builder.Entity<Category>().Property(e => e.CreatedOn).HasDefaultValueSql("GETDATE()");
-			builder.Entity<Rental>().HasQueryFilter(r => !r.Deleted);
-			builder.Entity<RentalCopy>().HasQueryFilter(r => !r.Rental!.Deleted);
 			base.OnModelCreating(builder);
 		}
 
