@@ -1,4 +1,5 @@
 ﻿using Bookify.Web.Core.ViewModels.Authors;
+using System.ComponentModel.DataAnnotations;
 
 namespace Bookify.Web.Controllers
 {
@@ -7,11 +8,13 @@ namespace Bookify.Web.Controllers
 	{
 		private readonly IApplicationDbContext _context;
 		private readonly IMapper _mapper;
-		public AuthorsController(IApplicationDbContext  context, IMapper mapper)
+        private readonly IValidator<AuthorsFormViewModel> _validator;
+        public AuthorsController(IApplicationDbContext  context, IMapper mapper, IValidator<AuthorsFormViewModel> validator)
 		{
 
 			_context = context;
 			_mapper = mapper;
+			_validator = validator;
 		}
 		public IActionResult Index()
 		{
@@ -33,10 +36,15 @@ namespace Bookify.Web.Controllers
 		//                   added   at option.Filters.Add( new  AutoValidateAntiforgeryTokenAttribute());
 		public IActionResult Create(AuthorsFormViewModel model)
 		{
-			if (!ModelState.IsValid)
-				return BadRequest();
+			//Fluent Validation
+			var resultValidation=_validator.Validate(model);
+            if (!resultValidation.IsValid)
+                return BadRequest();
 
-			var author=_mapper.Map<Author>(model);
+                //        if (!ModelState.IsValid)
+                //return BadRequest();
+
+                var author=_mapper.Map<Author>(model);
 			author.CreatedById = User.GetUserId();
 			_context.Authors.Add(author);
 			_context.SaveChanges();
@@ -57,7 +65,7 @@ namespace Bookify.Web.Controllers
 		}
 
 		[HttpPost]
-
+	
 		public IActionResult Edit(AuthorsFormViewModel model)
 		{
 			if (!ModelState.IsValid) return BadRequest();

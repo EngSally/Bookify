@@ -3,6 +3,8 @@ using Bookify.Web.Core.Mapper;
 using Bookify.Web.Helpers;
 using Bookify.Web.Seed;
 using Bookify.Web.Tasks;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using FluentValidation.AspNetCore;
 using Hangfire;
 using Hangfire.Dashboard;
 using HashidsNet;
@@ -31,7 +33,7 @@ builder.Services.AddHangfire(x => x.UseSqlServerStorage(connectionString));
 
 builder.Services.AddHangfireServer();
 builder.Services.AddSingleton<IHashids>(_ => new Hashids());
-builder.Services.AddDataProtection().SetApplicationName(nameof(Bookify.Web));
+builder.Services.AddDataProtection( ).SetApplicationName(nameof(Bookify.Web));
 builder.Services.AddScoped<IUserClaimsPrincipalFactory<ApplicationUser>, ApplicationUserClaimsPrincipalFactory>();
 builder.Services.AddTransient<IImageService, ImageService>();
 builder.Services.AddTransient<IViewToHTMLService, ViewToHTMLService>();
@@ -41,6 +43,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.Configure<CloudinarySetting>(builder.Configuration.GetSection("CloudinarySetting"));
 builder.Services.Configure<MailSetting>(builder.Configuration.GetSection("MailSetting"));
 builder.Services.AddAutoMapper(Assembly.GetAssembly(typeof(MappingProfile)));
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddFluentValidationClientsideAdapters();
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
 //Add Serilog
 Log.Logger = new LoggerConfiguration().ReadFrom.Configuration(builder.Configuration).CreateLogger();
 builder.Host.UseSerilog();
