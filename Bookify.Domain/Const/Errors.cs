@@ -3,14 +3,14 @@
 	public static class Errors
 	{
 		public  const  string  Required="Required";
-		public  const  string  MaxLength=" Length Can not be  more than {1} charctor";
+		public  const  string  MaxLength=" {PropertyName} Can not be  more than {MaxLength} charctor";
 		public  const  string  Duplicated="Another  record with the same {0} is aleardy exists";
 		public  const  string  DuplicatedMail="Another  User with the same Email is aleardy exists";
 		public  const  string  DuplicatedBook="Book With Same Title And Author  aleardy exists";
 		public  const  string  AllowedImageExtension="Only .jpg .jpeg .png  are allowed";
 		public  const  string  AllowedImageSize="Only 2M size are allowed";
 		public  const  string  DateNotAtFuture="Publishing Date Not Allowed Future Date";
-		public  const  string  RangNotBetween="{0} Must be between {1} and {2} ";
+		public  const  string  RangNotBetween="{PropertyName} Must be between {From} and {To}";
 		public  const  string  InvalidStartDate=" Invalid Start Date";
 		public  const  string  InvalidEndDate=" Invalid End Date";
 		public  const  string  InvalidUsername="Username only  contain letter or digit ";

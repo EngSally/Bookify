@@ -1,5 +1,6 @@
 ﻿using Bookify.Web.Core.ViewModels.Authors;
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 
 namespace Bookify.Web.Controllers
 {
@@ -68,8 +69,12 @@ namespace Bookify.Web.Controllers
 	
 		public IActionResult Edit(AuthorsFormViewModel model)
 		{
-			if (!ModelState.IsValid) return BadRequest();
-			var author=_context.Authors.Find(model.Id);
+            //Fluent Validation
+            var resultValidation=_validator.Validate(model);
+            if (!resultValidation.IsValid)
+                return BadRequest();
+            //if (!ModelState.IsValid) return BadRequest();
+            var author=_context.Authors.Find(model.Id);
 			if (author is null) return NotFound();
 			author = _mapper.Map(model, author);
 			author.LastUpdateOn = DateTime.Now;
@@ -101,7 +106,21 @@ namespace Bookify.Web.Controllers
 			return Ok(author.LastUpdateOn.ToString());
 		}
 
+        public bool WordBreak(string s, IList<string> wordDict)
+        {
+			int index=0;
+			for(int i=0; i<wordDict.Count;i++) 
+			{
+                if (index > s.Length) return false;
+                if (s.Substring(index, wordDict[i].Length-1)!= wordDict[i])
+					return false;
+				index = wordDict[i].Length - 1;
+
+            }
+			return true;
+        }
 
 
-	}
+
+    }
 }

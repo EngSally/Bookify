@@ -11,7 +11,7 @@
 
 
 		[Display(Name = "Edition Number")]
-		[Range(minimum: 1, maximum: 1000, ErrorMessage = Errors.RangNotBetween)]
+		//[Range(minimum: 1, maximum: 1000, ErrorMessage = Errors.RangNotBetween)]
 		[Remote("AllowItem", null!, AdditionalFields = "BookId,EditionNumber", ErrorMessage = "Same Book Has Same EditionNumber")]
 		public int EditionNumber { get; set; }
 
