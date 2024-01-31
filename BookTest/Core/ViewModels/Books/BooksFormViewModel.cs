@@ -8,7 +8,7 @@ namespace Bookify.Web.Core.ViewModels.Books
 		public int Id { get; set; }
 
 
-		[MaxLength(500, ErrorMessage = Errors.MaxLength)]
+		//[MaxLength(500, ErrorMessage = Errors.MaxLength)]
 		[Remote("AllowItem", null!, AdditionalFields = "Id,AuthorId", ErrorMessage = Errors.DuplicatedBook)]
 		public string Title { get; set; } = null!;
 
@@ -18,7 +18,7 @@ namespace Bookify.Web.Core.ViewModels.Books
 		public IEnumerable<SelectListItem>? Authors { get; set; }
 
 
-		[MaxLength(200, ErrorMessage = Errors.MaxLength)]
+		//[MaxLength(200, ErrorMessage = Errors.MaxLength)]
 		public string Publisher { get; set; } = null!;
 
 
@@ -32,7 +32,7 @@ namespace Bookify.Web.Core.ViewModels.Books
 
 
 
-		[MaxLength(50, ErrorMessage = Errors.MaxLength)]
+		//[MaxLength(50, ErrorMessage = Errors.MaxLength)]
 
 		public string Hall { get; set; } = null!;
 

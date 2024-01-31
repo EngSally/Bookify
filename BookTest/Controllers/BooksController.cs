@@ -1,6 +1,7 @@
 ﻿
 using Bookify.Web.Core.ViewModels.Books;
 using CloudinaryDotNet;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
 using System.Data;
@@ -14,6 +15,7 @@ namespace Bookify.Web.Controllers
 		private readonly IWebHostEnvironment _webHostEnvironment;
 		private readonly Cloudinary _cloudinary;
 		private readonly IApplicationDbContext _context;
+		private  readonly IValidator<BooksFormViewModel>    _validator;
 		private readonly IMapper _mapper;
 		private readonly IImageService _imageService;
 
@@ -21,22 +23,23 @@ namespace Bookify.Web.Controllers
 
 		private readonly List<string> _allowedImageExtension=new(){ ".jpg",".jpeg",".png",".ico"};
 		private readonly int _allowedSize=3145728;
-		public BooksController(IApplicationDbContext  context, IMapper mapper
-			, IWebHostEnvironment webHostEnvironment, IOptions<CloudinarySetting> cloudinarySetting, IImageService imageService)
-		{
-			_context = context;
-			_mapper = mapper;
-			_webHostEnvironment = webHostEnvironment;
-			_imageService = imageService;
-			Account account=new ()
-			{
-				Cloud=cloudinarySetting.Value.CloudName,
-				ApiKey=cloudinarySetting.Value.APIKey,
-				ApiSecret=cloudinarySetting.Value.APISecret
-			};
-			_cloudinary = new Cloudinary(account);
-		}
-		public IActionResult Index()
+        public BooksController(IApplicationDbContext context, IMapper mapper
+            , IWebHostEnvironment webHostEnvironment, IOptions<CloudinarySetting> cloudinarySetting, IImageService imageService, IValidator<BooksFormViewModel> validator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
+            _imageService = imageService;
+            Account account=new ()
+            {
+                Cloud=cloudinarySetting.Value.CloudName,
+                ApiKey=cloudinarySetting.Value.APIKey,
+                ApiSecret=cloudinarySetting.Value.APISecret
+            };
+            _cloudinary = new Cloudinary(account);
+            _validator = validator;
+        }
+        public IActionResult Index()
 		{
 			return View();
 		}
@@ -100,7 +103,11 @@ namespace Bookify.Web.Controllers
 
 		public async Task<IActionResult> Create(int id, BooksFormViewModel model)
 		{
-			if (!ModelState.IsValid)
+            //Fluent Validation with data annotation
+			var validationResult=_validator.Validate(model);
+			if (!validationResult.IsValid)
+				validationResult.AddToModelState(ModelState);
+            if (!ModelState.IsValid)
 			{
 				return View("Form", PopulateViewModel(model));
 			}
@@ -163,7 +170,11 @@ namespace Bookify.Web.Controllers
 
 		public async Task<IActionResult> Edit([FromForm] BooksFormViewModel FormViewModel)
 		{
-			if (!ModelState.IsValid) return View("Form", PopulateViewModel(FormViewModel));
+            //Fluent Validation with data annotation
+            var validationResult=_validator.Validate(FormViewModel);
+            if (!validationResult.IsValid)
+                validationResult.AddToModelState(ModelState);
+            if (!ModelState.IsValid) return View("Form", PopulateViewModel(FormViewModel));
 			var book=_context.Books.
 				Include(b=>b.Categories)
 				.Include(b=>b.BookCopies)

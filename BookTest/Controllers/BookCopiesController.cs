@@ -1,5 +1,6 @@
 ﻿
 using Bookify.Web.Core.ViewModels.BookCopy;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 
 namespace Bookify.Web.Controllers
@@ -8,12 +9,15 @@ namespace Bookify.Web.Controllers
 	{
 		private readonly   IApplicationDbContext  _context;
 		private readonly IMapper _mapper;
-		public BookCopiesController(IApplicationDbContext  context, IMapper mapper)
-		{
-			_context = context;
-			_mapper = mapper;
-		}
-		[AjaxOnly]
+		private readonly IValidator<BookCopyFormViewModel> _validator;
+
+		public BookCopiesController(IApplicationDbContext context, IMapper mapper, IValidator<BookCopyFormViewModel> validator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _validator = validator;
+        }
+        [AjaxOnly]
 
 		public IActionResult Create(int bookId)
 		{
@@ -31,9 +35,11 @@ namespace Bookify.Web.Controllers
 		[HttpPost]
 
 		public IActionResult Create(BookCopyFormViewModel model)
-		{
-			if (!ModelState.IsValid)
-				return BadRequest();
+		{//Fluent Validation
+			var result=_validator.Validate(model);
+			if(! result.IsValid) return BadRequest();
+			//if (!ModelState.IsValid)
+			//	return BadRequest();
 
 			var book = _context.Books.Find(model.BookId);
 
@@ -73,7 +79,11 @@ namespace Bookify.Web.Controllers
 
 		public IActionResult Edit(BookCopyFormViewModel model)
 		{
-			if (!ModelState.IsValid) return BadRequest();
+
+            // Fluent Validation
+            var result = _validator.Validate(model);
+            if (!result.IsValid) return BadRequest();
+            //if (!ModelState.IsValid) return BadRequest();
 			var bookCopy=_context.BooksCopies.Include(c=>c.Book).SingleOrDefault(c=>c.Id==model.Id);
 			if (bookCopy == null) return NotFound();
 
