@@ -1,4 +1,5 @@
 ﻿using Bookify.Web.Core.ViewModels.Subscribers;
+using FluentValidation.AspNetCore;
 using Hangfire;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -15,8 +16,9 @@ namespace Bookify.Web.Controllers
 		private readonly IEmailBodyBuilder _emailBodyBuilder;
 		private readonly IEmailSender _emailSender;
 		private readonly IMapper _mapper;
+		private readonly IValidator<SubscriberFormViewModel> _validator;
 
-		public SubscribersController(IApplicationDbContext dbContext, IDataProtectionProvider dataProtector, IImageService imageService, IMapper mapper, IEmailSender emailSender, IEmailBodyBuilder emailBodyBuilder)
+		public SubscribersController(IApplicationDbContext dbContext, IDataProtectionProvider dataProtector, IImageService imageService, IMapper mapper, IEmailSender emailSender, IEmailBodyBuilder emailBodyBuilder, IValidator<SubscriberFormViewModel> validator)
 		{
 			_dbContext = dbContext;
 			_dataProtector = dataProtector.CreateProtector("MySecureKey");
@@ -24,6 +26,7 @@ namespace Bookify.Web.Controllers
 			_emailSender = emailSender;
 			_mapper = mapper;
 			_emailBodyBuilder = emailBodyBuilder;
+			_validator = validator;
 		}
 
 		public IActionResult Index()
@@ -42,8 +45,11 @@ namespace Bookify.Web.Controllers
 		[HttpPost]
 
 		public async Task<IActionResult> Create(SubscriberFormViewModel model)
-		{
-			if (!ModelState.IsValid)
+        {  //Fluent Validation with data annotation
+            var validationResult= _validator.Validate(model);
+			if (!validationResult.IsValid)
+				validationResult.AddToModelState(ModelState);
+            if (!ModelState.IsValid)
 			{
 				return View("Form", PopulateViewModel(model));
 			}
@@ -118,7 +124,15 @@ namespace Bookify.Web.Controllers
 
 		public async Task<IActionResult> Edit(SubscriberFormViewModel model)
 		{
-			var subscriberId=_dataProtector.Unprotect(model.Key!);
+            //Fluent Validation with data annotation
+            var validationResult = _validator.Validate(model);
+
+            if (!validationResult.IsValid)
+                validationResult.AddToModelState(ModelState);
+
+            if (!ModelState.IsValid)
+                return View("Form", PopulateViewModel(model));
+            var subscriberId=_dataProtector.Unprotect(model.Key!);
 			if (subscriberId.Length == 0)
 				return NotFound();
 

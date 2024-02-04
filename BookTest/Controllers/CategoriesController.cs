@@ -8,13 +8,15 @@ namespace Bookify.Web.Controllers
 	{
 		private readonly IApplicationDbContext _context;
 		private readonly IMapper _mapper;
-		public categoriesController(IApplicationDbContext  context, IMapper mapper)
-		{
-			_context = context;
-			_mapper = mapper;
-		}
+		private readonly IValidator<CategoriesFormViewModel> _validator;
+		public categoriesController(IApplicationDbContext context, IMapper mapper, IValidator<CategoriesFormViewModel> validator)
+        {
+            _context = context;
+            _mapper = mapper;
+            _validator = validator;
+        }
 
-		public IActionResult Index()
+        public IActionResult Index()
 		{
 
 			var categories=_context.Categories.AsNoTracking().ToList();
@@ -38,8 +40,11 @@ namespace Bookify.Web.Controllers
 
 		public IActionResult Create(CategoriesFormViewModel model)
 		{
-			if (!ModelState.IsValid) return BadRequest();
-			var category= _mapper.Map<Category>(model);
+			var validationResult=_validator.Validate(model);
+			if (!validationResult.IsValid) return BadRequest();//fluent Validation
+
+            //if (!ModelState.IsValid) return BadRequest();//data annotation
+            var category= _mapper.Map<Category>(model);
 			category.CreatedById = User.GetUserId();
 			_context.Categories.Add(category);
 			_context.SaveChanges();
@@ -70,13 +75,12 @@ namespace Bookify.Web.Controllers
 
 		public IActionResult Edit(CategoriesFormViewModel model)
 		{
+            var validationResult=_validator.Validate(model);
+            if (!validationResult.IsValid) return BadRequest();//fluent Validation
 
-			if (!ModelState.IsValid)
-			{
-				return BadRequest();
-			}
+            //if (!ModelState.IsValid) return BadRequest();//data annotation
 
-			var category = _context.Categories.Find(model.Id);
+            var category = _context.Categories.Find(model.Id);
 			if (category is null) { return NotFound(); }
 			category = _mapper.Map(model, category);
 			category.LastUpdateOn = DateTime.Now;
