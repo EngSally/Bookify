@@ -8,32 +8,25 @@ namespace Bookify.Web.Core.ViewModels.Users
 	{
 
 		public string? Id { get; set; }
-		[MaxLength(100, ErrorMessage = Errors.MaxLength), Display(Name = "Full Name"),
-			RegularExpression(RegexPatterns.CharactersOnly_Eng, ErrorMessage = Errors.OnlyEnglishLetters)]
+		[Display(Name = "Full Name")]
 		public string FullName { get; set; } = null!;
-
-
-
-		[MaxLength(100, ErrorMessage = Errors.MaxLength)]
 		[Remote("AllowUserName", null!, AdditionalFields = "Id", ErrorMessage = Errors.Duplicated)]
-		[RegularExpression(RegexPatterns.Username, ErrorMessage = Errors.InvalidUsername)]
+		
 		public string UserName { get; set; } = null!;
-		[EmailAddress, MaxLength(100, ErrorMessage = Errors.MaxLength)]
+
+	
 		[Remote("AllowEmail", null!, AdditionalFields = "Id", ErrorMessage = Errors.Duplicated)]
 		public string Email { get; set; } = null!;
 
 
-		[MaxLength(100, ErrorMessage = Errors.MaxLength)]
-		[DataType(DataType.Password),
-		 StringLength(100, ErrorMessage = Errors.MaxMinLength,
-			   MinimumLength = 8), RegularExpression(RegexPatterns.Password, ErrorMessage = Errors.WeakPassword)]
+		
+		[DataType(DataType.Password)]
 		[RequiredIf("Id==null", ErrorMessage = Errors.Required)]
 		public string? Password { get; set; }
 
 
 		[DataType(DataType.Password),
-			Display(Name = "Confirm password"),
-			Compare("Password", ErrorMessage = Errors.ConfirmPasswordNotMatch)]
+			Display(Name = "Confirm password")]
 		[RequiredIf("Id==null", ErrorMessage = Errors.Required)]
 		public string? ConfirmPassword { get; set; }
 

@@ -14,7 +14,7 @@
 		public  const  string  InvalidStartDate=" Invalid Start Date";
 		public  const  string  InvalidEndDate=" Invalid End Date";
 		public  const  string  InvalidUsername="Username only  contain letter or digit ";
-		public  const  string  MaxMinLength="The {0} must be at least {2} and at max {1} characters long.";
+		public  const  string  MaxMinLength="The {PropertyName} must be at least {MinLength} and at max {MaxLength} characters long.";
 		public  const  string  ConfirmPasswordNotMatch="The password and confirmation password do not match.";
 		public  const  string WeakPassword="Passwords contain an uppercase character, lowercase character, a digit, and a non-alphanumeric character.";
 		public  const  string OnlyEnglishLetters = "Only English letters are allowed.";

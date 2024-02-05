@@ -1,4 +1,5 @@
 ﻿using Bookify.Web.Core.ViewModels.Users;
+using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -17,10 +18,13 @@ namespace Bookify.Web.Controllers
 		private readonly IEmailBodyBuilder _emailBodyBuilder;
 		private readonly IWebHostEnvironment _webHostEnvironment;
 		private  readonly IMapper _mapper;
+		private readonly IValidator<RestPasswordViewModel> _restValidator;
+		private readonly IValidator<UserFormViewModel> _userFormValidator;
 
 		public UsersController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManger,
 			IEmailSender emailSender, IEmailBodyBuilder emailBodyBuilder,
-			IWebHostEnvironment webHostEnvironment, IMapper mapper)
+			IWebHostEnvironment webHostEnvironment, IMapper mapper,
+            IValidator<RestPasswordViewModel> restValidator, IValidator<UserFormViewModel> userFormValidator)
 		{
 			_userManager = userManager;
 			_roleManger = roleManger;
@@ -28,6 +32,8 @@ namespace Bookify.Web.Controllers
 			_emailBodyBuilder = emailBodyBuilder;
 			_webHostEnvironment = webHostEnvironment;
 			_mapper = mapper;
+			_restValidator = restValidator;
+			_userFormValidator = userFormValidator;
 
 		}
 
@@ -64,11 +70,14 @@ namespace Bookify.Web.Controllers
 
 		public async Task<IActionResult> Create(UserFormViewModel model)
 		{
-			if (!ModelState.IsValid)
-			{
+			var validationResult=_userFormValidator.Validate(model);
+			if(!validationResult.IsValid) return BadRequest();
 
-				return BadRequest();
-			}
+   //         if (!ModelState.IsValid)
+			//{
+
+			//	return BadRequest();
+			//}
 
 			var user=new ApplicationUser
 			{
@@ -134,11 +143,13 @@ namespace Bookify.Web.Controllers
 
 		public async Task<IActionResult> Edit(UserFormViewModel model)
 		{
-			if (!ModelState.IsValid) return BadRequest(ModelState);
-			var user = await  _userManager.FindByIdAsync(model.Id);
+            var validationResult=_userFormValidator.Validate(model);
+            if (!validationResult.IsValid) return BadRequest();
+           // if (!ModelState.IsValid)
+ //	return BadRequest();
+			var user = await  _userManager.FindByIdAsync(model.Id!);
 			if (user is null) return NotFound();
-
-			user.UserName = model.UserName;
+        	user.UserName = model.UserName;
 			user.Email = model.Email;
 			user.FullName = model.FullName;
 			user.LastUpdateOn = DateTime.Now;
@@ -201,8 +212,9 @@ namespace Bookify.Web.Controllers
 		[HttpPost]
 
 		public async Task<IActionResult> RestPassword(RestPasswordViewModel model)
-		{
-			if (!ModelState.IsValid) return BadRequest(ModelState);
+		{   var validationResult=_restValidator.Validate(model);
+			if (validationResult.IsValid) validationResult.AddToModelState(ModelState);
+            if (!ModelState.IsValid) return BadRequest(ModelState);
 			var user= await  _userManager.FindByIdAsync(model.Id);
 			if (user is null) return NotFound();
 			var OldHashPassword=user.PasswordHash;
