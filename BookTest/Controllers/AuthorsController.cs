@@ -1,4 +1,5 @@
 ﻿using Bookify.Web.Core.ViewModels.Authors;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 
@@ -7,21 +8,24 @@ namespace Bookify.Web.Controllers
 	[Authorize(Roles = AppRole.Archive)]
 	public class AuthorsController : Controller
 	{
-		private readonly IApplicationDbContext _context;
-		private readonly IMapper _mapper;
+        //private readonly IApplicationDbContext _context;
+        //private readonly IBaseRepository<Author> _authorRepository;
+		private readonly IUnitOfWork _unitOfWork;
+        private readonly IMapper _mapper;
         private readonly IValidator<AuthorsFormViewModel> _validator;
-        public AuthorsController(IApplicationDbContext  context, IMapper mapper, IValidator<AuthorsFormViewModel> validator)
+	
+        public AuthorsController(IUnitOfWork unitOfWork, IMapper mapper, IValidator<AuthorsFormViewModel> validator)
 		{
 
-			_context = context;
+            _unitOfWork = unitOfWork;
 			_mapper = mapper;
 			_validator = validator;
 		}
 		public IActionResult Index()
 		{
 
-			var authers=_context.Authors.AsNoTracking().ToList();
-			var modelView=_mapper.Map<IEnumerable<AuthorViewModel>>(authers);
+			var authers=_unitOfWork.Authors.GetAll(false);
+            var modelView=_mapper.Map<IEnumerable<AuthorViewModel>>(authers);
 
 			return View(modelView);
 		}
@@ -47,9 +51,9 @@ namespace Bookify.Web.Controllers
 
                 var author=_mapper.Map<Author>(model);
 			author.CreatedById = User.GetUserId();
-			_context.Authors.Add(author);
-			_context.SaveChanges();
-			var viewModel=_mapper.Map<AuthorViewModel>(author);
+            author= _unitOfWork.Authors.Add(author);
+			_unitOfWork.Commit();
+                var viewModel=_mapper.Map<AuthorViewModel>(author);
 			return PartialView("_PartialRowAuthors", viewModel);
 
 
@@ -58,7 +62,7 @@ namespace Bookify.Web.Controllers
 		[AjaxOnly]
 		public IActionResult Edit(int id)
 		{
-			var author=_context.Authors.Find(id);
+			var author=_unitOfWork.Authors.GetById(id);
 			if (author is null) return NotFound();
 			var autherModel=_mapper.Map<AuthorsFormViewModel>(author);
 			return PartialView("_FormAuthor", autherModel);
@@ -74,12 +78,13 @@ namespace Bookify.Web.Controllers
             if (!resultValidation.IsValid)
                 return BadRequest();
             //if (!ModelState.IsValid) return BadRequest();
-            var author=_context.Authors.Find(model.Id);
-			if (author is null) return NotFound();
+            var author=_unitOfWork.Authors.GetById(model.Id);
+            if (author is null) return NotFound();
 			author = _mapper.Map(model, author);
 			author.LastUpdateOn = DateTime.Now;
 			author.LastUpdateById = User.GetUserId();
-			_context.SaveChanges();
+			_unitOfWork.Authors.Update(author);
+			_unitOfWork.Commit();
 			var authorViewModel=_mapper.Map<AuthorViewModel>(author);
 			return PartialView("_PartialRowAuthors", authorViewModel);
 
@@ -88,8 +93,9 @@ namespace Bookify.Web.Controllers
 
 		public IActionResult Allow(AuthorsFormViewModel model)
 		{
-			var author=_context.Authors.SingleOrDefault(a=>a.Name == model.Name);
-			bool allow=  author is null || author.Id.Equals(model.Id);
+			var author=_unitOfWork.Authors.Find(x=>x.Name == model.Name);
+                //_context.Authors.SingleOrDefault(a=>a.Name == model.Name);
+            bool allow=  author is null || author.Id.Equals(model.Id);
 			return Json(allow);
 		}
 
@@ -97,13 +103,14 @@ namespace Bookify.Web.Controllers
 
 		public IActionResult ChangeStatue(int id)
 		{
-			var author= _context.Authors.Find(id);
-			if (author is null) return NotFound();
+			var author=_unitOfWork.Authors.GetById(id);
+            if (author is null) return NotFound();
 			author.Deleted = !author.Deleted;
 			author.LastUpdateOn = DateTime.Now;
 			author.LastUpdateById = User.GetUserId();
-			_context.SaveChanges();
-			return Ok(author.LastUpdateOn.ToString());
+            _unitOfWork.Authors.Update(author);
+            _unitOfWork.Commit();
+            return Ok(author.LastUpdateOn.ToString());
 		}
 
         public bool WordBreak(string s, IList<string> wordDict)
