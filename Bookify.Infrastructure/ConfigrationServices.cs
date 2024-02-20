@@ -1,5 +1,6 @@
 ﻿
 using Bookify.Infrastructure.Repositories;
+using Bookify.Infrastructure.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -16,6 +17,7 @@ public static class ConfigureServices
                 builder => builder.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
 
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
+        services.AddScoped<IAuthorsService, AuthorsService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;

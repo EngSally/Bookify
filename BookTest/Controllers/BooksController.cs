@@ -80,9 +80,10 @@ namespace Bookify.Web.Controllers
 				books = books.Where(b => b.Title.Contains(searchValue) || b.Author!.Name.Contains(searchValue));
 			books = books.OrderBy($" {colSort} {sortType}");
 
-			var data=books.Skip(skip).Take(pageSize).ToList();
-			var booksViewModel=_mapper.Map<IEnumerable<BookDetailsViewModel>>(data);
-			var recordsTotal=books.Count();
+			books = books.Skip(skip).Take(pageSize);
+			var booksViewModel=_mapper.ProjectTo<BookRowViewModel>( books).ToList();
+           
+            var recordsTotal=books.Count();
 			var jsonData=new {  recordsFiltered=recordsTotal,recordsTotal,data=booksViewModel};
 			return Ok(jsonData);
 		}

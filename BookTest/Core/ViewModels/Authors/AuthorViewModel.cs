@@ -7,7 +7,7 @@
 		public string Name { get; set; } = null!;
 		public bool Deleted { get; set; }
 		public DateTime CretedOn { get; set; } = DateTime.Now;
-		public DateTime? LastUpdate { get; set; }
+		public DateTime? LastUpdateOn { get; set; }
 
 	}
 }

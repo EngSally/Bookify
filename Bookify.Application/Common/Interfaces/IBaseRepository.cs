@@ -10,6 +10,7 @@ namespace Bookify.Application.Common.Interfaces
 {
     public interface IBaseRepository<T> where T : class
     {
+        IQueryable<T> GetQueryable();
         IEnumerable<T> GetAll(bool withTracking=true );
        T Add(T entity);
        T? GetById(int id);

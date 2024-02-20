@@ -10,23 +10,22 @@ namespace Bookify.Web.Controllers
 	{
         //private readonly IApplicationDbContext _context;
         //private readonly IBaseRepository<Author> _authorRepository;
-		private readonly IUnitOfWork _unitOfWork;
+		private readonly IAuthorsService _authorsService;
         private readonly IMapper _mapper;
         private readonly IValidator<AuthorsFormViewModel> _validator;
 	
-        public AuthorsController(IUnitOfWork unitOfWork, IMapper mapper, IValidator<AuthorsFormViewModel> validator)
+        public AuthorsController(IAuthorsService authorsService, IMapper mapper, IValidator<AuthorsFormViewModel> validator)
 		{
 
-            _unitOfWork = unitOfWork;
+          _authorsService = authorsService;
 			_mapper = mapper;
 			_validator = validator;
 		}
 		public IActionResult Index()
 		{
 
-			var authers=_unitOfWork.Authors.GetAll(false);
+			var authers=_authorsService.GetAll(true);
             var modelView=_mapper.Map<IEnumerable<AuthorViewModel>>(authers);
-
 			return View(modelView);
 		}
 
@@ -51,8 +50,7 @@ namespace Bookify.Web.Controllers
 
                 var author=_mapper.Map<Author>(model);
 			author.CreatedById = User.GetUserId();
-            author= _unitOfWork.Authors.Add(author);
-			_unitOfWork.Commit();
+            author= _authorsService.Add(author);
                 var viewModel=_mapper.Map<AuthorViewModel>(author);
 			return PartialView("_PartialRowAuthors", viewModel);
 
@@ -62,7 +60,7 @@ namespace Bookify.Web.Controllers
 		[AjaxOnly]
 		public IActionResult Edit(int id)
 		{
-			var author=_unitOfWork.Authors.GetById(id);
+			var author=_authorsService.GetById(id);
 			if (author is null) return NotFound();
 			var autherModel=_mapper.Map<AuthorsFormViewModel>(author);
 			return PartialView("_FormAuthor", autherModel);
@@ -78,13 +76,12 @@ namespace Bookify.Web.Controllers
             if (!resultValidation.IsValid)
                 return BadRequest();
             //if (!ModelState.IsValid) return BadRequest();
-            var author=_unitOfWork.Authors.GetById(model.Id);
+            var author=_authorsService.GetById(model.Id);
             if (author is null) return NotFound();
 			author = _mapper.Map(model, author);
 			author.LastUpdateOn = DateTime.Now;
 			author.LastUpdateById = User.GetUserId();
-			_unitOfWork.Authors.Update(author);
-			_unitOfWork.Commit();
+            _authorsService.Update(author);
 			var authorViewModel=_mapper.Map<AuthorViewModel>(author);
 			return PartialView("_PartialRowAuthors", authorViewModel);
 
@@ -93,7 +90,7 @@ namespace Bookify.Web.Controllers
 
 		public IActionResult Allow(AuthorsFormViewModel model)
 		{
-			var author=_unitOfWork.Authors.Find(x=>x.Name == model.Name);
+		var author=_authorsService.Find(x=>x.Name == model.Name);
                 //_context.Authors.SingleOrDefault(a=>a.Name == model.Name);
             bool allow=  author is null || author.Id.Equals(model.Id);
 			return Json(allow);
@@ -103,31 +100,16 @@ namespace Bookify.Web.Controllers
 
 		public IActionResult ChangeStatue(int id)
 		{
-			var author=_unitOfWork.Authors.GetById(id);
+			var author=_authorsService.GetById(id);
             if (author is null) return NotFound();
 			author.Deleted = !author.Deleted;
 			author.LastUpdateOn = DateTime.Now;
 			author.LastUpdateById = User.GetUserId();
-            _unitOfWork.Authors.Update(author);
-            _unitOfWork.Commit();
+            _authorsService.Update(author);
             return Ok(author.LastUpdateOn.ToString());
 		}
 
-        public bool WordBreak(string s, IList<string> wordDict)
-        {
-			int index=0;
-			for(int i=0; i<wordDict.Count;i++) 
-			{
-                if (index > s.Length) return false;
-                if (s.Substring(index, wordDict[i].Length-1)!= wordDict[i])
-					return false;
-				index = wordDict[i].Length - 1;
-
-            }
-			return true;
-        }
-
-
+      
 
     }
 }

@@ -9,6 +9,7 @@ global using Bookify.Web.Core.ViewModels.Authors;
 global using Bookify.Web.Core.ViewModels;
 global using Bookify.Infrastructure;
 global using Bookify.Infrastructure.Persistence;
+global using Bookify.Infrastructure.Services;
 global using Bookify.Web.Extensions;
 global using Bookify.Web.Filters;
 global using Bookify.Web.Services;

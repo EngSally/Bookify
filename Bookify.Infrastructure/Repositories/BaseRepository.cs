@@ -14,6 +14,9 @@ namespace Bookify.Infrastructure.Repositories
         {
                 _context = context;
         }
+
+       public  IQueryable<T> GetQueryable()=> _context.Set<T>();
+        
         public IEnumerable<T> GetAll( bool withTracking = true )
         {
             IQueryable<T> quary = _context.Set<T>();
