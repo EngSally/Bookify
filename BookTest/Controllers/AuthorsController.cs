@@ -8,8 +8,7 @@ namespace Bookify.Web.Controllers
 	[Authorize(Roles = AppRole.Archive)]
 	public class AuthorsController : Controller
 	{
-        //private readonly IApplicationDbContext _context;
-        //private readonly IBaseRepository<Author> _authorRepository;
+       
 		private readonly IAuthorsService _authorsService;
         private readonly IMapper _mapper;
         private readonly IValidator<AuthorsFormViewModel> _validator;

@@ -1,17 +1,19 @@
 ﻿
+using Bookify.Infrastructure.Services;
 using Bookify.Web.Core.ViewModels.Categories;
+using DocumentFormat.OpenXml.Office2010.Excel;
 
 namespace Bookify.Web.Controllers
 {
 	[Authorize(Roles = AppRole.Archive)]
 	public class categoriesController : Controller
 	{
-		private readonly IApplicationDbContext _context;
+		private readonly ICategoriesService _categoriesService;
 		private readonly IMapper _mapper;
 		private readonly IValidator<CategoriesFormViewModel> _validator;
-		public categoriesController(IApplicationDbContext context, IMapper mapper, IValidator<CategoriesFormViewModel> validator)
+		public categoriesController(ICategoriesService categoriesService, IMapper mapper, IValidator<CategoriesFormViewModel> validator)
         {
-            _context = context;
+           _categoriesService = categoriesService;
             _mapper = mapper;
             _validator = validator;
         }
@@ -19,9 +21,8 @@ namespace Bookify.Web.Controllers
         public IActionResult Index()
 		{
 
-			var categories=_context.Categories.AsNoTracking().ToList();
-
-			var modelView=_mapper.Map< IEnumerable< CategoryViewModel>>(categories);
+			var categories=_categoriesService.GetAll(true);
+            var modelView=_mapper.Map< IEnumerable< CategoryViewModel>>(categories);
 
 			return View(modelView);
 		}
@@ -46,9 +47,8 @@ namespace Bookify.Web.Controllers
             //if (!ModelState.IsValid) return BadRequest();//data annotation
             var category= _mapper.Map<Category>(model);
 			category.CreatedById = User.GetUserId();
-			_context.Categories.Add(category);
-			_context.SaveChanges();
-			var categoryViewModel=_mapper.Map<CategoryViewModel>(category);
+            _categoriesService.Add(category);
+            var categoryViewModel=_mapper.Map<CategoryViewModel>(category);
 
 			return PartialView("_PartialRowCategory", categoryViewModel);
 		}
@@ -59,7 +59,7 @@ namespace Bookify.Web.Controllers
 		{
 
 
-			var category = _context.Categories.Find(id);
+			var category =_categoriesService.GetById(id);
 			if (category is null)
 			{
 				return NotFound();
@@ -80,13 +80,13 @@ namespace Bookify.Web.Controllers
 
             //if (!ModelState.IsValid) return BadRequest();//data annotation
 
-            var category = _context.Categories.Find(model.Id);
-			if (category is null) { return NotFound(); }
+            var category = _categoriesService.GetById(model.Id);
+            if (category is null) { return NotFound(); }
 			category = _mapper.Map(model, category);
 			category.LastUpdateOn = DateTime.Now;
 			category.LastUpdateById = User.GetUserId();
-			_context.SaveChanges();
-			var viewModel=_mapper.Map<CategoryViewModel>(category);
+            _categoriesService.Update(category);
+            var viewModel=_mapper.Map<CategoryViewModel>(category);
 			return PartialView("_PartialRowCategory", viewModel);
 		}
 
@@ -94,13 +94,13 @@ namespace Bookify.Web.Controllers
 
 		public IActionResult ChangeStatue(int id)
 		{
-			var category = _context.Categories.Find(id);
-			if (category is null)
+			var category =_categoriesService.GetById(id);
+            if (category is null)
 			{ return NotFound(); }
 			category.Deleted = !category.Deleted;
 			category.LastUpdateOn = DateTime.Now;
 			category.LastUpdateById = User.GetUserId();
-			_context.SaveChanges();
+			_categoriesService.Update(category);
 			return Ok(DateTime.Now.ToString());
 
 		}
@@ -108,17 +108,9 @@ namespace Bookify.Web.Controllers
 
 		public IActionResult AllowItem(CategoriesFormViewModel model)
 		{
-			var Category = _context.Categories.SingleOrDefault(x=>x.Name == model.Name);
+			var Category = _categoriesService.Find(x=>x.Name == model.Name);
 			bool allow=Category is null||Category.Id.Equals(model.Id);
 			return Json(allow);
-		}
-
-		public bool IsSameAfterReversals(int num)
-		{
-			if (num < 10) return true;
-			if (num % 10 == 0) return false;
-			return true;
-
 		}
 
 
