@@ -19,6 +19,7 @@ public static class ConfigureServices
         services.AddScoped<IApplicationDbContext, ApplicationDbContext>();
         services.AddScoped<IAuthorsService, AuthorsService>();
         services.AddScoped<ICategoriesService, CategoriesService>();
+        services.AddScoped<IBooksService, BooksService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;

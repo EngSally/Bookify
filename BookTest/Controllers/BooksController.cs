@@ -1,6 +1,8 @@
 ﻿
+using Bookify.Domain.Entities;
 using Bookify.Web.Core.ViewModels.Books;
 using CloudinaryDotNet;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Options;
@@ -18,13 +20,15 @@ namespace Bookify.Web.Controllers
 		private  readonly IValidator<BooksFormViewModel>    _validator;
 		private readonly IMapper _mapper;
 		private readonly IImageService _imageService;
+		private readonly IBooksService _booksService;
 
-
+		
 
 		private readonly List<string> _allowedImageExtension=new(){ ".jpg",".jpeg",".png",".ico"};
 		private readonly int _allowedSize=3145728;
         public BooksController(IApplicationDbContext context, IMapper mapper
-            , IWebHostEnvironment webHostEnvironment, IOptions<CloudinarySetting> cloudinarySetting, IImageService imageService, IValidator<BooksFormViewModel> validator)
+            , IWebHostEnvironment webHostEnvironment, IOptions<CloudinarySetting> cloudinarySetting, IImageService imageService,
+			IValidator<BooksFormViewModel> validator, IBooksService booksService)
         {
             _context = context;
             _mapper = mapper;
@@ -38,6 +42,7 @@ namespace Bookify.Web.Controllers
             };
             _cloudinary = new Cloudinary(account);
             _validator = validator;
+			_booksService = booksService;
         }
         public IActionResult Index()
 		{
@@ -53,11 +58,13 @@ namespace Bookify.Web.Controllers
 				.Include(b=>b.Categories)
 				.ThenInclude(c=>c.Category)
 				.SingleOrDefault(b=>b.Id==Id);
+			var quary=_booksService.GetDetails();
 
-			if (book is null) return NotFound();
-			var BookDetails=_mapper.Map<BookDetailsViewModel>(book);
+			
+			var BookDetails=_mapper.ProjectTo<BookDetailsViewModel>(quary).SingleOrDefault(b=>b.Id==Id);
+            if (book is null) return NotFound();
 
-			return View(BookDetails);
+            return View(BookDetails);
 		}
 
 		[HttpPost]
