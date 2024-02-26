@@ -20,8 +20,11 @@ namespace Bookify.Infrastructure.Services;
             return query.ToList();
     }
 
-
-  public  Author Add(Author author)
+    IEnumerable<Author> LoadActive()
+    {
+      return   _context.Authors.Where(a => !a.Deleted).OrderBy(a => a.Name).AsNoTracking().ToList();
+    }
+    public  Author Add(Author author)
     {
         _context.Authors.Add(author);
         _context.SaveChanges();

@@ -8,6 +8,7 @@ namespace Bookify.Infrastructure.Services
     public  interface ICategoriesService
     {
         IEnumerable<Category> GetAll(bool asNoTracking = false);
+        IEnumerable<Category> LoadActive();
         Category Add(Category author);
         Category? GetById(int id);
         void Update(Category author);

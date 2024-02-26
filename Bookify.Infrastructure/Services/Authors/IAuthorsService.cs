@@ -10,6 +10,7 @@ namespace Bookify.Infrastructure.Services;
     public  interface IAuthorsService
     {
     IEnumerable<Author> GetAll(bool asNoTracking = false);
+    IEnumerable<Author> LoadActive();
     Author Add (Author author);
     Author? GetById(int id);
     void Update(Author author);
