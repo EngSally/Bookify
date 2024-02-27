@@ -1,4 +1,5 @@
 ﻿
+using Bookify.Infrastructure.Services.BookCopies;
 using Bookify.Web.Core.ViewModels.BookCopy;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
@@ -10,12 +11,17 @@ namespace Bookify.Web.Controllers
 		private readonly   IApplicationDbContext  _context;
 		private readonly IMapper _mapper;
 		private readonly IValidator<BookCopyFormViewModel> _validator;
+		private readonly IBooksService _booksService;
+		private readonly IBookCopiesService _bookCopiesService;
 
-		public BookCopiesController(IApplicationDbContext context, IMapper mapper, IValidator<BookCopyFormViewModel> validator)
+		public BookCopiesController(IApplicationDbContext context, IMapper mapper,
+			IValidator<BookCopyFormViewModel> validator, IBooksService booksService, IBookCopiesService bookCopiesService)
         {
             _context = context;
             _mapper = mapper;
             _validator = validator;
+			_booksService = booksService;
+			_bookCopiesService = bookCopiesService;
         }
         [AjaxOnly]
 
@@ -23,7 +29,7 @@ namespace Bookify.Web.Controllers
 		{
 			var book=_context.Books.Find(bookId);
 			if (book is null) return NotFound();
-
+			var dd=_booksService.BookAvailableForRental(bookId);
 			var model=new BookCopyFormViewModel
 			{
 				BookId=bookId,
@@ -132,24 +138,6 @@ namespace Bookify.Web.Controllers
 			return Json(allow);
 		}
 
-		public bool AreOccurrencesEqual(string s)
-		{
-			Dictionary<char,int> dic=new Dictionary<char, int> ();
-			foreach (char c in s)
-			{
-				if (!dic.TryAdd(c, 1))
-				{
-					dic[c]++;
-				}
-			}
-
-			for (int i = 1; i < dic.Count; i++)
-			{
-				if (dic.ElementAt(i - 1).Value != dic.ElementAt(i).Value)
-					return false;
-			}
-			return true;
-
-		}
+		
 	}
 }

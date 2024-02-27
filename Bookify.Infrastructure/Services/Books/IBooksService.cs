@@ -8,6 +8,7 @@ namespace Bookify.Infrastructure.Services
     {
         public Book? GetById(int id);
         IQueryable<Book> GetDetails();
+        bool BookAvailableForRental(int id);
         (IQueryable<Book> books, int recordsTotal) GetFiltered(GetFilterDTO dto);
          Book Add(Book book, IEnumerable<int> selectedCategories, string createdById);
          Book Update(Book book, IEnumerable<int> selectedCategories, string updatedById);

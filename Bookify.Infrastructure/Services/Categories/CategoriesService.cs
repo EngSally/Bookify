@@ -19,7 +19,7 @@ namespace Bookify.Infrastructure.Services
             _context.SaveChanges();
             return categorie;
         }
-        IEnumerable<Category> LoadActive()
+      public   IEnumerable<Category> LoadActive()
         {
             return _context.Categories.Where(a => !a.Deleted).OrderBy(a => a.Name).AsNoTracking().ToList();
         }

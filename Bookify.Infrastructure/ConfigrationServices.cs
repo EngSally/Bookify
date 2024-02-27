@@ -1,6 +1,7 @@
 ﻿
 using Bookify.Infrastructure.Repositories;
 using Bookify.Infrastructure.Services;
+using Bookify.Infrastructure.Services.BookCopies;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -20,6 +21,7 @@ public static class ConfigureServices
         services.AddScoped<IAuthorsService, AuthorsService>();
         services.AddScoped<ICategoriesService, CategoriesService>();
         services.AddScoped<IBooksService, BooksService>();
+        services.AddScoped<IBookCopiesService, BookCopiesService>();
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;

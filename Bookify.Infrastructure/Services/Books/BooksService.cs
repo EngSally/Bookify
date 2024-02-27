@@ -18,13 +18,21 @@ namespace Bookify.Infrastructure.Services
         {
             return _context.Books.Find(id);
         }
+
+        public  bool BookAvailableForRental(int id)
+        {
+            var resut= _context.Books.FromSqlInterpolated($" Select IsAvailableForRental from Books where Books.Id={id};");
+            return true;
+        }
         public IQueryable<Book> GetDetails()
         {
+            
             return _context.Books
                    .Include(b => b.Author)
                    .Include(b => b.BookCopies)
                    .Include(b => b.Categories)
                    .ThenInclude(c => c.Category);
+
         }
 
         public  (IQueryable<Book> books, int recordsTotal) GetFiltered(GetFilterDTO dto)
@@ -45,8 +53,7 @@ namespace Bookify.Infrastructure.Services
         public Book Add(Book book, IEnumerable<int> selectedCategories, string createdById)
         {
             book.CreatedById = createdById;
-
-            foreach (var category in selectedCategories)
+                 foreach (var category in selectedCategories)
                 book.Categories.Add(new BookCategory { CategoryId = category });
 
             _context.Books.Add(book);
