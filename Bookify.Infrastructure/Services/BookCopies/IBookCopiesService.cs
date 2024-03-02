@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
 
-namespace Bookify.Infrastructure.Services.BookCopies
+namespace Bookify.Infrastructure.Services
 {
     public  interface IBookCopiesService
     
     {
-
+        BookCopy Add(BookCopy bookCopy);
     }
 }

@@ -19,10 +19,14 @@ namespace Bookify.Infrastructure.Services
             return _context.Books.Find(id);
         }
 
-        public  bool BookAvailableForRental(int id)
+        public  bool? BookAvailableForRental(int id)
         {
-            var resut= _context.Books.FromSqlInterpolated($" Select IsAvailableForRental from Books where Books.Id={id};");
-            return true;
+
+              return    _context!.Books.Where(b => b.Id == id).Select(b => new { b.IsAvailableForRental }).SingleOrDefault()?.IsAvailableForRental;
+            
+
+
+
         }
         public IQueryable<Book> GetDetails()
         {

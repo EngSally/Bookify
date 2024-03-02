@@ -27,14 +27,14 @@ namespace Bookify.Web.Controllers
 
 		public IActionResult Create(int bookId)
 		{
-			var book=_context.Books.Find(bookId);
-			if (book is null) return NotFound();
-			var dd=_booksService.BookAvailableForRental(bookId);
+			var isAvailableForRental=_booksService.BookAvailableForRental(bookId);
+			if (isAvailableForRental is null) return NotFound();
+			
 			var model=new BookCopyFormViewModel
 			{
 				BookId=bookId,
-				ShowRentalInput=book.IsAvailableForRental
-			};
+				ShowRentalInput=isAvailableForRental.HasValue
+            };
 			return PartialView("_FormBookCopy", model);
 		}
 
@@ -44,24 +44,20 @@ namespace Bookify.Web.Controllers
 		{//Fluent Validation
 			var result=_validator.Validate(model);
 			if(! result.IsValid) return BadRequest();
-			//if (!ModelState.IsValid)
-			//	return BadRequest();
+            //if (!ModelState.IsValid)
+            //	return BadRequest();
+            var bookIsAvailable=_booksService.BookAvailableForRental(model.BookId);
+            if (bookIsAvailable is null) return NotFound();
 
-			var book = _context.Books.Find(model.BookId);
-
-			if (book is null)
-				return NotFound();
-
-			BookCopy copy = new()
+            BookCopy copy = new()
 			{
 				EditionNumber = model.EditionNumber,
-				IsAvailableForRental = book.IsAvailableForRental && model.IsAvailableForRental,
+				BookId=model.BookId,
+				IsAvailableForRental =bookIsAvailable.HasValue && model.IsAvailableForRental,
 				CreatedById =User.GetUserId()
 			};
 
-			book.BookCopies.Add(copy);
-			_context.SaveChanges();
-
+            copy=_bookCopiesService.Add(copy);
 			var viewModel = _mapper.Map<BookCopyViewModel>(copy);
 
 			return PartialView("_BookCopyRow", viewModel);
