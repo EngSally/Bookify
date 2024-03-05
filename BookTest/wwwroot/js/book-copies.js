@@ -13,6 +13,7 @@ function OnAddBookCopy(row) {
 
 }
 function OnEditBookCopy(row) {
+
     ShowToastrMessageSuccess();
     $('#staticBackdrop').modal('hide');
     $(updateRow).addClass('animate__animated animate__flash');

@@ -1,6 +1,7 @@
 ﻿
 using Bookify.Infrastructure.Services.BookCopies;
 using Bookify.Web.Core.ViewModels.BookCopy;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
 
 
@@ -40,7 +41,7 @@ namespace Bookify.Web.Controllers
 
 		[HttpPost]
 
-		public IActionResult Create(BookCopyFormViewModel model)
+        public IActionResult Create(BookCopyFormViewModel model)
 		{//Fluent Validation
 			var result=_validator.Validate(model);
 			if(! result.IsValid) return BadRequest();
@@ -69,12 +70,12 @@ namespace Bookify.Web.Controllers
 		[HttpGet]
 		public IActionResult Edit(int id)
 		{
-			var bookCopy=_context.BooksCopies.Include(c=>c.Book).SingleOrDefault(c=>c.Id==id);
+            (BookCopy? bookCopy, bool? BookAvailableForRental) = _bookCopiesService.GetById(id);  
+		
 			if (bookCopy is null) return NotFound();
 			var model=_mapper.Map<BookCopyFormViewModel>(bookCopy);
-			model.ShowRentalInput = bookCopy.Book!.IsAvailableForRental;
-
-			return PartialView("_FormBookCopy", model);
+			model.ShowRentalInput = BookAvailableForRental.HasValue;
+            return PartialView("_FormBookCopy", model);
 		}
 
 		[HttpPost]
@@ -86,16 +87,14 @@ namespace Bookify.Web.Controllers
             var result = _validator.Validate(model);
             if (!result.IsValid) return BadRequest();
             //if (!ModelState.IsValid) return BadRequest();
-			var bookCopy=_context.BooksCopies.Include(c=>c.Book).SingleOrDefault(c=>c.Id==model.Id);
-			if (bookCopy == null) return NotFound();
-
+            (BookCopy? bookCopy, bool? BookAvailableForRental) = _bookCopiesService.GetById(model.Id);
+            if (bookCopy == null) return NotFound();
 			bookCopy = _mapper.Map(model, bookCopy);
-			bookCopy.IsAvailableForRental = bookCopy.Book!.IsAvailableForRental ? model.IsAvailableForRental : false;
+			bookCopy.IsAvailableForRental = BookAvailableForRental.HasValue ? model.IsAvailableForRental : false;
 			bookCopy.LastUpdateById = User.GetUserId();
 			bookCopy.LastUpdateOn = DateTime.Now;
-			_context.SaveChanges();
+			_bookCopiesService.Update(bookCopy);
 			var bookCopyViewModel=_mapper.Map<BookCopyViewModel>(bookCopy);
-
 			return PartialView("_BookCopyRow", bookCopyViewModel);
 
 
@@ -114,24 +113,17 @@ namespace Bookify.Web.Controllers
 
 		public IActionResult ToggleStatus(int id)
 		{
-			var copy = _context.BooksCopies.Find(id);
+			var copy =_bookCopiesService.ToggleStatus(id,User.GetUserId());
+			if(copy == null) return NotFound();
+            return Ok();
 
-			if (copy is null)
-				return NotFound();
-
-			copy.Deleted = !copy.Deleted;
-			copy.LastUpdateOn = DateTime.Now;
-
-			_context.SaveChanges();
-
-			return Ok();
+          
 		}
 
 		public IActionResult AllowItem(BookCopyFormViewModel model)
 		{
-			var bookCopy = _context.BooksCopies.SingleOrDefault(b=>b.BookId==model.BookId&&b.EditionNumber==model.EditionNumber);
-			bool allow=bookCopy is null||bookCopy.Id.Equals(model.Id);
-			return Json(allow);
+			
+			return Json(_bookCopiesService.AllowItem(model.BookId,model.Id,model.EditionNumber));
 		}
 
 		
