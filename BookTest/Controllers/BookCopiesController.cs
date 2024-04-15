@@ -1,5 +1,6 @@
 ﻿
 using Bookify.Infrastructure.Services.BookCopies;
+using Bookify.Infrastructure.Services.Rentals;
 using Bookify.Web.Core.ViewModels.BookCopy;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Model;
@@ -14,15 +15,17 @@ namespace Bookify.Web.Controllers
 		private readonly IValidator<BookCopyFormViewModel> _validator;
 		private readonly IBooksService _booksService;
 		private readonly IBookCopiesService _bookCopiesService;
+		private readonly IRentalService _rentalService;
 
 		public BookCopiesController(IApplicationDbContext context, IMapper mapper,
-			IValidator<BookCopyFormViewModel> validator, IBooksService booksService, IBookCopiesService bookCopiesService)
+			IValidator<BookCopyFormViewModel> validator, IBooksService booksService, IBookCopiesService bookCopiesService, IRentalService rentalService)
         {
             _context = context;
             _mapper = mapper;
             _validator = validator;
 			_booksService = booksService;
 			_bookCopiesService = bookCopiesService;
+			_rentalService = rentalService;
         }
         [AjaxOnly]
 
@@ -101,10 +104,8 @@ namespace Bookify.Web.Controllers
 		}
 		public IActionResult RentalHistory(int id)
 		{
-			var rentals=_context.RentalCopies
-				.Include(r=>r.Rental)
-				.ThenInclude(r=>r.Subscriber)
-				.Where(c=>c.BookCopyId==id).ToList();
+            var rentals=   _rentalService.RentalHistory(id);
+         
 			var model=_mapper.Map<IEnumerable<BookCopyRentalHistoryViewModel>>(rentals);
 			return View(model);
 		}

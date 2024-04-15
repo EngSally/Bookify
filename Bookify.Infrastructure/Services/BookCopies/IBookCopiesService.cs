@@ -12,5 +12,7 @@ namespace Bookify.Infrastructure.Services
         int Update(BookCopy bookCopy);
         BookCopy? ToggleStatus(int id, string userId);
         bool AllowItem(int bookId, int copyId, int editionNumber);
+
+
     }
 }
